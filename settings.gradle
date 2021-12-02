@@ -1,0 +1,19 @@
+rootProject.name = 'karma-bond-score'
+
+include (
+  'Karma-CustomBond',
+  'Karma-CustomBond-Test',
+  
+  'Karma-CustomTreasury',
+  'Karma-CustomTreasury-Test',
+
+  'Karma-Factory',
+  'Karma-Factory-Test',
+
+  'Karma-Test',
+  'Karma-Utils',
+  
+  'javaee-tokens',
+  'unittest',
+  'testinteg',
+)
