@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package dao.karma.interfaces;
+package dao.karma.utils.librairies;
 
 import java.math.BigInteger;
 
-import score.Address;
-import score.Context;
+public class FixedPoint {
 
-public class IIRC2 {
+  public class uq112x112 {
+    BigInteger _x;
 
-  public static void transfer (
-    Address irc2,
-    Address to,
-    BigInteger amount,
-    byte[] data
-  ) {
-    Context.call(irc2, "transfer", to, amount, data);
+    public BigInteger decode112with18 () {
+      return this._x.divide(new BigInteger("5192296858534827"));
+    }
   }
 
-  public static int decimals (Address irc2) {
-    return ((BigInteger) Context.call(irc2, "decimals")).intValue();
-  }
-
-  public static BigInteger totalSupply (Address irc2) {
-    return (BigInteger) Context.call(irc2, "totalSupply");
+  public static uq112x112 fraction(BigInteger numerator, BigInteger denominator) {
+    // TODO
+    return null;
   }
 }

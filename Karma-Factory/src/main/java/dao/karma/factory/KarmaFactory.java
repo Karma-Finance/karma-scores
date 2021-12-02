@@ -61,14 +61,14 @@ public class KarmaFactory extends Ownable {
     // Methods
     // ================================================
     /**
-     *  Contract constructor
+     * Contract constructor
      * 
-     *  Access: Everybody
+     * Access: Everybody
      * 
-     *  @param karmaTreasury The Karma Treasury contract address
-     *  @param karmaFactoryStorage The Karma Factory Storage contract address
-     *  @param karmaSubsidyRouter The karma Subsidy Router contract address
-     *  @param karmaDAO The Karma DAO contract address
+     * @param karmaTreasury The Karma Treasury contract address
+     * @param karmaFactoryStorage The Karma Factory Storage contract address
+     * @param karmaSubsidyRouter The karma Subsidy Router contract address
+     * @param karmaDAO The Karma DAO contract address
      */
     public KarmaFactory (
         Address karmaTreasury,
@@ -144,6 +144,8 @@ public class KarmaFactory extends Ownable {
     /**
      * Deploys custom treasury and custom bond contracts and returns address of both
      * 
+     * Access: Policy
+     * 
      * @param payoutToken Address
      * @param principleToken Address
      * @param initialOwner Address
@@ -199,6 +201,8 @@ public class KarmaFactory extends Ownable {
     
     /**
      * Deploys custom bond contract and returns address
+     * 
+     * Access: Policy
      * 
      * @param payoutToken address
      * @param principleToken address

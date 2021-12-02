@@ -34,6 +34,7 @@ import score.DictDB;
 import score.annotation.EventLog;
 import score.annotation.External;
 import score.annotation.Optional;
+import scorex.io.IOException;
 import scorex.io.Reader;
 import scorex.io.StringReader;
 
@@ -96,13 +97,13 @@ public class KarmaCustomTreasury extends Ownable {
     // --- Bond Contract Functions ---
     
     /**
-     *  Deposit principle token and recieve back payout token
+     * Deposit principle token and recieve back payout token
      * 
-     *  Access: Everybody
+     * Access: Everybody
      * 
-     *  @param principleTokenAddress
-     *  @param amountPrincipleToken
-     *  @param amountPayoutToken
+     * @param principleTokenAddress
+     * @param amountPrincipleToken
+     * @param amountPayoutToken
      */
     // @External - this method is external through tokenFallback
     private void deposit (
@@ -118,9 +119,14 @@ public class KarmaCustomTreasury extends Ownable {
     }
     
     @External
-    public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) throws Exception {
+    public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) {
         Reader reader = new StringReader(new String(_data));
-        JsonValue input = Json.parse(reader);
+        JsonValue input = null;
+        try {
+            input = Json.parse(reader);
+        } catch (IOException e) {
+            Context.revert("tokenFallback: Invalid JSON");
+        }
         JsonObject root = input.asObject();
         String method = root.get("method").asString();
         Address token = Context.getCaller();
@@ -144,7 +150,7 @@ public class KarmaCustomTreasury extends Ownable {
     /**
      * Policy can withdraw IRC2 token to desired address
      *
-     * Access: Only policy
+     * Access: Policy
      * 
      * @param token The token to withdraw
      * @param destination The destination address for the withdraw
@@ -156,6 +162,7 @@ public class KarmaCustomTreasury extends Ownable {
         Address destination,
         BigInteger amount
     ) {
+        // Access control
         onlyPolicy();
 
         IIRC2.transfer(token, destination, amount, JSONUtils.method("withdraw"));
@@ -165,7 +172,7 @@ public class KarmaCustomTreasury extends Ownable {
     /**
      * Toggle a bond contract
      * 
-     * Access: Only policy
+     * Access: Policy
      * 
      * @param bondContract The bond contract to toggle
      */
@@ -173,6 +180,7 @@ public class KarmaCustomTreasury extends Ownable {
     public void toggleBondContract (
         Address bondContract
     ) {
+        // Access control
         onlyPolicy();
 
         boolean state = this.bondContract.getOrDefault(bondContract, false);
@@ -215,8 +223,8 @@ public class KarmaCustomTreasury extends Ownable {
         Address principleTokenAddress,
         BigInteger amount
     ) {
-        int payoutTokenDecimals = IIRC2.decimals(payoutToken).intValue();
-        int principleTokenAddressDecimals = IIRC2.decimals(principleTokenAddress).intValue();
+        int payoutTokenDecimals = IIRC2.decimals(payoutToken);
+        int principleTokenAddressDecimals = IIRC2.decimals(principleTokenAddress);
 
         return amount.multiply(MathUtils.pow10(payoutTokenDecimals)).divide(MathUtils.pow10(principleTokenAddressDecimals));
     }
