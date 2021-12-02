@@ -1,4 +1,4 @@
-# Karma Custom Treasury Documentation
+# Karma Factory Storage Documentation
 
 ---
 
