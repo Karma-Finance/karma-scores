@@ -73,7 +73,7 @@ public class KarmaFactory extends Ownable {
         Address karmaSubsidyRouter,  // 0x97Fac4EA361338EaB5c89792eE196DA8712C9a4a
         Address karmaDAO             // Proxy -> 0x34cfac646f301356faa8b21e94227e3583fe3f5f
     ) {
-        this.name = "KarmaDAO Factory";
+        this.name = "Karma Factory";
 
         Context.require(!karmaTreasury.equals(ZERO_ADDRESS),
             "KarmaFactory: karmaTreasury cannot be zero address");
