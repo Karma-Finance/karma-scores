@@ -12,6 +12,7 @@ include (
 
   'Karma-Test',
   'Karma-Utils',
+  'Karma-Interfaces',
   
   'javaee-tokens',
   'unittest',
