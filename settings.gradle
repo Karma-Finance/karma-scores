@@ -6,9 +6,18 @@ include (
   
   'Karma-CustomTreasury',
   'Karma-CustomTreasury-Test',
+  
+  'Karma-Treasury',
+  'Karma-Treasury-Test',
 
   'Karma-Factory',
   'Karma-Factory-Test',
+
+  'Karma-FactoryStorage',
+  'Karma-FactoryStorage-Test',
+
+  'Karma-SubsidyRouter',
+  'Karma-SubsidyRouter-Test',
 
   'Karma-Test',
   'Karma-Utils',

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package dao.karma.customtreasury;
+package dao.karma.treasury;
 
 import score.annotation.External;
 
-public class KarmaCustomTreasury {
+public class KarmaTreasury {
 
     // ================================================
     // Consts
     // ================================================
     // Contract class name
-    public static final String NAME = "KarmaCustomTreasury";
+    public static final String NAME = "KarmaTreasury";
 
     // Contract name
     private final String name;
@@ -44,9 +44,9 @@ public class KarmaCustomTreasury {
      *  Contract constructor
      * 
      */
-    public KarmaCustomTreasury(
+    public KarmaTreasury (
     ) {
-        this.name = "Karma Custom Treasury";
+        this.name = "Karma Treasury";
     }
 
     // ================================================

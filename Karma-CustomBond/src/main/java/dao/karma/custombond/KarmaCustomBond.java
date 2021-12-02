@@ -46,7 +46,7 @@ public class KarmaCustomBond {
      */
     public KarmaCustomBond(
     ) {
-        this.name = "KarmaDAO Custom Bond";
+        this.name = "Karma Custom Bond";
     }
 
     // ================================================
