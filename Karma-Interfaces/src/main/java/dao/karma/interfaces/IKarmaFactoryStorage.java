@@ -22,7 +22,7 @@ import dao.karma.utils.classes.TreasuryBond;
 import score.Address;
 import score.Context;
 
-public class IOlympusProFactoryStorage {
+public class IKarmaFactoryStorage {
   
   public static TreasuryBond pushBond (
     Address karmaFactoryStorage,

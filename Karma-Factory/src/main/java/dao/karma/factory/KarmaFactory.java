@@ -20,7 +20,7 @@ import static dao.karma.utils.AddressUtils.ZERO_ADDRESS;
 
 import java.math.BigInteger;
 
-import dao.karma.interfaces.IOlympusProFactoryStorage;
+import dao.karma.interfaces.IKarmaFactoryStorage;
 import dao.karma.utils.classes.TreasuryBond;
 import dao.karma.utils.types.Ownable;
 import score.Address;
@@ -154,7 +154,7 @@ public class KarmaFactory extends Ownable {
             fees
         );
 
-        return IOlympusProFactoryStorage.pushBond (
+        return IKarmaFactoryStorage.pushBond (
             this.karmaFactoryStorage,
             payoutToken, 
             principleToken, 
@@ -199,7 +199,7 @@ public class KarmaFactory extends Ownable {
             fees
         );
 
-        return IOlympusProFactoryStorage.pushBond (
+        return IKarmaFactoryStorage.pushBond (
             this.karmaFactoryStorage,
             payoutToken, 
             principleToken, 
