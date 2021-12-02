@@ -62,16 +62,19 @@ public class KarmaFactory extends Ownable {
     // ================================================
     /**
      *  Contract constructor
+     * 
+     *  Access: Everybody
+     * 
      *  @param karmaTreasury The Karma Treasury contract address
      *  @param karmaFactoryStorage The Karma Factory Storage contract address
      *  @param karmaSubsidyRouter The karma Subsidy Router contract address
      *  @param karmaDAO The Karma DAO contract address
      */
     public KarmaFactory (
-        Address karmaTreasury,       // 0x31F8Cc382c9898b273eff4e0b7626a6987C846E8
-        Address karmaFactoryStorage, // 0x6828D71014D797533C3b49B6990Ca1781656B71f
-        Address karmaSubsidyRouter,  // 0x97Fac4EA361338EaB5c89792eE196DA8712C9a4a
-        Address karmaDAO             // Proxy -> 0x34cfac646f301356faa8b21e94227e3583fe3f5f
+        Address karmaTreasury,
+        Address karmaFactoryStorage,
+        Address karmaSubsidyRouter,
+        Address karmaDAO
     ) {
         this.name = "Karma Factory";
 
@@ -93,26 +96,48 @@ public class KarmaFactory extends Ownable {
     // ================================================
     // Contract Initialization
     // ================================================
+    /**
+     * Write the Custom Treasury Contract bytes. 
+     * Can only be called once after deploying.
+     * 
+     * Access: SCORE Owner
+     * 
+     * @param contractBytes The contract bytes
+     */
     @External
-    public void setCustomTreasuryContractBytes (byte[] contract) {
+    public void setCustomTreasuryContractBytes (byte[] contractBytes) {
         final Address caller = Context.getCaller();
 
+        // Access control
         checkIsOwner(caller);
 
         // The Custom Treasury Contract bytes cannot be set more than once
-        Context.require(this.customTreasuryContractBytes.get() == null,
-            "setCustomTreasuryContractBytes: already set");
+        checkCustomTreasuryContractBytesNotInitialized();
+        
+        // OK
+        this.customTreasuryContractBytes.set(contractBytes);
     }
-    
+
+    /**
+     * Write the Custom Treasury Contract bytes. 
+     * Can only be called once after deploying.
+     * 
+     * Access: SCORE Owner
+     * 
+     * @param contractBytes The contract bytes
+     */
     @External
-    public void setCustomBondContractBytes (byte[] contract) {
+    public void setCustomBondContractBytes (byte[] contractBytes) {
         final Address caller = Context.getCaller();
 
+        // Access control
         checkIsOwner(caller);
 
         // The Custom Bond Contract bytes cannot be set more than once
-        Context.require(this.customBondContractBytes.get() == null,
-            "setCustomBondContractBytes: already set");
+        checkCustomBondContractBytesNotInitialized();
+
+        // OK
+        this.customBondContractBytes.set(contractBytes);
     }
 
     // --- Policy Functions --- 
@@ -133,8 +158,14 @@ public class KarmaFactory extends Ownable {
         BigInteger[] tierCeilings, 
         BigInteger[] fees
     ) {
+        // Access control
         onlyPolicy();
 
+        // Check contracts bytes initialized
+        checkCustomTreasuryContractBytesInitialized();
+        checkCustomBondContractBytesInitialized();
+
+        // OK
         Address treasury = Context.deploy (
             customTreasuryContractBytes.get(), 
             payoutToken, 
@@ -219,6 +250,38 @@ public class KarmaFactory extends Ownable {
             "checkIsOwner: Only owner can call this method");
     }
 
+    /**
+     * Check if the custom treasury contract bytes have been initialized
+     */
+    private void checkCustomTreasuryContractBytesInitialized() {
+        Context.require(customTreasuryContractBytes.get() != null,
+            "checkCustomTreasuryContractBytesInitialized: not set");
+    }
+
+    /**
+     * Check if the custom treasury contract bytes have been initialized
+     */
+    private void checkCustomBondContractBytesInitialized() {
+        Context.require(customBondContractBytes.get() != null,
+            "checkCustomBondContractBytesInitialized: not set");
+    }
+
+    /**
+     * Check if the custom treasury contract bytes haven't been initialized
+     */
+    private void checkCustomTreasuryContractBytesNotInitialized() {
+        Context.require(this.customTreasuryContractBytes.get() == null,
+            "checkCustomTreasuryContractBytesNotInitialized: already set");
+    }
+
+    /**
+     * Check if the custom treasury contract bytes haven't been initialized
+     */
+    private void checkCustomBondContractBytesNotInitialized() {
+        Context.require(this.customBondContractBytes.get() == null,
+            "checkCustomBondContractBytesNotInitialized: already set");
+    }
+
     // ================================================
     // Public variable getters
     // ================================================
@@ -228,5 +291,25 @@ public class KarmaFactory extends Ownable {
     @External(readonly = true)
     public String name() {
         return this.name;
+    }
+
+    @External(readonly = true)
+    public Address karmaTreasury() {
+        return this.karmaTreasury;
+    }
+    
+    @External(readonly = true)
+    public Address karmaFactoryStorage() {
+        return this.karmaFactoryStorage;
+    }
+    
+    @External(readonly = true)
+    public Address karmaSubsidyRouter() {
+        return this.karmaSubsidyRouter;
+    }
+    
+    @External(readonly = true)
+    public Address karmaDAO() {
+        return this.karmaDAO;
     }
 }
