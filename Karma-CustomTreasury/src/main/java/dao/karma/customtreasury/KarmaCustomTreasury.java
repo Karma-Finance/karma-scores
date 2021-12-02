@@ -16,9 +16,28 @@
 
 package dao.karma.customtreasury;
 
-import score.annotation.External;
+import java.math.BigInteger;
 
-public class KarmaCustomTreasury {
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+
+import dao.karma.interfaces.IIRC2;
+import dao.karma.utils.AddressUtils;
+import dao.karma.utils.JSONUtils;
+import dao.karma.utils.MathUtils;
+import dao.karma.utils.StringUtils;
+import dao.karma.utils.types.Ownable;
+import score.Address;
+import score.Context;
+import score.DictDB;
+import score.annotation.EventLog;
+import score.annotation.External;
+import score.annotation.Optional;
+import scorex.io.Reader;
+import scorex.io.StringReader;
+
+public class KarmaCustomTreasury extends Ownable {
 
     // ================================================
     // Consts
@@ -29,6 +48,12 @@ public class KarmaCustomTreasury {
     // Contract name
     private final String name;
 
+    // The payout token contract address
+    private final Address payoutToken;
+
+    // Bond contracts
+    private final DictDB<Address, Boolean> bondContract = Context.newDictDB(NAME + "_bondContract", Boolean.class);
+
     // ================================================
     // DB Variables
     // ================================================
@@ -36,17 +61,123 @@ public class KarmaCustomTreasury {
     // ================================================
     // Event Logs
     // ================================================
+    @EventLog
+    public void BondContractToggled (
+        Address bondContract, 
+        boolean approved
+    ) {}
+
+    @EventLog
+    public void Withdraw (
+        Address token, 
+        Address destination, 
+        BigInteger amount
+    ) {}
 
     // ================================================
     // Methods
     // ================================================
     /**
      *  Contract constructor
-     * 
      */
-    public KarmaCustomTreasury(
+    public KarmaCustomTreasury (
+        Address payoutToken, 
+        Address initialOwner
     ) {
+        Context.require(!payoutToken.equals(AddressUtils.ZERO_ADDRESS));
+        Context.require(!initialOwner.equals(AddressUtils.ZERO_ADDRESS));
+
         this.name = "Karma Custom Treasury";
+
+        this.payoutToken = payoutToken;
+        this.policy.set(initialOwner);
+    }
+
+    // --- Bond Contract Functions ---
+    
+    /**
+     *  Deposit principle token and recieve back payout token
+     * 
+     *  Access: Everybody
+     * 
+     *  @param principleTokenAddress
+     *  @param amountPrincipleToken
+     *  @param amountPayoutToken
+     */
+    // @External - this method is external through tokenFallback
+    private void deposit (
+        Address caller,
+        Address principleTokenAddress, 
+        BigInteger amountPrincipleToken,
+        BigInteger amountPayoutToken
+    ) {
+        Context.require(bondContract.getOrDefault(caller, false), 
+            "deposit: caller is not a bond contract");
+
+        IIRC2.transfer(payoutToken, caller, amountPayoutToken, JSONUtils.method("deposit"));
+    }
+    
+    @External
+    public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) throws Exception {
+        Reader reader = new StringReader(new String(_data));
+        JsonValue input = Json.parse(reader);
+        JsonObject root = input.asObject();
+        String method = root.get("method").asString();
+        Address token = Context.getCaller();
+
+        switch (method)
+        {
+            case "deposit": {
+                JsonObject params = root.get("params").asObject();
+                BigInteger amountPayoutToken = StringUtils.toBigInt(params.get("amountPayoutToken").asString());
+                deposit(_from, token, _value, amountPayoutToken);
+                break;
+            }
+
+            default:
+                Context.revert("tokenFallback: Unimplemented tokenFallback action");
+        }
+    }
+
+
+    // --- Policy Functions ---
+    /**
+     * Policy can withdraw IRC2 token to desired address
+     *
+     * Access: Only policy
+     * 
+     * @param token The token to withdraw
+     * @param destination The destination address for the withdraw
+     * @param amount The amount of tokens
+     */
+    @External
+    public void withdraw (
+        Address token,
+        Address destination,
+        BigInteger amount
+    ) {
+        onlyPolicy();
+
+        IIRC2.transfer(token, destination, amount, JSONUtils.method("withdraw"));
+        this.Withdraw(token, destination, amount);
+    }
+
+    /**
+     * Toggle a bond contract
+     * 
+     * Access: Only policy
+     * 
+     * @param bondContract The bond contract to toggle
+     */
+    @External
+    public void toggleBondContract (
+        Address bondContract
+    ) {
+        onlyPolicy();
+
+        boolean state = this.bondContract.getOrDefault(bondContract, false);
+        // toggle
+        this.bondContract.set(bondContract, !state);
     }
 
     // ================================================
@@ -63,4 +194,31 @@ public class KarmaCustomTreasury {
     public String name() {
         return this.name;
     }
+
+    @External(readonly = true)
+    public Address payoutToken() {
+        return this.payoutToken;
+    }
+    
+    // ================================================
+    // View Functions
+    // ================================================
+    /**
+     * Returns payout token valuation of principle
+     * 
+     * @param principleTokenAddress
+     * @param amount
+     * @return value
+     */
+    @External(readonly = true)
+    public BigInteger valueOfToken (
+        Address principleTokenAddress,
+        BigInteger amount
+    ) {
+        int payoutTokenDecimals = IIRC2.decimals(payoutToken).intValue();
+        int principleTokenAddressDecimals = IIRC2.decimals(principleTokenAddress).intValue();
+
+        return amount.multiply(MathUtils.pow10(payoutTokenDecimals)).divide(MathUtils.pow10(principleTokenAddressDecimals));
+    }
+
 }
