@@ -61,7 +61,6 @@ public class KarmaCustomBond extends Ownable {
     private final Address karmaDAO; // The KarmaDAO contract address
     private final Address subsidyRouter; // pays subsidy in Karma to custom treasury
 
-
     // ================================================
     // DB Variables
     // ================================================
