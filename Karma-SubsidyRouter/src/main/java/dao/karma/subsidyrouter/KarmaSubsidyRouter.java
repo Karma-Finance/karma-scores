@@ -16,9 +16,20 @@
 
 package dao.karma.subsidyrouter;
 
+import static dao.karma.utils.AddressUtils.ZERO_ADDRESS;
+
+import java.math.BigInteger;
+
+import dao.karma.interfaces.IBond;
+import dao.karma.utils.types.Ownable;
+import score.Address;
+import score.Context;
+import score.DictDB;
 import score.annotation.External;
 
-public class KarmaSubsidyRouter {
+// Immutable contract routes between Karma bonds and subsidy controllers
+// Allows for subsidies on bonds offered through bond contracts
+public class KarmaSubsidyRouter extends Ownable {
 
     // ================================================
     // Consts
@@ -32,10 +43,8 @@ public class KarmaSubsidyRouter {
     // ================================================
     // DB Variables
     // ================================================
-
-    // ================================================
-    // Event Logs
-    // ================================================
+    // maps bond contract managed by subsidy controller
+    private final DictDB<Address, Address> bondForController = Context.newDictDB(NAME + "_bondForController", Address.class);
 
     // ================================================
     // Methods
@@ -48,10 +57,56 @@ public class KarmaSubsidyRouter {
     ) {
         this.name = "Karma Subsidy Router";
     }
+    
+    /**
+     * Subsidy controller fetches and resets payout counter
+     * 
+     * Access: Everyone
+     */
+    @External
+    public BigInteger getSubsidyInfo() {
+        final Address caller = Context.getCaller();
+        Address bond = this.bondForController.get(caller);
 
-    // ================================================
-    // Checks
-    // ================================================
+        Context.require (bond != null,
+            "getSubsidyInfo: Address not mapped");
+
+        return IBond.paySubsidy(bond);
+    }
+
+    /**
+     * Add new subsidy controller for bond contract
+     * 
+     * Access: Policy
+     * 
+     * @param bond
+     * @param subsidyController
+     */
+    @External
+    public void addSubsidyController (Address bond, Address subsidyController) {
+        // Access control
+        onlyPolicy();
+
+        Context.require (!bond.equals(ZERO_ADDRESS));
+        Context.require (!subsidyController.equals(ZERO_ADDRESS));
+
+        this.bondForController.set(subsidyController, bond);
+    }
+    
+    /**
+     * Remove subsidy controller for bond contract
+     * 
+     * Access: Policy
+     * 
+     * @param subsidyController address
+     */
+    @External
+    public void removeSubsidyController (Address subsidyController) {
+        // Access control
+        onlyPolicy();
+
+        this.bondForController.set(subsidyController, null);
+    }
 
     // ================================================
     // Public variable getters
@@ -62,5 +117,15 @@ public class KarmaSubsidyRouter {
     @External(readonly = true)
     public String name() {
         return this.name;
+    }
+
+    /**
+     * Get the bond associated with a given controller
+     * @param controller The controller
+     * @return The bond
+     */
+    @External(readonly = true)
+    public Address bondForController (Address controller) {
+        return this.bondForController.get(controller);
     }
 }
