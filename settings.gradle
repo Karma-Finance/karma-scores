@@ -1,29 +1,31 @@
 rootProject.name = 'karma-bond-score'
 
 include (
-  'Karma-CustomBond',
-  'Karma-CustomBond-Test',
+  // Karma-Bond
+  ':Karma-Bond:Karma-CustomBond',
+  ':Karma-Bond:Karma-CustomBond-Test',
   
-  'Karma-CustomTreasury',
-  'Karma-CustomTreasury-Test',
+  ':Karma-Bond:Karma-CustomTreasury',
+  ':Karma-Bond:Karma-CustomTreasury-Test',
   
-  'Karma-Treasury',
-  'Karma-Treasury-Test',
+  ':Karma-Bond:Karma-Factory',
+  ':Karma-Bond:Karma-Factory-Test',
 
-  'Karma-Factory',
-  'Karma-Factory-Test',
+  ':Karma-Bond:Karma-FactoryStorage',
+  ':Karma-Bond:Karma-FactoryStorage-Test',
 
-  'Karma-FactoryStorage',
-  'Karma-FactoryStorage-Test',
+  ':Karma-Bond:Karma-SubsidyRouter',
+  ':Karma-Bond:Karma-SubsidyRouter-Test',
 
-  'Karma-SubsidyRouter',
-  'Karma-SubsidyRouter-Test',
+  // Karma-DAO
+  ':Karma-DAO:Karma-Treasury',
+  ':Karma-DAO:Karma-Treasury-Test',
 
-  'Karma-Test',
-  'Karma-Utils',
-  'Karma-Interfaces',
-  
-  'javaee-tokens',
-  'unittest',
-  'testinteg',
-)
+  // Librairies & common code
+  ':Karma-Commons:Karma-Test',
+  ':Karma-Commons:Karma-Utils',
+  ':Karma-Commons:Karma-Interfaces',
+  ':Karma-Commons:javaee-tokens',
+  ':Karma-Commons:unittest',
+  ':Karma-Commons:testinteg',
+)   

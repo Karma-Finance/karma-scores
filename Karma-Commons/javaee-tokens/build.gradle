@@ -11,7 +11,7 @@ java {
 
 dependencies {
     compileOnly 'foundation.icon:javaee-api:0.9.0'
-    implementation project(':Karma-Utils')
+    implementation project(':Karma-Commons:Karma-Utils')
     
     testImplementation 'foundation.icon:javaee-unittest:0.9.1'
     

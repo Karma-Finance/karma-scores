@@ -10,12 +10,11 @@ dependencies {
     implementation 'foundation.icon:javaee-scorex:0.5.2'
     implementation 'com.github.sink772:minimal-json:0.9.6'
 
-    implementation project(':Karma-Utils')
-    implementation project(':Karma-Interfaces')
+    implementation project(':Karma-Commons:Karma-Utils')
 }
 
 optimizedJar {
-    mainClassName = 'dao.karma.factory.KarmaFactory'
+    mainClassName = 'dao.karma.treasury.KarmaTreasury'
     // setEnableDebug(true)
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }

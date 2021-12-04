@@ -38,27 +38,27 @@ class Command:
     @staticmethod
     def optimizedJar(args):
         javaPkg, version, build = get_meta(args.package, args.endpoint)
+        print(f"Executing {javaPkg}:build...")
+        result = str(bash(f"./gradlew {javaPkg}:build"))
+        print(f"Executing {javaPkg}:optimizedJar...")
         result = str(bash(f"./gradlew {javaPkg}:optimizedJar"))
         if not "BUILD SUCCESSFUL" in result:
             print(result)
 
     @staticmethod
     def deploy(args):
-        print("Optimizing JAR...")
         Command.optimizedJar(args)
         config = Config(args.endpoint, args.keystore.name, args.password)
         deploy(config, args.package, verbose=print)
 
     @staticmethod
     def update(args):
-        print("Optimizing JAR...")
         Command.optimizedJar(args)
         config = Config(args.endpoint, args.keystore.name, args.password)
         update(config, args.package, verbose=print)
 
     @staticmethod
     def invoke(args):
-        print("Optimizing JAR...")
         config = Config(args.endpoint, args.keystore.name, args.password)
         invoke(config, args.package, args.params, verbose=print)
 

@@ -12,12 +12,12 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 
     testImplementation 'com.github.sink772:minimal-json:0.9.6'
-    testImplementation project(':javaee-tokens')
-    testImplementation project(':unittest')
+    testImplementation project(':Karma-Commons:javaee-tokens')
+    testImplementation project(':Karma-Commons:unittest')
 
-    testImplementation project(':Karma-Test')
-    testImplementation project(':Karma-Utils')
-    testImplementation project(':Karma-FactoryStorage')
+    testImplementation project(':Karma-Commons:Karma-Test')
+    testImplementation project(':Karma-Commons:Karma-Utils')
+    testImplementation project(':Karma-DAO:Karma-Treasury')
 }
 
 test {
