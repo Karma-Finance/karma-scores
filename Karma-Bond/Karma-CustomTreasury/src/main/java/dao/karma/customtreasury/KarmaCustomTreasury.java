@@ -91,7 +91,7 @@ public class KarmaCustomTreasury extends Ownable {
         this.name = "Karma Custom Treasury";
 
         this.payoutToken = payoutToken;
-        this.policy.set(initialOwner);
+        this.owner.set(initialOwner);
     }
 
     // --- Bond Contract Functions ---

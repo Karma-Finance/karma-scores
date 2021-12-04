@@ -155,8 +155,8 @@ public class KarmaCustomBond extends Ownable {
             this.karmaTreasury.set(karmaTreasury);
         }
 
-        if (this.policy.get() == null) {
-            this.policy.set(initialOwner);
+        if (this.owner.get() == null) {
+            this.owner.set(initialOwner);
         }
 
         Context.require(tierCeilings.length == fees.length,
