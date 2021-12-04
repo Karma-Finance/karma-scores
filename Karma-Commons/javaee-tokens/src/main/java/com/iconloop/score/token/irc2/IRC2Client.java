@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dao.karma.test.clients;
+package com.iconloop.score.token.irc2;
 
 import java.math.BigInteger;
 

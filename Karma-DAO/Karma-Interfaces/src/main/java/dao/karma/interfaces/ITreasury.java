@@ -18,6 +18,8 @@ package dao.karma.interfaces;
 
 import java.math.BigInteger;
 
+import com.iconloop.score.token.irc2.IIRC2;
+
 import dao.karma.utils.JSONUtils;
 import score.Address;
 import score.Context;

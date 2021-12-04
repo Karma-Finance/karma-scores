@@ -21,8 +21,8 @@ import java.math.BigInteger;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import com.iconloop.score.token.irc2.IIRC2;
 
-import dao.karma.interfaces.IIRC2;
 import dao.karma.utils.AddressUtils;
 import dao.karma.utils.JSONUtils;
 import dao.karma.utils.MathUtils;

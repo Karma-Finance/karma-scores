@@ -16,15 +16,18 @@ include (
 
   ':Karma-Bond:Karma-SubsidyRouter',
   ':Karma-Bond:Karma-SubsidyRouter-Test',
+  
+  ':Karma-Bond:Karma-Interfaces',
 
   // Karma-DAO
   ':Karma-DAO:Karma-Treasury',
   ':Karma-DAO:Karma-Treasury-Test',
+  
+  ':Karma-DAO:Karma-Interfaces',
 
   // Librairies & common code
   ':Karma-Commons:Karma-Test',
   ':Karma-Commons:Karma-Utils',
-  ':Karma-Commons:Karma-Interfaces',
   ':Karma-Commons:javaee-tokens',
   ':Karma-Commons:unittest',
   ':Karma-Commons:testinteg',
