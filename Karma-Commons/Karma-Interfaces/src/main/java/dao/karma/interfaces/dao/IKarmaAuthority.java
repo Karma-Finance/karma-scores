@@ -19,7 +19,7 @@ package dao.karma.interfaces.dao;
 import score.Address;
 import score.Context;
 
-public class IKarmaAuthority {
+public abstract class IKarmaAuthority {
   public static Address governor(Address authority) {
     return (Address) Context.call(authority, "governor");
   }

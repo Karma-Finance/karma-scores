@@ -16,9 +16,17 @@
 
 package dao.karma.token;
 
+import java.math.BigInteger;
+
+import dao.karma.standards.token.irc2.IRC2Basic;
+import dao.karma.types.IKarmaAccessControlled;
+import dao.karma.types.KarmaAccessControlled;
+import score.Address;
+import score.Context;
+import score.annotation.EventLog;
 import score.annotation.External;
 
-public class KarmaToken {
+public class KarmaToken extends IRC2Basic implements IKarmaAccessControlled {
 
     // ================================================
     // Consts
@@ -26,8 +34,8 @@ public class KarmaToken {
     // Contract class name
     public static final String NAME = "KarmaToken";
 
-    // Contract name
-    private final String name;
+    // Implements KarmaAccessControlled
+    private final KarmaAccessControlled accessControlled;
 
     // ================================================
     // DB Variables
@@ -45,22 +53,59 @@ public class KarmaToken {
      * 
      */
     public KarmaToken (
+        Address authority
     ) {
-        this.name = "Karma Token";
+        super("Karma Token", "KARMA", 9);
+        this.accessControlled = new KarmaAccessControlled(NAME + "_accessControlled", authority);
+    }
+
+    /**
+     * Mint new tokens
+     * 
+     * Access: Vault
+     * 
+     * @param account
+     * @param amount
+     */
+    @External
+    public void mint (Address account, BigInteger amount) {
+        // Access control
+        this.accessControlled.onlyVault();
+
+        // OK
+        this._mint(account, amount);
+    }
+
+    /**
+     * Mint new tokens
+     * 
+     * Access: Everyone
+     * 
+     * @param amount
+     */
+    @External
+    public void burn (BigInteger amount) {
+        this._burn (Context.getCaller(), amount);
     }
 
     // ================================================
     // Checks
     // ================================================
 
+    // --- Implement IKarmaAccessControlled ---
     // ================================================
-    // Public variable getters
+    // Event Logs
     // ================================================
-    /**
-     * Get the contract name
-     */
-    @External(readonly = true)
-    public String name() {
-        return this.name;
+    @Override
+    @EventLog(indexed = 1)
+    public void AuthorityUpdated(Address authority) {}
+
+    // ================================================
+    // Methods
+    // ================================================
+    @Override
+    @External
+    public void setAuthority(Address newAuthority) {
+        this.accessControlled.setAuthority(newAuthority);
     }
 }

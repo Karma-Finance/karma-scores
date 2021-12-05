@@ -11,6 +11,8 @@ dependencies {
     implementation 'com.github.sink772:minimal-json:0.9.6'
 
     implementation project(':Karma-Commons:Karma-Utils')
+    implementation project(':Karma-Commons:Karma-Types')
+    implementation project(':Karma-Commons:ICON:javaee-tokens')
 }
 
 optimizedJar {

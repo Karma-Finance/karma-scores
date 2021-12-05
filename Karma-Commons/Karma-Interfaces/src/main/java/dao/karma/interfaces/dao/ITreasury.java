@@ -23,7 +23,7 @@ import dao.karma.utils.JSONUtils;
 import score.Address;
 import score.Context;
 
-public class ITreasury {
+public abstract class ITreasury {
   public static BigInteger valueOfToken(Address treasury, Address principalToken, BigInteger amount) {
     return (BigInteger) Context.call(treasury, "valueOfToken", principalToken, amount);
   }

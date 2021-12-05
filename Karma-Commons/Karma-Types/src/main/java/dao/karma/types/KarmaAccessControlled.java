@@ -22,13 +22,11 @@ import score.Context;
 import score.VarDB;
 import score.annotation.EventLog;
 
-public abstract class KarmaAccessControlled {
+public class KarmaAccessControlled {
   
     // ================================================
     // Consts
     // ================================================
-    // Contract class name
-    public static final String NAME = "KarmaAccessControlled";
 
     // ================================================
     // Event Logs
@@ -39,9 +37,11 @@ public abstract class KarmaAccessControlled {
     // ================================================
     // DB Variables
     // ================================================
-    private final VarDB<Address> authority = Context.newVarDB(NAME + "_authority", Address.class);
+    private final VarDB<Address> authority;
 
-    public KarmaAccessControlled (Address address) {
+    public KarmaAccessControlled (String id, Address address) {
+      this.authority = Context.newVarDB(id + "_authority", Address.class);
+
       if (this.authority.get() == null) {
         this.authority.set(address);
         this.AuthorityUpdated(address);

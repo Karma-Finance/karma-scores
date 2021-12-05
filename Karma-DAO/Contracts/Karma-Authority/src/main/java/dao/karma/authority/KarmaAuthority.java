@@ -16,6 +16,7 @@
 
 package dao.karma.authority;
 
+import dao.karma.types.IKarmaAccessControlled;
 import dao.karma.types.KarmaAccessControlled;
 import score.Address;
 import score.Context;
@@ -23,7 +24,7 @@ import score.VarDB;
 import score.annotation.EventLog;
 import score.annotation.External;
 
-public class KarmaAuthority extends KarmaAccessControlled {
+public class KarmaAuthority implements IKarmaAccessControlled {
 
     // ================================================
     // Consts
@@ -33,6 +34,9 @@ public class KarmaAuthority extends KarmaAccessControlled {
 
     // Contract name
     private final String name;
+
+    // Implements KarmaAccessControlled
+    private final KarmaAccessControlled accessControlled;
 
     // ================================================
     // DB Variables
@@ -80,10 +84,10 @@ public class KarmaAuthority extends KarmaAccessControlled {
         Address policy,
         Address vault
     ) {
-        super(Context.getAddress());
         final Address thisAddress = Context.getAddress();
-
         this.name = "Karma Authority";
+
+        this.accessControlled = new KarmaAccessControlled(NAME + "_accessControlled", thisAddress);
 
         if (this.governor.get() == null) {
             this.governor.set(governor);
@@ -118,7 +122,7 @@ public class KarmaAuthority extends KarmaAccessControlled {
         boolean effectiveImmediately
     ) {
         // Access control
-        onlyGovernor();
+        this.accessControlled.onlyGovernor();
 
         // OK
         if (effectiveImmediately) {
@@ -143,7 +147,7 @@ public class KarmaAuthority extends KarmaAccessControlled {
         boolean effectiveImmediately
     ) {
         // Access control
-        onlyGovernor();
+        this.accessControlled.onlyGovernor();
 
         // OK
         if (effectiveImmediately) {
@@ -168,7 +172,7 @@ public class KarmaAuthority extends KarmaAccessControlled {
         boolean effectiveImmediately
     ) {
         // Access control
-        onlyGovernor();
+        this.accessControlled.onlyGovernor();
 
         // OK
         if (effectiveImmediately) {
@@ -193,7 +197,7 @@ public class KarmaAuthority extends KarmaAccessControlled {
         boolean effectiveImmediately
     ) {
         // Access control
-        onlyGovernor();
+        this.accessControlled.onlyGovernor();
 
         // OK
         if (effectiveImmediately) {
@@ -310,5 +314,22 @@ public class KarmaAuthority extends KarmaAccessControlled {
     @External(readonly = true)
     public Address vault() {
         return this.vault.get();
+    }
+
+    // --- Implement IKarmaAccessControlled ---
+    // ================================================
+    // Event Logs
+    // ================================================
+    @Override
+    @EventLog(indexed = 1)
+    public void AuthorityUpdated(Address authority) {}
+
+    // ================================================
+    // Methods
+    // ================================================
+    @Override
+    @External
+    public void setAuthority(Address newAuthority) {
+        this.accessControlled.setAuthority(newAuthority);
     }
 }
