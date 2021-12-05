@@ -17,7 +17,7 @@ dependencies {
 
     testImplementation project(':Karma-Commons:Karma-Test')
     testImplementation project(':Karma-Commons:Karma-Utils')
-    testImplementation project(':Karma-Bond:Karma-SubsidyRouter')
+    testImplementation project(':Karma-Bond:Contracts:Karma-SubsidyRouter')
 }
 
 test {

@@ -2,56 +2,56 @@ rootProject.name = 'karma-bond-score'
 
 include (
   // Karma-Bond
-  ':Karma-Bond:Karma-CustomBond',
+  ':Karma-Bond:Contracts:Karma-CustomBond',
   ':Karma-Bond:Tests:Karma-CustomBond-Test',
 
-  ':Karma-Bond:Karma-CustomTreasury',
+  ':Karma-Bond:Contracts:Karma-CustomTreasury',
   ':Karma-Bond:Tests:Karma-CustomTreasury-Test',
 
-  ':Karma-Bond:Karma-Factory',
+  ':Karma-Bond:Contracts:Karma-Factory',
   ':Karma-Bond:Tests:Karma-Factory-Test',
 
-  ':Karma-Bond:Karma-FactoryStorage',
+  ':Karma-Bond:Contracts:Karma-FactoryStorage',
   ':Karma-Bond:Tests:Karma-FactoryStorage-Test',
 
-  ':Karma-Bond:Karma-SubsidyRouter',
+  ':Karma-Bond:Contracts:Karma-SubsidyRouter',
   ':Karma-Bond:Tests:Karma-SubsidyRouter-Test',
 
-  ':Karma-Bond:Karma-Interfaces',
-
   // Karma-DAO
-  ':Karma-DAO:Karma-Treasury',
-  ':Karma-DAO:Tests:Karma-Treasury-Test',
-
-  ':Karma-DAO:Karma-BondTeller',
-  ':Karma-DAO:Tests:Karma-BondTeller-Test',
-
-  ':Karma-DAO:Karma-Authority',
+  ':Karma-DAO:Contracts:Karma-Authority',
   ':Karma-DAO:Tests:Karma-Authority-Test',
 
-  ':Karma-DAO:Karma-BondDepository',
+  ':Karma-DAO:Contracts:Karma-BondDepository',
   ':Karma-DAO:Tests:Karma-BondDepository-Test',
 
-  ':Karma-DAO:Karma-KARMA',
-  ':Karma-DAO:Tests:Karma-KARMA-Test',
+  ':Karma-DAO:Contracts:Karma-BondTeller',
+  ':Karma-DAO:Tests:Karma-BondTeller-Test',
 
-  ':Karma-DAO:Karma-sKARMA',
-  ':Karma-DAO:Tests:Karma-sKARMA-Test',
-
-  ':Karma-DAO:Karma-Staking',
+  ':Karma-DAO:Contracts:Karma-Staking',
   ':Karma-DAO:Tests:Karma-Staking-Test',
 
-  ':Karma-DAO:Karma-StakingDistributor',
+  ':Karma-DAO:Contracts:Karma-StakingDistributor',
   ':Karma-DAO:Tests:Karma-StakingDistributor-Test',
 
-  ':Karma-DAO:Karma-StandardBondingCalculator',
+  ':Karma-DAO:Contracts:Karma-StandardBondingCalculator',
   ':Karma-DAO:Tests:Karma-StandardBondingCalculator-Test',
 
-  ':Karma-DAO:Karma-Interfaces',
+  ':Karma-DAO:Contracts:Karma-Token',
+  ':Karma-DAO:Tests:Karma-Token-Test',
+
+  ':Karma-DAO:Contracts:Karma-Token-Staked',
+  ':Karma-DAO:Tests:Karma-Token-Staked-Test',
+
+  ':Karma-DAO:Contracts:Karma-Treasury',
+  ':Karma-DAO:Tests:Karma-Treasury-Test',
 
   // Librairies & common code
   ':Karma-Commons:Karma-Test',
   ':Karma-Commons:Karma-Utils',
+  ':Karma-Commons:Karma-Classes',
+  ':Karma-Commons:Karma-Types',
+  ':Karma-Commons:Karma-Interfaces',
+
   ':Karma-Commons:javaee-tokens',
   ':Karma-Commons:unittest',
   ':Karma-Commons:testinteg',

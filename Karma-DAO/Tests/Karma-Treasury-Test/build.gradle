@@ -17,7 +17,7 @@ dependencies {
 
     testImplementation project(':Karma-Commons:Karma-Test')
     testImplementation project(':Karma-Commons:Karma-Utils')
-    testImplementation project(':Karma-DAO:Karma-Treasury')
+    testImplementation project(':Karma-DAO:Contracts:Karma-Treasury')
 }
 
 test {
