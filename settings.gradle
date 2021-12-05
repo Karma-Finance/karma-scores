@@ -3,49 +3,49 @@ rootProject.name = 'karma-bond-score'
 include (
   // Karma-Bond
   ':Karma-Bond:Karma-CustomBond',
-  ':Karma-Bond:Karma-CustomBond-Test',
+  ':Karma-Bond:Tests:Karma-CustomBond-Test',
 
   ':Karma-Bond:Karma-CustomTreasury',
-  ':Karma-Bond:Karma-CustomTreasury-Test',
+  ':Karma-Bond:Tests:Karma-CustomTreasury-Test',
 
   ':Karma-Bond:Karma-Factory',
-  ':Karma-Bond:Karma-Factory-Test',
+  ':Karma-Bond:Tests:Karma-Factory-Test',
 
   ':Karma-Bond:Karma-FactoryStorage',
-  ':Karma-Bond:Karma-FactoryStorage-Test',
+  ':Karma-Bond:Tests:Karma-FactoryStorage-Test',
 
   ':Karma-Bond:Karma-SubsidyRouter',
-  ':Karma-Bond:Karma-SubsidyRouter-Test',
+  ':Karma-Bond:Tests:Karma-SubsidyRouter-Test',
 
   ':Karma-Bond:Karma-Interfaces',
 
   // Karma-DAO
   ':Karma-DAO:Karma-Treasury',
-  ':Karma-DAO:Karma-Treasury-Test',
+  ':Karma-DAO:Tests:Karma-Treasury-Test',
 
   ':Karma-DAO:Karma-BondTeller',
-  ':Karma-DAO:Karma-BondTeller-Test',
+  ':Karma-DAO:Tests:Karma-BondTeller-Test',
 
   ':Karma-DAO:Karma-Authority',
-  ':Karma-DAO:Karma-Authority-Test',
+  ':Karma-DAO:Tests:Karma-Authority-Test',
 
   ':Karma-DAO:Karma-BondDepository',
-  ':Karma-DAO:Karma-BondDepository-Test',
+  ':Karma-DAO:Tests:Karma-BondDepository-Test',
 
   ':Karma-DAO:Karma-KARMA',
-  ':Karma-DAO:Karma-KARMA-Test',
+  ':Karma-DAO:Tests:Karma-KARMA-Test',
 
   ':Karma-DAO:Karma-sKARMA',
-  ':Karma-DAO:Karma-sKARMA-Test',
+  ':Karma-DAO:Tests:Karma-sKARMA-Test',
 
   ':Karma-DAO:Karma-Staking',
-  ':Karma-DAO:Karma-Staking-Test',
+  ':Karma-DAO:Tests:Karma-Staking-Test',
 
   ':Karma-DAO:Karma-StakingDistributor',
-  ':Karma-DAO:Karma-StakingDistributor-Test',
+  ':Karma-DAO:Tests:Karma-StakingDistributor-Test',
 
   ':Karma-DAO:Karma-StandardBondingCalculator',
-  ':Karma-DAO:Karma-StandardBondingCalculator-Test',
+  ':Karma-DAO:Tests:Karma-StandardBondingCalculator-Test',
 
   ':Karma-DAO:Karma-Interfaces',
 
