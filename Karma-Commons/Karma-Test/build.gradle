@@ -12,8 +12,7 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15on:1.60'
 
     implementation project(':Karma-Commons:Karma-Utils')
-    implementation project(':Karma-Commons:javaee-tokens')
-    implementation project(':Karma-Commons:unittest')
+    implementation project(':Karma-Commons:ICON:unittest')
 
     implementation 'org.mockito:mockito-core:4.1.0'
     implementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'

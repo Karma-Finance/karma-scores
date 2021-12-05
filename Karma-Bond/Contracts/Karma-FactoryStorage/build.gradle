@@ -12,7 +12,7 @@ dependencies {
 
     implementation project(':Karma-Commons:Karma-Utils')
     implementation project(':Karma-Commons:Karma-Types')
-    implementation project(':Karma-Commons:Karma-Classes')
+    implementation project(':Karma-Commons:Karma-Structs')
 }
 
 optimizedJar {

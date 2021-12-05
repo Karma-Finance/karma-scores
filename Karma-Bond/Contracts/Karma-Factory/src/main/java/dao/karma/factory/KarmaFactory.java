@@ -20,8 +20,8 @@ import static dao.karma.utils.AddressUtils.ZERO_ADDRESS;
 
 import java.math.BigInteger;
 
-import dao.karma.classes.TreasuryBond;
 import dao.karma.interfaces.bond.IKarmaFactoryStorage;
+import dao.karma.structs.bond.TreasuryBond;
 import dao.karma.types.Ownable;
 import score.Address;
 import score.Context;

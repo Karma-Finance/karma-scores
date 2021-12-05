@@ -10,7 +10,6 @@ dependencies {
     implementation 'foundation.icon:javaee-scorex:0.5.2'
     implementation 'com.github.sink772:minimal-json:0.9.6'
 
-    implementation project(':Karma-Commons:javaee-tokens')
     implementation project(':Karma-Commons:Karma-Utils')
     implementation project(':Karma-Commons:Karma-Types')
     implementation project(':Karma-Commons:Karma-Interfaces')

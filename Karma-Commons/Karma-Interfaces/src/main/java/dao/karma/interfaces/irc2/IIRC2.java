@@ -14,35 +14,29 @@
  * limitations under the License.
  */
 
-package dao.karma.interfaces.bond;
+package dao.karma.interfaces.irc2;
 
 import java.math.BigInteger;
 
-import dao.karma.structs.bond.TreasuryBond;
 import score.Address;
 import score.Context;
 
-public class IKarmaFactoryStorage {
-  
-  public static TreasuryBond pushBond (
-    Address karmaFactoryStorage,
-    Address payoutToken, 
-    Address principleToken, 
-    Address treasury,
-    Address bond,
-    Address initialOwner, 
-    BigInteger[] tierCeilings, 
-    BigInteger[] fees
+public class IIRC2 {
+
+  public static void transfer (
+    Address irc2,
+    Address to,
+    BigInteger amount,
+    byte[] data
   ) {
-    return TreasuryBond.fromMap (
-      Context.call (karmaFactoryStorage, "pushBond",
-      payoutToken, 
-      principleToken, 
-      treasury, 
-      bond,
-      initialOwner,
-      tierCeilings,
-      fees
-    ));
+    Context.call(irc2, "transfer", to, amount, data);
+  }
+
+  public static int decimals (Address irc2) {
+    return ((BigInteger) Context.call(irc2, "decimals")).intValue();
+  }
+
+  public static BigInteger totalSupply (Address irc2) {
+    return (BigInteger) Context.call(irc2, "totalSupply");
   }
 }

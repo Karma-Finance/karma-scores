@@ -14,21 +14,32 @@
  * limitations under the License.
  */
 
-package dao.karma.interfaces.dao;
+package dao.karma.structs.bond;
 
-import java.math.BigInteger;
+import java.util.Map;
 
-import dao.karma.interfaces.irc2.IIRC2;
-import dao.karma.utils.JSONUtils;
 import score.Address;
-import score.Context;
 
-public class ITreasury {
-  public static BigInteger valueOfToken(Address treasury, Address principalToken, BigInteger amount) {
-    return (BigInteger) Context.call(treasury, "valueOfToken", principalToken, amount);
+public class TreasuryBond {
+  public Address treasury;
+  public Address bond;
+
+  public TreasuryBond () {}
+
+  public TreasuryBond (
+    Address treasury, 
+    Address bond
+  ) {
+    this.treasury = treasury;
+    this.bond = bond;
   }
 
-  public static void deposit(Address treasury, Address principalToken, BigInteger amount, BigInteger payout) {
-    IIRC2.transfer(principalToken, treasury, amount, JSONUtils.method("deposit"));
+  public static TreasuryBond fromMap(Object call) {
+    @SuppressWarnings("unchecked")
+    Map<String,Object> map = (Map<String,Object>) call;
+    return new TreasuryBond(
+        (Address) map.get("treasury"), 
+        (Address) map.get("bond")
+    );
   }
 }
