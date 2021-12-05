@@ -23,4 +23,16 @@ public class IKarmaAuthority {
   public static Address governor(Address authority) {
     return (Address) Context.call(authority, "governor");
   }
+
+  public static Address guardian(Address authority) {
+    return (Address) Context.call(authority, "guardian");
+  }
+
+  public static Address policy(Address authority) {
+    return (Address) Context.call(authority, "policy");
+  }
+
+  public static Address vault(Address authority) {
+    return (Address) Context.call(authority, "vault");
+  }
 }

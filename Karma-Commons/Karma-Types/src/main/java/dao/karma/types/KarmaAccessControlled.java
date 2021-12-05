@@ -53,6 +53,48 @@ public abstract class KarmaAccessControlled {
     // ================================================
     public void onlyGovernor () {
       final Address caller = Context.getCaller();
-      Context.require(caller.equals(IKarmaAuthority.governor(this.authority.get())));
+      final Address governor = IKarmaAuthority.governor(this.authority.get());
+      Context.require(caller.equals(governor),
+        "onlyGovernor: Only governor can call this method");
+    }
+
+    public void onlyGuardian () {
+      final Address caller = Context.getCaller();
+      final Address guardian = IKarmaAuthority.guardian(this.authority.get());
+      Context.require(caller.equals(guardian),
+        "onlyGuardian: Only guardian can call this method");
+    }
+
+    public void onlyPolicy () {
+      final Address caller = Context.getCaller();
+      final Address policy = IKarmaAuthority.policy(this.authority.get());
+      Context.require(caller.equals(policy),
+        "onlyPolicy: Only policy can call this method");
+    }
+
+    public void onlyVault () {
+      final Address caller = Context.getCaller();
+      final Address vault = IKarmaAuthority.vault(this.authority.get());
+      Context.require(caller.equals(vault),
+        "onlyVault: Only vault can call this method");
+    }
+
+    // ================================================
+    // Gov only
+    // ================================================
+    /**
+     * Update the authority address
+     * 
+     * Access : Governor
+     * 
+     * @param newAuthority
+     */
+    public void setAuthority (Address newAuthority) {
+      // Access control
+      onlyGovernor();
+
+      // OK
+      this.authority.set(newAuthority);
+      this.AuthorityUpdated(newAuthority);
     }
 }
