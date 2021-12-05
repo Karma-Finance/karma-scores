@@ -77,7 +77,7 @@ public class KarmaToken extends IRC2Basic implements IKarmaAccessControlled {
     }
 
     /**
-     * Mint new tokens
+     * Burn tokens from the caller account
      * 
      * Access: Everyone
      * 
