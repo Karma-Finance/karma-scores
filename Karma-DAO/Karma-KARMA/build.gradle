@@ -14,7 +14,7 @@ dependencies {
 }
 
 optimizedJar {
-    mainClassName = 'dao.karma.karma.KarmaKARMA'
+    mainClassName = 'dao.karma.karma.Karma'
     // setEnableDebug(true)
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }

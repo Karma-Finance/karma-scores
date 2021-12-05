@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-package dao.karma.karma.client;
+package dao.karma.karma;
 
-public class KarmaKARMAClient {
+import dao.karma.test.KarmaTest;
+import dao.karma.test.ScoreSpy;
 
+public class StakedKarmaTest extends KarmaTest {
+
+  ScoreSpy<StakedKarma> karma;
+  
+  void setup_karma () throws Exception {
+    karma = deploy(StakedKarma.class);
+  }
 }

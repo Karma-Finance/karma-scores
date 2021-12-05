@@ -18,13 +18,13 @@ package dao.karma.skarma;
 
 import score.annotation.External;
 
-public class KarmasKARMA {
+public class StakedKarma {
 
     // ================================================
     // Consts
     // ================================================
     // Contract class name
-    public static final String NAME = "KarmasKARMA";
+    public static final String NAME = "StakedKarma";
 
     // Contract name
     private final String name;
@@ -44,9 +44,9 @@ public class KarmasKARMA {
      *  Contract constructor
      * 
      */
-    public KarmasKARMA (
+    public StakedKarma (
     ) {
-        this.name = "Karmas KARMA";
+        this.name = "Staked Karma";
     }
 
     // ================================================

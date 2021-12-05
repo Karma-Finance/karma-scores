@@ -26,6 +26,27 @@ include (
   ':Karma-DAO:Karma-BondTeller',
   ':Karma-DAO:Karma-BondTeller-Test',
 
+  ':Karma-DAO:Karma-Authority',
+  ':Karma-DAO:Karma-Authority-Test',
+
+  ':Karma-DAO:Karma-BondDepository',
+  ':Karma-DAO:Karma-BondDepository-Test',
+
+  ':Karma-DAO:Karma-KARMA',
+  ':Karma-DAO:Karma-KARMA-Test',
+
+  ':Karma-DAO:Karma-sKARMA',
+  ':Karma-DAO:Karma-sKARMA-Test',
+
+  ':Karma-DAO:Karma-Staking',
+  ':Karma-DAO:Karma-Staking-Test',
+
+  ':Karma-DAO:Karma-StakingDistributor',
+  ':Karma-DAO:Karma-StakingDistributor-Test',
+
+  ':Karma-DAO:Karma-StandardBondingCalculator',
+  ':Karma-DAO:Karma-StandardBondingCalculator-Test',
+
   ':Karma-DAO:Karma-Interfaces',
 
   // Librairies & common code
