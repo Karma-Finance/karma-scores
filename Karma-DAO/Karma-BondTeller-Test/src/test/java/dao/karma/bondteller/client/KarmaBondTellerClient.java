@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-package dao.karma.interfaces;
+package dao.karma.bondteller.client;
 
-import java.math.BigInteger;
+public class KarmaBondTellerClient {
 
-import score.Address;
-import score.Context;
-
-public class IBond {
-  public static BigInteger paySubsidy (Address bond) {
-    return (BigInteger) Context.call(bond, "paySubsidy");
-  }
-
-  public static BigInteger pendingPayoutFor (Address bond, Address recipient) {
-    return (BigInteger) Context.call(bond, "pendingPayoutFor", recipient);
-  }
-
-  public static void redeem (Address bond, Address recipient, boolean stake) {
-    Context.call(bond, "redeem", recipient, stake);
-  }
 }

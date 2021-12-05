@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-package dao.karma.interfaces;
+package dao.karma.bondteller;
 
-import java.math.BigInteger;
+import dao.karma.test.KarmaTest;
+import dao.karma.test.ScoreSpy;
 
-import score.Address;
-import score.Context;
+public class KarmaBondTellerTest extends KarmaTest {
 
-public class IBond {
-  public static BigInteger paySubsidy (Address bond) {
-    return (BigInteger) Context.call(bond, "paySubsidy");
-  }
-
-  public static BigInteger pendingPayoutFor (Address bond, Address recipient) {
-    return (BigInteger) Context.call(bond, "pendingPayoutFor", recipient);
-  }
-
-  public static void redeem (Address bond, Address recipient, boolean stake) {
-    Context.call(bond, "redeem", recipient, stake);
+  ScoreSpy<KarmaBondTeller> bondTeller;
+  
+  void setup_bondTeller () throws Exception {
+    bondTeller = deploy(KarmaBondTeller.class);
   }
 }

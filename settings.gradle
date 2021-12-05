@@ -4,10 +4,10 @@ include (
   // Karma-Bond
   ':Karma-Bond:Karma-CustomBond',
   ':Karma-Bond:Karma-CustomBond-Test',
-  
+
   ':Karma-Bond:Karma-CustomTreasury',
   ':Karma-Bond:Karma-CustomTreasury-Test',
-  
+
   ':Karma-Bond:Karma-Factory',
   ':Karma-Bond:Karma-Factory-Test',
 
@@ -16,13 +16,16 @@ include (
 
   ':Karma-Bond:Karma-SubsidyRouter',
   ':Karma-Bond:Karma-SubsidyRouter-Test',
-  
+
   ':Karma-Bond:Karma-Interfaces',
 
   // Karma-DAO
   ':Karma-DAO:Karma-Treasury',
   ':Karma-DAO:Karma-Treasury-Test',
-  
+
+  ':Karma-DAO:Karma-BondTeller',
+  ':Karma-DAO:Karma-BondTeller-Test',
+
   ':Karma-DAO:Karma-Interfaces',
 
   // Librairies & common code
@@ -31,4 +34,4 @@ include (
   ':Karma-Commons:javaee-tokens',
   ':Karma-Commons:unittest',
   ':Karma-Commons:testinteg',
-)   
+)
