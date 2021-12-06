@@ -47,7 +47,7 @@ public class Adjust {
         this.buffer = buffer;
         this.lastBlock = lastBlock;
     }
-    
+
     public static Adjust readObject (ObjectReader r) {
         return new Adjust (
             r.readBoolean(),
