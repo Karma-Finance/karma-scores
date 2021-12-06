@@ -439,9 +439,12 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
     @External(readonly = true)
     public BigInteger bondPriceInUsd (BigInteger bondId) {
         var bond = this.bonds.get(bondId);
-        return (!bond.calculator.equals(ZERO_ADDRESS)) 
-        ? bondPrice(bondId).multiply(ICalculator.markdown(bond.calculator, bond.principal)).divide(BigInteger.valueOf(100))
-        : bondPrice(bondId).multiply(MathUtils.pow10(IIRC2.decimals(bond.principal))).divide(BigInteger.valueOf(100));
+
+        BigInteger multiplier = !bond.calculator.equals(ZERO_ADDRESS)
+            ? ICalculator.markdown(bond.calculator, bond.principal)
+            : MathUtils.pow10(IIRC2.decimals(bond.principal));
+
+        return bondPrice(bondId).multiply(multiplier).divide(BigInteger.valueOf(100));
     }
 
     // --- Debt --- 

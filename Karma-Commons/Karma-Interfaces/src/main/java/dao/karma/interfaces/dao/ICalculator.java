@@ -22,7 +22,7 @@ import score.Address;
 import score.Context;
 
 public abstract class ICalculator {
-  public static BigInteger markdown(Address calculator, Address principal) {
+  public static BigInteger markdown (Address calculator, Address principal) {
     return (BigInteger) Context.call(calculator, "markdown", principal);
   }
 }
