@@ -23,6 +23,7 @@ import java.math.BigInteger;
 public class IntUtils {
   public final static BigInteger MAX_UINT8   = new BigInteger("ff", 16);
   public final static BigInteger MAX_UINT16  = new BigInteger("ffff", 16);
+  public final static BigInteger MAX_INT32   = new BigInteger("7fffffff", 16);
   public final static BigInteger MAX_UINT32  = new BigInteger("ffffffff", 16);
   public final static BigInteger MAX_UINT64  = new BigInteger("ffffffffffffffff", 16);
   public static final BigInteger MAX_UINT96  = new BigInteger("ffffffffffffffffffffffff", 16);

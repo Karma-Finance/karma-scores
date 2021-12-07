@@ -18,9 +18,7 @@ package dao.karma.customtreasury;
 
 import java.math.BigInteger;
 
-import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 import dao.karma.interfaces.irc2.IIRC2;
 
 import dao.karma.utils.AddressUtils;
@@ -34,9 +32,6 @@ import score.DictDB;
 import score.annotation.EventLog;
 import score.annotation.External;
 import score.annotation.Optional;
-import scorex.io.IOException;
-import scorex.io.Reader;
-import scorex.io.StringReader;
 
 public class KarmaCustomTreasury extends Ownable {
 
@@ -120,14 +115,7 @@ public class KarmaCustomTreasury extends Ownable {
     
     @External
     public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) {
-        Reader reader = new StringReader(new String(_data));
-        JsonValue input = null;
-        try {
-            input = Json.parse(reader);
-        } catch (IOException e) {
-            Context.revert("tokenFallback: Invalid JSON");
-        }
-        JsonObject root = input.asObject();
+        JsonObject root = JSONUtils.parseData(_data);
         String method = root.get("method").asString();
         Address token = Context.getCaller();
 

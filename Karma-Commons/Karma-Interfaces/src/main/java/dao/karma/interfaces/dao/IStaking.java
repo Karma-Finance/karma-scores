@@ -18,25 +18,18 @@ package dao.karma.interfaces.dao;
 
 import java.math.BigInteger;
 
+import com.eclipsesource.json.Json;
+
 import dao.karma.interfaces.irc2.IIRC2;
 import dao.karma.utils.JSONUtils;
 import score.Address;
-import score.Context;
 
-public abstract class ITreasury {
-  public static BigInteger valueOfToken(Address treasury, Address principalToken, BigInteger amount) {
-    return (BigInteger) Context.call(treasury, "valueOfToken", principalToken, amount);
-  }
-
-  public static void deposit(Address treasury, Address principalToken, BigInteger amount, BigInteger payout) {
-    IIRC2.transfer(principalToken, treasury, amount, JSONUtils.method("deposit"));
-  }
-
-  public static BigInteger tokenValue(Address treasury, Address principal, BigInteger amount) {
-    return (BigInteger) Context.call(treasury, "tokenValue", principal, amount);
-  }
-
-  public static void mint(Address treasury, Address to, BigInteger amount) {
-    Context.call(treasury, "mint", to, amount);
+public abstract class IStaking {
+  public static void stake(Address staking, Address KARMA, BigInteger amount, Boolean rebasing, Boolean claim) {
+    var params = Json.object()
+      .add("rebasing", rebasing.toString())
+      .add("claim", claim.toString());
+    
+    IIRC2.transfer(KARMA, staking, amount, JSONUtils.method("stake", params));
   }
 }

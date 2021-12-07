@@ -23,8 +23,8 @@ import score.DictDB;
 import score.VarDB;
 
 public class Map256<K, V> {
-    private final DictDB<K, V> values;
-    private final VarDB<BigInteger> size;
+    protected final DictDB<K, V> values;
+    protected final VarDB<BigInteger> size;
 
     public Map256(String id, Class<K> keyClass, Class<V> valueClass) {
         this.values = Context.newDictDB(id + "_values", valueClass);

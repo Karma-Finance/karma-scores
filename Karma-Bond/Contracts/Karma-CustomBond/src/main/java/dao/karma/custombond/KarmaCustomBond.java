@@ -21,9 +21,7 @@ import static java.math.BigInteger.ZERO;
 
 import java.math.BigInteger;
 
-import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 import dao.karma.interfaces.irc2.IIRC2;
 
 import dao.karma.interfaces.dao.ITreasury;
@@ -40,9 +38,6 @@ import score.VarDB;
 import score.annotation.EventLog;
 import score.annotation.External;
 import score.annotation.Optional;
-import scorex.io.IOException;
-import scorex.io.Reader;
-import scorex.io.StringReader;
 
 public class KarmaCustomBond extends Ownable {
 
@@ -416,14 +411,7 @@ public class KarmaCustomBond extends Ownable {
 
     @External
     public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) {
-        Reader reader = new StringReader(new String(_data));
-        JsonValue input = null;
-        try {
-            input = Json.parse(reader);
-        } catch (IOException e) {
-            Context.revert("tokenFallback: Invalid JSON");
-        }
-        JsonObject root = input.asObject();
+        JsonObject root = JSONUtils.parseData(_data);
         String method = root.get("method").asString();
         Address token = Context.getCaller();
 
