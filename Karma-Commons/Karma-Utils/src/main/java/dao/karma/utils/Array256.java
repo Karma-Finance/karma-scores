@@ -18,8 +18,6 @@ package dao.karma.utils;
 
 import java.math.BigInteger;
 
-import score.Context;
-
 public class Array256<V> extends Map256<BigInteger, V> {
 
     public Array256(String id, Class<V> valueClass) {
@@ -33,10 +31,7 @@ public class Array256<V> extends Map256<BigInteger, V> {
 
     @SuppressWarnings("unchecked")
     public V[] toArray() {
-        Context.require(this.size().compareTo(IntUtils.MAX_INT32) <= 0, 
-            "Array256::toArray: max size reached");
-
-        int size = this.size().intValue();
+        int size = this.size().intValueExact();
         Object[] result = new Object[size];
 
         for (int i = 0; i < size; i++) {

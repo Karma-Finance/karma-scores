@@ -234,7 +234,7 @@ public class KarmaCustomBond extends Ownable {
                 int minVesting = minHours * 3600 / averageBlockTime;
                 Context.require(input.compareTo(BigInteger.valueOf(minVesting)) >= 0, 
                     "setBondTerms: Vesting must be longer than 36 hours");
-                terms.vestingTerm = input.longValue();
+                terms.vestingTerm = input.longValueExact();
             } break;
 
             case PAYOUT: {
