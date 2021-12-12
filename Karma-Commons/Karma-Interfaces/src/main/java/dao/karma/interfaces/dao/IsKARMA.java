@@ -23,11 +23,31 @@ import score.Context;
 
 public abstract class IsKARMA {
 
-  public static BigInteger toG(Address sKARMA, BigInteger payout) {
-    return (BigInteger) Context.call(sKARMA, "toG", payout);
+  public static BigInteger toG (Address sKARMA, BigInteger payout) {
+    return (BigInteger) Context.call (sKARMA, "toG", payout);
   }
 
-  public static BigInteger fromG(Address sKARMA, BigInteger dues) {
-    return (BigInteger) Context.call(sKARMA, "fromG", dues);
+  public static BigInteger fromG (Address sKARMA, BigInteger dues) {
+    return (BigInteger) Context.call (sKARMA, "fromG", dues);
+  }
+
+  public static BigInteger gonsForBalance (Address sKARMA, BigInteger amount) {
+    return (BigInteger) Context.call (sKARMA, "gonsForBalance", amount);
+  }
+
+  public static BigInteger balanceForGons (Address sKARMA, BigInteger gons) {
+    return (BigInteger) Context.call (sKARMA, "balanceForGons", gons);
+  }
+
+  public static void rebase (Address sKARMA, BigInteger distribute, BigInteger number) {
+    Context.call (sKARMA, "rebase", distribute, number);
+  }
+
+  public static BigInteger index (Address sKARMA) {
+    return (BigInteger) Context.call (sKARMA, "index");
+  }
+
+  public static BigInteger circulatingSupply(Address sKARMA) {
+    return (BigInteger) Context.call (sKARMA, "circulatingSupply");
   }
 }

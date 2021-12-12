@@ -30,4 +30,12 @@ public abstract class IgKARMA {
   public static BigInteger balanceFrom (Address gKARMA, BigInteger amount) {
     return (BigInteger) Context.call (gKARMA, "balanceFrom", amount);
   }
+
+  public static void burn (Address gKARMA, BigInteger amount) {
+    Context.call (gKARMA, "burn", amount);
+  }
+
+  public static void mint (Address gKARMA, Address to, BigInteger gBalance) {
+    Context.call (gKARMA, "mint", to, gBalance);
+  }
 }

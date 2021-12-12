@@ -14,33 +14,15 @@
  * limitations under the License.
  */
 
-package dao.karma.interfaces.irc2;
+package dao.karma.interfaces.dao;
 
 import java.math.BigInteger;
 
 import score.Address;
 import score.Context;
 
-public class IIRC2 {
-
-  public static void transfer (
-    Address irc2,
-    Address to,
-    BigInteger amount,
-    byte[] data
-  ) {
-    Context.call(irc2, "transfer", to, amount, data);
-  }
-
-  public static int decimals (Address irc2) {
-    return ((BigInteger) Context.call(irc2, "decimals")).intValue();
-  }
-
-  public static BigInteger totalSupply (Address irc2) {
-    return (BigInteger) Context.call(irc2, "totalSupply");
-  }
-
-  public static BigInteger balanceOf(Address irc2, Address address) {
-    return (BigInteger) Context.call(irc2, "balanceOf", address);
+public abstract class IDistributor {
+  public static BigInteger distribute (Address distributor) {
+    return (BigInteger) Context.call(distributor, "distribute");
   }
 }
