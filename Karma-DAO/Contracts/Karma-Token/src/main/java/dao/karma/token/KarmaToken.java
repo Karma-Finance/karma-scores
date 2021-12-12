@@ -33,6 +33,7 @@ public class KarmaToken extends IRC2Basic implements IKarmaAccessControlled {
     // ================================================
     // Contract class name
     public static final String NAME = "KarmaToken";
+    private final static int decimals = 9;
 
     // Implements KarmaAccessControlled
     private final KarmaAccessControlled accessControlled;
@@ -55,7 +56,7 @@ public class KarmaToken extends IRC2Basic implements IKarmaAccessControlled {
     public KarmaToken (
         Address authority
     ) {
-        super("Karma Token", "KARMA", 9);
+        super("Karma Token", "KARMA", decimals);
         this.accessControlled = new KarmaAccessControlled(NAME + "_accessControlled", authority);
     }
 
