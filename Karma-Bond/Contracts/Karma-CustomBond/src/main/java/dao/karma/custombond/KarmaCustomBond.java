@@ -156,7 +156,7 @@ public class KarmaCustomBond extends Ownable {
 
         Context.require(tierCeilings.length == fees.length,
             "KarmaCustomBond: tier length and fee length not the same");
-        
+
         for (int i = 0; i  < tierCeilings.length; i++) {
             feeTiers.add(new FeeTiers(tierCeilings[i], fees[i]));
         }
@@ -255,7 +255,7 @@ public class KarmaCustomBond extends Ownable {
     }
     
     /**
-     * @notice set control variable adjustment
+     * Set control variable adjustment
      * 
      * Access: Policy
      * 
@@ -608,8 +608,8 @@ public class KarmaCustomBond extends Ownable {
     }
 
     /**
-     *  @notice calculate current ratio of debt to payout token supply
-     *  @notice protocols using Karma Pro should be careful when quickly adding large %s to total supply
+     *  Calculate current ratio of debt to payout token supply
+     *  Protocols using Karma Pro should be careful when quickly adding large %s to total supply
      */
     @External(readonly = true)
     public BigInteger debtRatio() {
@@ -677,7 +677,7 @@ public class KarmaCustomBond extends Ownable {
     }
 
     /**
-     *  @notice current fee Karma takes of each bond
+     *  Current fee Karma takes of each bond
      *  @return currentFee_ uint
      */
     @External(readonly = true)

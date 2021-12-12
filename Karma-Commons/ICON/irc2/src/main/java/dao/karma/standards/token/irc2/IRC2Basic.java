@@ -31,7 +31,7 @@ public abstract class IRC2Basic implements IRC2 {
     private final VarDB<String> name = Context.newVarDB("token_name", String.class);
     private final VarDB<String> symbol = Context.newVarDB("token_symbol", String.class);
     private final VarDB<BigInteger> decimals = Context.newVarDB("decimals", BigInteger.class);
-    private final VarDB<BigInteger> totalSupply = Context.newVarDB("total_supply", BigInteger.class);
+    protected final VarDB<BigInteger> totalSupply = Context.newVarDB("total_supply", BigInteger.class);
     private final DictDB<Address, BigInteger> balances = Context.newDictDB("balances", BigInteger.class);
 
     public IRC2Basic(String _name, String _symbol, int _decimals) {

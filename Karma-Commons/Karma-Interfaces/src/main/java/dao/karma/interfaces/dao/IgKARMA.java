@@ -18,23 +18,16 @@ package dao.karma.interfaces.dao;
 
 import java.math.BigInteger;
 
-import com.eclipsesource.json.Json;
-
-import dao.karma.interfaces.irc2.IIRC2;
-import dao.karma.utils.JSONUtils;
 import score.Address;
 import score.Context;
 
-public abstract class IStaking {
-  public static void stake(Address staking, Address KARMA, BigInteger amount, Boolean rebasing, Boolean claim) {
-    var params = Json.object()
-      .add("rebasing", rebasing.toString())
-      .add("claim", claim.toString());
-    
-    IIRC2.transfer(KARMA, staking, amount, JSONUtils.method("stake", params));
+public abstract class IgKARMA {
+
+  public static BigInteger balanceTo (Address gKARMA, BigInteger amount) {
+    return (BigInteger) Context.call (gKARMA, "balanceTo", amount);
   }
 
-  public static BigInteger supplyInWarmup (Address staking) {
-    return (BigInteger) Context.call(staking, "supplyInWarmup");
+  public static BigInteger balanceFrom (Address gKARMA, BigInteger amount) {
+    return (BigInteger) Context.call (gKARMA, "balanceFrom", amount);
   }
 }

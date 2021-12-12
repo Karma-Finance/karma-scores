@@ -57,7 +57,7 @@ include (
   ':Karma-Commons:Karma-Interfaces',
 
   // ICON related code
-  ':Karma-Commons:ICON:javaee-tokens',
+  ':Karma-Commons:ICON:irc2',
   ':Karma-Commons:ICON:unittest',
   ':Karma-Commons:ICON:testinteg',
 )
