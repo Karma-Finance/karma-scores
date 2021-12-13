@@ -48,33 +48,57 @@ public class KarmaAccessControlled {
       }
     }
 
+    public Address policy () {
+      return IKarmaAuthority.policy(this.authority.get());
+    }
+
+    public Address vault () {
+      return IKarmaAuthority.vault(this.authority.get());
+    }
+
+    public Address governor () {
+      return IKarmaAuthority.governor(this.authority.get());
+    }
+
+    public Address guardian () {
+      return IKarmaAuthority.guardian(this.authority.get());
+    }
+
     // ================================================
     // Modifiers
     // ================================================
     public void onlyGovernor () {
       final Address caller = Context.getCaller();
-      final Address governor = IKarmaAuthority.governor(this.authority.get());
+      final Address governor = this.governor();
       Context.require(caller.equals(governor),
         "onlyGovernor: Only governor can call this method");
     }
 
     public void onlyGuardian () {
       final Address caller = Context.getCaller();
-      final Address guardian = IKarmaAuthority.guardian(this.authority.get());
+      final Address guardian = this.guardian();
       Context.require(caller.equals(guardian),
         "onlyGuardian: Only guardian can call this method");
     }
 
+    public void onlyGovernorOrGuardian () {
+      final Address caller = Context.getCaller();
+      final Address governor = this.governor();
+      final Address guardian = this.guardian();
+      Context.require(caller.equals(governor) || caller.equals(guardian),
+        "onlyGuardian: Only governor or guardian can call this method");
+    }
+
     public void onlyPolicy () {
       final Address caller = Context.getCaller();
-      final Address policy = IKarmaAuthority.policy(this.authority.get());
+      final Address policy = this.policy();
       Context.require(caller.equals(policy),
         "onlyPolicy: Only policy can call this method");
     }
 
     public void onlyVault () {
       final Address caller = Context.getCaller();
-      final Address vault = IKarmaAuthority.vault(this.authority.get());
+      final Address vault = this.vault();
       Context.require(caller.equals(vault),
         "onlyVault: Only vault can call this method");
     }
