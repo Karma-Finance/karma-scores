@@ -88,7 +88,6 @@ public class KarmaStakingDistributor implements IKarmaAccessControlled {
     }
 
     // --- Public functions ---
-
     /**
      * Send epoch reward to staking contract
      * 
