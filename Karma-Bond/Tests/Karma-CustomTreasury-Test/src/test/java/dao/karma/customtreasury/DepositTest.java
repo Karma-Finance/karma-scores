@@ -16,7 +16,6 @@ import dao.karma.test.ScoreSpy;
 import dao.karma.test.tokens.Bnusd;
 import dao.karma.test.tokens.Usdc;
 import dao.karma.utils.JSONUtils;
-import score.Context;
 
 public class DepositTest extends KarmaCustomTreasuryTest {
   
