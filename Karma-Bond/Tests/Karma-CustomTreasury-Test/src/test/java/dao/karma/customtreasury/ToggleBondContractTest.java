@@ -17,7 +17,7 @@ import dao.karma.test.tokens.Bnusd;
 import dao.karma.test.tokens.Usdc;
 import dao.karma.utils.JSONUtils;
 
-public class WithdrawTest extends KarmaCustomTreasuryTest {
+public class ToggleBondContractTest extends KarmaCustomTreasuryTest {
   
   ScoreSpy<Bnusd> depositToken;
   ScoreSpy<Bnusd> payoutToken;
@@ -41,33 +41,31 @@ public class WithdrawTest extends KarmaCustomTreasuryTest {
     // Mint payoutToken to treasury 
     IRC2Client.mint(payoutToken.score, owner, EXA.multiply(BigInteger.valueOf(1000)));
     IRC2Client.transfer(payoutToken.score, owner, treasury.getAddress(), BigInteger.valueOf(1000), JSONUtils.method("funding"));
-  
-    // Do the deposit to the treasury
-    BigInteger amountPayoutToken = BigInteger.valueOf(1000);
-    KarmaCustomTreasuryClient.toggleBondContract(treasury.score, owner, bondContract.getAddress());
-    KarmaCustomTreasuryClient.deposit(treasury.score, depositToken.score, bondContract, BigInteger.valueOf(1000), amountPayoutToken);
   }
 
   @Test
-  void testWithdraw () {
-    // Get the original balance
-    BigInteger oldBalance = IRC2Client.balanceOf(depositToken.score, alice.getAddress());
-    BigInteger amountWithdrawn = BigInteger.valueOf(1000);
+  void testToggleBondContract () {
+    // Check initial value
+    assertEquals(false, KarmaCustomTreasuryClient.bondContract(treasury.score, bondContract.getAddress()));
 
-    KarmaCustomTreasuryClient.withdraw(treasury.score, owner, depositToken.getAddress(), alice.getAddress(), amountWithdrawn);
+    // toggle
+    KarmaCustomTreasuryClient.toggleBondContract(treasury.score, owner, bondContract.getAddress());
 
-    // Check the withdraw funds
-    BigInteger newBalance = IRC2Client.balanceOf(depositToken.score, alice.getAddress());
-    assertEquals(oldBalance.add(amountWithdrawn), newBalance);
+    // Check the new toggle
+    assertEquals(true, KarmaCustomTreasuryClient.bondContract(treasury.score, bondContract.getAddress()));
+
+    // toggle again
+    KarmaCustomTreasuryClient.toggleBondContract(treasury.score, owner, bondContract.getAddress());
+
+    // Check the new toggle
+    assertEquals(false, KarmaCustomTreasuryClient.bondContract(treasury.score, bondContract.getAddress()));
   }
 
   @Test
   void testNotPolicy () {
-    BigInteger amountWithdrawn = BigInteger.valueOf(1000);
-
-    // Only owner can call withdraw, alice is not owner
+    // Only owner can call toggleBondContract, alice is not owner
     AssertUtils.assertThrowsMessage(
-      () -> KarmaCustomTreasuryClient.withdraw(treasury.score, alice, depositToken.getAddress(), alice.getAddress(), amountWithdrawn), 
+      () -> KarmaCustomTreasuryClient.toggleBondContract(treasury.score, alice, bondContract.getAddress()), 
       "onlyPolicy: caller is not the owner");
   }
 }

@@ -203,6 +203,11 @@ public class KarmaCustomTreasury extends Ownable {
     public Address payoutToken() {
         return this.payoutToken;
     }
+
+    @External(readonly = true)
+    public boolean bondContract (Address address) {
+        return this.bondContract.getOrDefault(address, false);
+    }
     
     // ================================================
     // View Functions
@@ -212,7 +217,6 @@ public class KarmaCustomTreasury extends Ownable {
      * 
      * @param principleTokenAddress
      * @param amount
-     * @return value
      */
     @External(readonly = true)
     public BigInteger valueOfToken (

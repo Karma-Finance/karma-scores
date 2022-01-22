@@ -50,4 +50,8 @@ public class KarmaCustomTreasuryClient {
   public static void withdraw(Score client, Account from, Address token, Address destination, BigInteger amount) {
     client.invoke(from, "withdraw", token, destination, amount);
   }
+
+  public static boolean bondContract(Score client, Address address) {
+    return (boolean) client.call("bondContract", address);
+  }
 }

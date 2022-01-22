@@ -107,3 +107,31 @@ public void withdraw (
   },
 }
 ```
+
+## `KarmaCustomTreasury::toggleBondContract`
+
+### 📜 Method Call
+
+- Toggle a contract in the bond contract whitelist
+- Access: Policy
+
+```java
+@External
+public void toggleBondContract (
+  Address bondContract
+)
+```
+
+- `bondContract` The bond contract to toggle
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomTreasury,
+  "method": "toggleBondContract",
+  "params": {
+    "bondContract": "cx000000000000000000000000000000000000000b" // a bond contract
+  },
+}
+```
