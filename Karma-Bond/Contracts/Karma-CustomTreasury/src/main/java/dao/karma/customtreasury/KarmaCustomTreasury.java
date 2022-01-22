@@ -199,11 +199,18 @@ public class KarmaCustomTreasury extends Ownable {
         return this.name;
     }
 
+    /**
+     * Return the payout token address
+     */
     @External(readonly = true)
     public Address payoutToken() {
         return this.payoutToken;
     }
 
+    /**
+     * Return the status of a given address in the bond contract whitelist
+     * @param address Any address
+     */
     @External(readonly = true)
     public boolean bondContract (Address address) {
         return this.bondContract.getOrDefault(address, false);
@@ -213,20 +220,20 @@ public class KarmaCustomTreasury extends Ownable {
     // View Functions
     // ================================================
     /**
-     * Returns payout token valuation of principle
+     * Returns payout token valuation of principle token
      * 
-     * @param principleTokenAddress
-     * @param amount
+     * @param principleTokenAddress The principle token address
+     * @param amount An amount of principle token
      */
     @External(readonly = true)
     public BigInteger valueOfToken (
         Address principleTokenAddress,
         BigInteger amount
     ) {
+        // convert amount to match payout token decimals
         int payoutTokenDecimals = IIRC2.decimals(payoutToken);
         int principleTokenAddressDecimals = IIRC2.decimals(principleTokenAddress);
 
         return amount.multiply(MathUtils.pow10(payoutTokenDecimals)).divide(MathUtils.pow10(principleTokenAddressDecimals));
     }
-
 }

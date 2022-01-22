@@ -69,7 +69,7 @@ private void deposit (
         "amountPayoutToken": "0x1158e460913d00000" // 20 * 10**18
       }
     })
-  },
+  }
 }
 ```
 
@@ -104,7 +104,7 @@ public void withdraw (
     "token": "cx000000000000000000000000000000000000000b",
     "destination": "hx00000000000000000000000000000000000000ff", // any address
     "amount": "0xde0b6b3a7640000", // 10**18
-  },
+  }
 }
 ```
 
@@ -132,6 +132,101 @@ public void toggleBondContract (
   "method": "toggleBondContract",
   "params": {
     "bondContract": "cx000000000000000000000000000000000000000b" // a bond contract
-  },
+  }
 }
+```
+
+# Public variable getters
+
+## `KarmaCustomTreasury::payoutToken`
+
+### 📜 Method Call
+
+- Return the payout token address
+
+```java
+@External(readonly = true)
+public Address payoutToken()
+```
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomTreasury,
+  "method": "payoutToken"
+}
+```
+
+Result:
+```java
+"cx000000000000000000000000000000000000000a"
+```
+
+
+## `KarmaCustomTreasury::bondContract`
+
+### 📜 Method Call
+
+- Return the status of a given address in the bond contract whitelist
+
+```java
+@External(readonly = true)
+public boolean bondContract (Address address)
+```
+
+- `address`: Any address
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomTreasury,
+  "method": "bondContract",
+  "params": {
+    "address": "cx000000000000000000000000000000000000000b" // a bond contract previously whitelisted
+  }
+}
+```
+
+Result:
+```java
+"0x1" // true
+```
+
+# View Functions
+
+## `KarmaCustomTreasury::valueOfToken`
+
+### 📜 Method Call
+
+- Returns payout token valuation of principle token
+
+```java
+@External(readonly = true)
+public BigInteger valueOfToken (
+    Address principleTokenAddress,
+    BigInteger amount
+)
+```
+
+- `principleTokenAddress`: The principle token address
+- `amount`: An amount of principle token
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomTreasury,
+  "method": "valueOfToken",
+  "params": {
+    "principleTokenAddress": "cx000000000000000000000000000000000000000b",
+    "amount": "0x1158e460913d00000" // 20 * 10**18
+  }
+}
+```
+
+Result:
+```java
+"0x1158e460913d00000" // 20 * 10**18
 ```
