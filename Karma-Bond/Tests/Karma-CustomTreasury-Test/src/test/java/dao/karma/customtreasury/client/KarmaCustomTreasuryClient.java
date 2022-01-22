@@ -46,4 +46,8 @@ public class KarmaCustomTreasuryClient {
   public static void toggleBondContract (Score client, Account from, Address bondContract) {
     client.invoke(from, "toggleBondContract", bondContract);
   }
+
+  public static void withdraw(Score client, Account from, Address token, Address destination, BigInteger amount) {
+    client.invoke(from, "withdraw", token, destination, amount);
+  }
 }
