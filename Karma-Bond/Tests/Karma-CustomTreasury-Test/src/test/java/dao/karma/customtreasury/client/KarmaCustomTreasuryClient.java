@@ -16,6 +16,34 @@
 
 package dao.karma.customtreasury.client;
 
+import java.math.BigInteger;
+
+import com.eclipsesource.json.Json;
+import com.iconloop.score.test.Account;
+import com.iconloop.score.test.Score;
+
+import dao.karma.standards.token.irc2.client.IRC2Client;
+import dao.karma.utils.JSONUtils;
+import score.Address;
+
 public class KarmaCustomTreasuryClient {
 
+  public static Address policy (Score client) {
+    return (Address) client.call("policy");
+  }
+
+  public static Address payoutToken (Score client) {
+    return (Address) client.call("payoutToken");
+  }
+
+  public static void deposit(Score client, Score depositToken, Account from, BigInteger amountDepositToken, BigInteger amountPayoutToken) {
+    var params = Json.object()
+      .add("amountPayoutToken", amountPayoutToken.toString());
+    
+    IRC2Client.transfer(depositToken, from, client.getAddress(), amountDepositToken, JSONUtils.method("deposit", params));
+  }
+
+  public static void toggleBondContract (Score client, Account from, Address bondContract) {
+    client.invoke(from, "toggleBondContract", bondContract);
+  }
 }

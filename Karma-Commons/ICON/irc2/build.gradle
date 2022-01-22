@@ -6,4 +6,6 @@ dependencies {
     implementation 'org.mockito:mockito-inline:3.11.0'
     implementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+    
+    implementation project(':Karma-Commons:ICON:unittest')
 }

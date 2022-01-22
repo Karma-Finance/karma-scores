@@ -28,13 +28,28 @@ public class IRC2Client {
   public static BigInteger balanceOf(Score irc2, Address account) {
     return (BigInteger) irc2.call("balanceOf", account);
   }
+
   public static BigInteger balanceOf(Score irc2, Account account) {
     return balanceOf(irc2, account.getAddress());
   }
-  public static void transfer(Score irc2, Account from, Account to, BigInteger amount, byte[] data) {
-    irc2.invoke(from, "transfer", to.getAddress(), amount, data);
+
+  public static void transfer(Score irc2, Account from, Address to, BigInteger amount, byte[] data) {
+    irc2.invoke(from, "transfer", to, amount, data);
   }
-  public static void transfer(Score irc2, Account from, Account to, BigInteger amount) {
+
+  public static void transfer(Score irc2, Account from, Address to, BigInteger amount) {
     transfer(irc2, from, to, amount, "".getBytes());
+  }
+
+  public static void transfer(Score irc2, Account from, Account to, BigInteger amount, byte[] data) {
+    transfer(irc2, from, to.getAddress(), amount, data);
+  }
+
+  public static void transfer(Score irc2, Account from, Account to, BigInteger amount) {
+    transfer(irc2, from, to.getAddress(), amount, "".getBytes());
+  }
+  
+  public static void mint(Score irc2, Account from, BigInteger amount) {
+    irc2.invoke(from, "mint", amount);
   }
 }

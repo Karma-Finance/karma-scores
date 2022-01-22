@@ -16,14 +16,38 @@
 
 package dao.karma.custombond;
 
+import java.math.BigInteger;
+
 import dao.karma.test.KarmaTest;
 import dao.karma.test.ScoreSpy;
+import score.Address;
 
 public class KarmaCustomBondTest extends KarmaTest {
 
   ScoreSpy<KarmaCustomBond> bond;
   
-  void setup_bond () throws Exception {
-    bond = deploy(KarmaCustomBond.class);
+  void setup_bond (
+    Address customTreasury,
+    Address payoutToken,
+    Address principalToken,
+    Address karmaTreasury,
+    Address subsidyRouter,
+    Address initialOwner,
+    Address karmaDAO,
+    BigInteger[] tierCeilings,
+    BigInteger[] fees
+  ) throws Exception {
+    bond = deploy(
+      KarmaCustomBond.class,
+      customTreasury,
+      payoutToken,
+      principalToken,
+      karmaTreasury,
+      subsidyRouter,
+      initialOwner,
+      karmaDAO,
+      tierCeilings,
+      fees
+    );
   }
 }

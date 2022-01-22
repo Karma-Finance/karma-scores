@@ -18,12 +18,20 @@ package dao.karma.customtreasury;
 
 import dao.karma.test.KarmaTest;
 import dao.karma.test.ScoreSpy;
+import score.Address;
 
 public class KarmaCustomTreasuryTest extends KarmaTest {
 
   ScoreSpy<KarmaCustomTreasury> treasury;
   
-  void setup_treasury () throws Exception {
-    treasury = deploy(KarmaCustomTreasury.class);
+  void setup_treasury (
+    Address payoutToken, 
+    Address initialOwner
+  ) throws Exception {
+    treasury = deploy(
+      KarmaCustomTreasury.class,
+      payoutToken,
+      initialOwner
+    );
   }
 }

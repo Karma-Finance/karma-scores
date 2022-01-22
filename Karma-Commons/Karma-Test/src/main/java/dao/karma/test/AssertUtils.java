@@ -22,9 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.function.Executable;
 
 public class AssertUtils {
+  
   public static <T extends Throwable> void assertThrowsMessage (Class<T> expectedType, Executable executable, String message) {
     assertEquals(
       message,
       assertThrows(expectedType, executable).getMessage());
+  }
+
+  public static <T extends Throwable> void assertThrowsMessage (Executable executable, String message) {
+    assertThrowsMessage(AssertionError.class, executable, message);
   }
 }
