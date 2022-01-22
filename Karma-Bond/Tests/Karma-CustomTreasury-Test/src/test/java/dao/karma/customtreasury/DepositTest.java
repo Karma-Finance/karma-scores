@@ -1,5 +1,7 @@
 package dao.karma.customtreasury;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigInteger;
 
 import com.iconloop.score.test.Account;
@@ -14,6 +16,7 @@ import dao.karma.test.ScoreSpy;
 import dao.karma.test.tokens.Bnusd;
 import dao.karma.test.tokens.Usdc;
 import dao.karma.utils.JSONUtils;
+import score.Context;
 
 public class DepositTest extends KarmaCustomTreasuryTest {
   
@@ -43,8 +46,17 @@ public class DepositTest extends KarmaCustomTreasuryTest {
 
   @Test
   void testDeposit () {
+    // Get the original balance
+    BigInteger oldBalance = IRC2Client.balanceOf(payoutToken.score, bondContract.getAddress());
+    BigInteger amountPayoutToken = BigInteger.valueOf(1000);
+
+    // Do the deposit to the treasury
     KarmaCustomTreasuryClient.toggleBondContract(treasury.score, owner, bondContract.getAddress());
-    KarmaCustomTreasuryClient.deposit(treasury.score, depositToken.score, bondContract, BigInteger.valueOf(1000), BigInteger.valueOf(1000));
+    KarmaCustomTreasuryClient.deposit(treasury.score, depositToken.score, bondContract, BigInteger.valueOf(1000), amountPayoutToken);
+
+    // Check if bondContract received the payout
+    BigInteger newBalance = IRC2Client.balanceOf(payoutToken.score, bondContract.getAddress());
+    assertEquals(oldBalance.add(amountPayoutToken), newBalance);
   }
 
   @Test

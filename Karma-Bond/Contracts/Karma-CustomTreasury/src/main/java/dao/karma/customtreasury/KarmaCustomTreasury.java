@@ -111,7 +111,7 @@ public class KarmaCustomTreasury extends Ownable {
         Context.require(bondContract.getOrDefault(caller, false), 
             "deposit: caller is not a bond contract");
 
-        IIRC2.transfer(payoutToken, caller, amountPayoutToken, JSONUtils.method("deposit"));
+        IIRC2.transfer(this.payoutToken, caller, amountPayoutToken, JSONUtils.method("pay"));
     }
     
     @External
