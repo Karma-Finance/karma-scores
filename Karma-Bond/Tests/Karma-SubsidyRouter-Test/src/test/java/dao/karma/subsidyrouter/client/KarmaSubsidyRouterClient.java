@@ -16,6 +16,26 @@
 
 package dao.karma.subsidyrouter.client;
 
+import com.iconloop.score.test.Account;
+import com.iconloop.score.test.Score;
+
+import score.Address;
+
 public class KarmaSubsidyRouterClient {
 
+  public static void addSubsidyController(Score client, Account from, Address subsidyController, Address bond) {
+    client.invoke(from, "addSubsidyController", subsidyController, bond);
+  }
+  
+  public static void removeSubsidyController(Score client, Account from, Address subsidyController) {
+    client.invoke(from, "removeSubsidyController", subsidyController);
+  }
+
+  public static Address bondForController(Score client, Address subsidyController) {
+    return (Address) client.call("bondForController", subsidyController);
+  }
+
+  public static void getSubsidyInfo (Score client, Account from) {
+    client.invoke(from, "getSubsidyInfo");
+  }
 }

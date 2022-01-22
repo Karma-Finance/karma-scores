@@ -1,7 +1,7 @@
 # Karma Custom Treasury Documentation
 
 The Karma Custom Treasury handles payment of a payout token against a deposit token.
-Only Karma Bond contracts are allowed to deposit funds and receive the payout token.
+Only Karma Bond contracts are allowed to deposit funds and receive the payout token. The Treasury owner can whitelist bonds contracts and withdraw tokens from the Treasury.
 
 ---
 

@@ -53,16 +53,54 @@ public class KarmaSubsidyRouter extends Ownable {
      *  Contract constructor
      * 
      */
-    public KarmaSubsidyRouter (
-    ) {
+    public KarmaSubsidyRouter () {
         super(Context.getCaller());
         this.name = "Karma Subsidy Router";
     }
     
     /**
+     * Add new subsidy controller for bond contract
+     * 
+     * Access: Policy
+     * 
+     * @param subsidyController The Subsidy Controller address
+     * @param bond A bond contract address
+     */
+    @External
+    public void addSubsidyController (
+        Address subsidyController,
+        Address bond
+    ) {
+        // Access control
+        onlyPolicy();
+
+        Context.require (!bond.equals(ZERO_ADDRESS));
+        Context.require (!subsidyController.equals(ZERO_ADDRESS));
+
+        // OK
+        this.bondForController.set(subsidyController, bond);
+    }
+
+    /**
+     * Remove subsidy controller for bond contract
+     * 
+     * Access: Policy
+     * 
+     * @param subsidyController The Subsidy Controller address
+     */
+    @External
+    public void removeSubsidyController (Address subsidyController) {
+        // Access control
+        onlyPolicy();
+
+        // OK
+        this.bondForController.set(subsidyController, null);
+    }
+
+    /**
      * Subsidy controller fetches and resets payout counter
      * 
-     * Access: Everyone
+     * Access: Subsidy Controller
      */
     @External
     public BigInteger getSubsidyInfo() {
@@ -73,40 +111,6 @@ public class KarmaSubsidyRouter extends Ownable {
             "getSubsidyInfo: Address not mapped");
 
         return IBond.paySubsidy(bond);
-    }
-
-    /**
-     * Add new subsidy controller for bond contract
-     * 
-     * Access: Policy
-     * 
-     * @param bond
-     * @param subsidyController
-     */
-    @External
-    public void addSubsidyController (Address bond, Address subsidyController) {
-        // Access control
-        onlyPolicy();
-
-        Context.require (!bond.equals(ZERO_ADDRESS));
-        Context.require (!subsidyController.equals(ZERO_ADDRESS));
-
-        this.bondForController.set(subsidyController, bond);
-    }
-    
-    /**
-     * Remove subsidy controller for bond contract
-     * 
-     * Access: Policy
-     * 
-     * @param subsidyController address
-     */
-    @External
-    public void removeSubsidyController (Address subsidyController) {
-        // Access control
-        onlyPolicy();
-
-        this.bondForController.set(subsidyController, null);
     }
 
     // ================================================
@@ -121,12 +125,12 @@ public class KarmaSubsidyRouter extends Ownable {
     }
 
     /**
-     * Get the bond associated with a given controller
-     * @param controller The controller
+     * Get the bond associated with a given subsidyController
+     * @param subsidyController The subsidyController
      * @return The bond
      */
     @External(readonly = true)
-    public Address bondForController (Address controller) {
-        return this.bondForController.get(controller);
+    public Address bondForController (Address subsidyController) {
+        return this.bondForController.get(subsidyController);
     }
 }

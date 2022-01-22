@@ -94,6 +94,12 @@ public class KarmaCustomBond extends Ownable {
     ) {}
 
     @EventLog
+    public void PayoutUpdate (
+        BigInteger oldPayout,
+        BigInteger newPayout
+    ) {}
+
+    @EventLog
     public void BondRedeemed (
         Address recipient,
         BigInteger payout,
@@ -323,7 +329,8 @@ public class KarmaCustomBond extends Ownable {
 
         // OK
         BigInteger result = payoutSinceLastSubsidy.get();
-        payoutSinceLastSubsidy.set(ZERO);
+        this.payoutSinceLastSubsidy.set(ZERO);
+        this.PayoutUpdate(result, ZERO);
 
         return result;
     }
@@ -407,7 +414,10 @@ public class KarmaCustomBond extends Ownable {
         // total payout increased
         this.totalPayoutGiven.set(totalPayoutGiven.get().add(payout));
         // subsidy counter increased
-        this.payoutSinceLastSubsidy.set(payoutSinceLastSubsidy.get().add( payout ));
+        BigInteger oldPayout = payoutSinceLastSubsidy.get();
+        BigInteger newPayout = oldPayout.add(payout);
+        this.payoutSinceLastSubsidy.set(newPayout);
+        this.PayoutUpdate(oldPayout, newPayout);
         
         // control variable is adjusted
         adjust();

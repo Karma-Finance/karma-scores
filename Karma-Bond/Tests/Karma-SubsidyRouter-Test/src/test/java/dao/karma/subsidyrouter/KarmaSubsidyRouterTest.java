@@ -21,9 +21,9 @@ import dao.karma.test.ScoreSpy;
 
 public class KarmaSubsidyRouterTest extends KarmaTest {
 
-  ScoreSpy<KarmaSubsidyRouter> treasury;
+  ScoreSpy<KarmaSubsidyRouter> subsidyRouter;
   
-  void setup_treasury () throws Exception {
-    treasury = deploy(KarmaSubsidyRouter.class);
+  void setup_subsidy_router () throws Exception {
+    subsidyRouter = deploy(KarmaSubsidyRouter.class);
   }
 }
