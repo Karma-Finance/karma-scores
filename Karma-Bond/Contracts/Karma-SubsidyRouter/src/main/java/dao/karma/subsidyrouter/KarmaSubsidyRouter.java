@@ -55,6 +55,7 @@ public class KarmaSubsidyRouter extends Ownable {
      */
     public KarmaSubsidyRouter (
     ) {
+        super(Context.getCaller());
         this.name = "Karma Subsidy Router";
     }
     

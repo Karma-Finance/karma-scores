@@ -76,6 +76,8 @@ public class KarmaFactory extends Ownable {
         Address karmaSubsidyRouter,
         Address karmaDAO
     ) {
+        super(Context.getCaller());
+
         this.name = "Karma Factory";
 
         Context.require(!karmaTreasury.equals(ZERO_ADDRESS),

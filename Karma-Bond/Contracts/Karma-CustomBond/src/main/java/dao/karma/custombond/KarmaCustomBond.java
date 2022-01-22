@@ -131,6 +131,9 @@ public class KarmaCustomBond extends Ownable {
         BigInteger[] tierCeilings,
         BigInteger[] fees
     ) {
+        super(initialOwner);
+
+        // Check inputs
         Context.require(!customTreasury.equals(ZERO_ADDRESS));
         Context.require(!payoutToken.equals(ZERO_ADDRESS));
         Context.require(!principalToken.equals(ZERO_ADDRESS));
@@ -139,6 +142,10 @@ public class KarmaCustomBond extends Ownable {
         Context.require(!initialOwner.equals(ZERO_ADDRESS));
         Context.require(!karmaDAO.equals(ZERO_ADDRESS));
 
+        Context.require(tierCeilings.length == fees.length,
+            "KarmaCustomBond: tier length and fee length not the same");
+
+        // OK
         this.name = "Karma Custom Bond";
         this.customTreasury = customTreasury;
         this.payoutToken = payoutToken;
@@ -146,19 +153,12 @@ public class KarmaCustomBond extends Ownable {
         this.subsidyRouter = subsidyRouter;
         this.karmaDAO = karmaDAO;
 
+        for (int i = 0; i  < tierCeilings.length; i++) {
+            this.feeTiers.add(new FeeTiers(tierCeilings[i], fees[i]));
+        }
+
         if (this.karmaTreasury.get() == null) {
             this.karmaTreasury.set(karmaTreasury);
-        }
-
-        if (this.owner.get() == null) {
-            this.owner.set(initialOwner);
-        }
-
-        Context.require(tierCeilings.length == fees.length,
-            "KarmaCustomBond: tier length and fee length not the same");
-
-        for (int i = 0; i  < tierCeilings.length; i++) {
-            feeTiers.add(new FeeTiers(tierCeilings[i], fees[i]));
         }
     }
 
@@ -189,6 +189,7 @@ public class KarmaCustomBond extends Ownable {
         Context.require(currentDebt().equals(ZERO), 
             "Debt must be 0 for initialization");
 
+        // OK
         this.terms.set (
             new Terms (
                 controlVariable,
@@ -225,6 +226,7 @@ public class KarmaCustomBond extends Ownable {
         // Access control
         onlyPolicy();
 
+        // OK
         var terms = this.terms.get();
 
         switch (parameter) {
@@ -277,6 +279,7 @@ public class KarmaCustomBond extends Ownable {
         Context.require(increment.compareTo(terms.get().controlVariable.multiply(BigInteger.valueOf(30)).divide(BigInteger.valueOf(1000))) <= 0, 
             "setBondTerms: Increment too large");
 
+        // OK
         this.adjustment.set (
             new Adjust (
                 addition,
@@ -318,6 +321,7 @@ public class KarmaCustomBond extends Ownable {
         // Access control
         checkSubsidy(caller);
 
+        // OK
         BigInteger result = payoutSinceLastSubsidy.get();
         payoutSinceLastSubsidy.set(ZERO);
 

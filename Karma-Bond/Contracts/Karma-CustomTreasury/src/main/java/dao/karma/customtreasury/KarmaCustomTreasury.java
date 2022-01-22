@@ -80,19 +80,20 @@ public class KarmaCustomTreasury extends Ownable {
         Address payoutToken, 
         Address initialOwner
     ) {
+        super(initialOwner);
+        
         Context.require(!payoutToken.equals(AddressUtils.ZERO_ADDRESS));
         Context.require(!initialOwner.equals(AddressUtils.ZERO_ADDRESS));
 
         this.name = "Karma Custom Treasury";
 
         this.payoutToken = payoutToken;
-        this.owner.set(initialOwner);
     }
 
     // --- Bond Contract Functions ---
     
     /**
-     * Deposit principle token and recieve back payout token
+     * Deposit principle token and receive back payout token
      * 
      * Access: Everybody
      * 
@@ -125,6 +126,11 @@ public class KarmaCustomTreasury extends Ownable {
                 JsonObject params = root.get("params").asObject();
                 BigInteger amountPayoutToken = StringUtils.toBigInt(params.get("amountPayoutToken").asString());
                 deposit(_from, token, _value, amountPayoutToken);
+                break;
+            }
+
+            case "funding": {
+                // accept funds from any address
                 break;
             }
 

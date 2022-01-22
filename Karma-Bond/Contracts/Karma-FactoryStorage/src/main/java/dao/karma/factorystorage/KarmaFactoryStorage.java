@@ -65,6 +65,7 @@ public class KarmaFactoryStorage extends Ownable {
      */
     public KarmaFactoryStorage (
     ) {
+        super(Context.getCaller());
         this.name = "Karma Factory Storage";
     }
 
