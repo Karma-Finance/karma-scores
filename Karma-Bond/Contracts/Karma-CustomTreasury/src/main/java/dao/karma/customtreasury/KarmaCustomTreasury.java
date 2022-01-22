@@ -177,7 +177,9 @@ public class KarmaCustomTreasury extends Ownable {
         // Access control
         onlyPolicy();
 
+        // OK
         boolean state = this.bondContract.getOrDefault(bondContract, false);
+
         // toggle
         this.bondContract.set(bondContract, !state);
     }

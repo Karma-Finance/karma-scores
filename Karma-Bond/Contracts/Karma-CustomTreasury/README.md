@@ -72,3 +72,38 @@ private void deposit (
   },
 }
 ```
+
+
+## `KarmaCustomTreasury::withdraw`
+
+### 📜 Method Call
+
+- Policy can withdraw any IRC2 token to a desired address
+- Access: Policy
+
+```java
+@External
+public void withdraw (
+    Address token,
+    Address destination,
+    BigInteger amount
+)
+```
+
+- `token`: The token to withdraw
+- `destination`: The destination address of the withdrawn tokens
+- `amount`: The amount of tokens
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomTreasury,
+  "method": "withdraw",
+  "params": {
+    "token": "cx000000000000000000000000000000000000000b",
+    "destination": "hx00000000000000000000000000000000000000ff", // any address
+    "amount": "0xde0b6b3a7640000", // 10**18
+  },
+}
+```
