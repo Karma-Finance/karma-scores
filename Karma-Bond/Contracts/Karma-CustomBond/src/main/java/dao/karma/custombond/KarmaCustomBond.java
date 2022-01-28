@@ -596,6 +596,7 @@ public class KarmaCustomBond extends Ownable {
     public BigInteger bondPrice() {
         var terms = this.terms.get();
 
+        // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-5))
         BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IIRC2.decimals(payoutToken) - 5));
         
         if (price.compareTo(terms.minimumPrice) < 0) {
@@ -607,10 +608,12 @@ public class KarmaCustomBond extends Ownable {
 
     /**
      * Calculate true bond price a user pays
+     * 
      * @return price
      */
     @External(readonly = true)
     public BigInteger trueBondPrice() {
+        // truePrice = `bondPrice()` + (`bondPrice()` * `currentKarmaFee()` / 10**6)
         return bondPrice().add(bondPrice().multiply(currentKarmaFee()).divide(MathUtils.pow10(6)));
     }
 
@@ -619,6 +622,7 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger maxPayout() {
+        // IRC2(payoutToken).totalSupply() * terms().maxPayout / 10**5
         return IIRC2.totalSupply(this.payoutToken).multiply(this.terms.get().maxPayout).divide(BigInteger.valueOf(100000));
     }
 
@@ -636,7 +640,9 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger payoutFor (BigInteger value) {
+        // total = value / bondPrice() / 10**11
         BigInteger total = FixedPoint.fraction(value, bondPrice()).decode112with18().divide(MathUtils.pow10(11));
+        // payoutFor = total - (total * currentKarmaFee() / 10**6)
         return total.subtract(total.multiply(currentKarmaFee()).divide(MathUtils.pow10(6)));
     }
 
@@ -646,6 +652,7 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger debtRatio() {
+        // debtRatio = currentDebt() * IRC2(payoutToken).decimals() / IRC2(payoutToken).totalSupply() / 10**18
         return FixedPoint.fraction (
             currentDebt().multiply(MathUtils.pow10(IIRC2.decimals(payoutToken))),
             IIRC2.totalSupply(payoutToken)
@@ -657,6 +664,7 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger currentDebt() {
+        // currentDebt = totalDebt() - debtDecay()
         return this.totalDebt.get().subtract(debtDecay());
     }
 
@@ -669,6 +677,7 @@ public class KarmaCustomBond extends Ownable {
         Long blockHeight = Context.getBlockHeight();
         BigInteger blocksSinceLast = BigInteger.valueOf(blockHeight - lastDecay.get());
         BigInteger vestingTerm = BigInteger.valueOf(this.terms.get().vestingTerm);
+        // decay = totalDebt() * (blockHeight - lastDecay()) / (terms().vestingTerm)
         BigInteger decay = totalDebt.multiply(blocksSinceLast).divide(vestingTerm);
 
         if (decay.compareTo(totalDebt) > 0) {
@@ -680,10 +689,12 @@ public class KarmaCustomBond extends Ownable {
 
     /**
      * Calculate how far into vesting a depositor is
-     * @param _depositor address
+     * @param depositor The depositor address to calculate the vesting for
      */
     @External(readonly = true)
-    public BigInteger percentVestedFor (Address depositor) {
+    public BigInteger percentVestedFor (
+        Address depositor
+    ) {
         Bond bond = bondInfo.get(depositor);
         Long blockHeight = Context.getBlockHeight();
         Long blocksSinceLast = blockHeight - bond.lastBlock;
@@ -696,10 +707,12 @@ public class KarmaCustomBond extends Ownable {
 
     /**
      * Calculate amount of payout token available for claim by depositor
-     * @param depositor address
+     * @param depositor The depositor address to calculate the payout token available for
      */
     @External(readonly = true)
-    public BigInteger pendingPayoutFor (Address depositor) {
+    public BigInteger pendingPayoutFor (
+        Address depositor
+    ) {
         BigInteger percentVested = percentVestedFor (depositor);
         BigInteger payout = bondInfo.get(depositor).payout;
         BigInteger vested = BigInteger.valueOf(10000);
@@ -710,8 +723,7 @@ public class KarmaCustomBond extends Ownable {
     }
 
     /**
-     *  Current fee Karma takes of each bond
-     *  @return currentFee_ uint
+     * Get the current fee Karma takes of each bond
      */
     @External(readonly = true)
     public BigInteger currentKarmaFee() {

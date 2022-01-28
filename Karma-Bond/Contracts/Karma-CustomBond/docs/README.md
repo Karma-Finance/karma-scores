@@ -1,8 +1,8 @@
 # Karma Custom Bond Documentation
 
+---
 
 ## Initialization methods
----
 
 ## `KarmaCustomBond::constructor`
 
@@ -60,7 +60,7 @@ public void initializeBond (
 - `controlVariable`: The Bond Control Variable (BCV). Controls bond price and capacity. BCV directly affects the bond price - the higher the BCV, the higher the bond price. As a higher bond price makes bonds less attractive, the protocol can adjust this value to tune the bond capacity.
 - `vestingTerm`: Vesting term (typically 7 days), expressed in ICON blocks. A bond vests linearly to the bonder over a length of time, called the bond vesting term. This means the bonder can claim a portion of the reward tokens each day, with all rewards being claimable at the end of the term.
 - `minimumPrice`: Minimum price of the bond
-- `maxPayout`: Max payout as a % of total supply
+- `maxPayout`: Max payout as a % of total supply, in thousandths of a %. i.e. 500 = 0.5%
 - `maxDebt`: Ceiling on how many bonds can be outstanding
 - `initialDebt`: Initial debt used for initializing the contract
 
@@ -81,9 +81,10 @@ public void initializeBond (
 }
 ```
 
+---
+
 ## Policy Functions
 
----
 
 ## `KarmaCustomBond::setBondTerms`
 
@@ -155,6 +156,8 @@ public void setAdjustment (
 }
 ```
 
+---
+
 ## Custom Bond settings
 
 ## `KarmaCustomBond::changeKarmaTreasury`
@@ -210,6 +213,8 @@ public BigInteger paySubsidy()
   "method": "paySubsidy"
 }
 ```
+
+---
 
 ## User functions
 
@@ -290,4 +295,310 @@ public BigInteger redeem (
     "buffer": "0x1" // 1 block
   }
 }
+```
+
+---
+
+## View functions
+
+## `KarmaCustomBond::bondPrice`
+
+### 📜 Method Call
+
+- Calculate current bond premium
+- price = `BCV` * `debtRatio` / (10**(`IRC2(payoutToken).decimals()` - 5))
+- if price is < 0, price = `terms().minimumPrice`
+
+```java
+@External(readonly = true)
+public BigInteger bondPrice()
+```
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "bondPrice"
+}
+```
+
+Result:
+```java
+0x4f26
+```
+
+---
+
+## `KarmaCustomBond::trueBondPrice`
+
+### 📜 Method Call
+
+- Calculate true bond price a user pays
+- truePrice = `bondPrice()` + (`bondPrice()` * `currentKarmaFee()` / 10**6)
+
+```java
+@External(readonly = true)
+public BigInteger trueBondPrice()
+```
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "trueBondPrice"
+}
+```
+
+Result:
+```java
+0x51c8
+```
+
+---
+
+## `KarmaCustomBond::maxPayout`
+
+### 📜 Method Call
+
+- Determine maximum bond size
+- maxBondSize = `IRC2(payoutToken).totalSupply()` * `terms().maxPayout` / 10**5
+
+```java
+@External(readonly = true)
+public BigInteger maxPayout()
+```
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "maxPayout"
+}
+```
+
+Result:
+```java
+0x1b87506a3e7b0d400000 // 130000000000000000000000
+```
+
+---
+
+## `KarmaCustomBond::payoutFor`
+
+### 📜 Method Call
+
+- Calculate user's interest due for new bond, accounting for Karma Fee
+- `total` = `value` / `bondPrice()` / 10**11
+- `payoutFor` = `total` - (`total` * `currentKarmaFee()` / 10**6)
+
+```java
+@External(readonly = true)
+public BigInteger payoutFor(
+  BigInteger value
+)
+```
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "payoutFor",
+  "params": {
+    "value": "0x3e8" // 1000
+  }
+}
+```
+
+Result:
+```java
+0x74c02 // 478210
+```
+
+---
+
+## `KarmaCustomBond::debtRatio`
+
+### 📜 Method Call
+
+- Calculate current ratio of debt to payout token supply
+- Protocols using Karma Bond should be careful when quickly adding large %s to total supply
+- `debtRatio` = `currentDebt()` * `IRC2(payoutToken).decimals()` / `IRC2(payoutToken).totalSupply()` / 10**18
+
+```java
+@External(readonly = true)
+public BigInteger debtRatio()
+```
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "debtRatio"
+}
+```
+
+Result:
+```java
+0x1c5a0eae924 // 1948319934756
+```
+
+---
+
+## `KarmaCustomBond::currentDebt`
+
+### 📜 Method Call
+
+- Calculate debt factoring in decay
+- `currentDebt` = `totalDebt()` - `debtDecay()`
+
+```java
+@External(readonly = true)
+public BigInteger currentDebt()
+```
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "currentDebt"
+}
+```
+
+Result:
+```java
+0x699e5ee2050eac4519 // 1948319934756655219993
+```
+
+---
+
+## `KarmaCustomBond::debtDecay`
+
+### 📜 Method Call
+
+- Amount to decay total debt by
+- `debtDecay` = `totalDebt()` * (`blockHeight` - `lastDecay()`) / (`terms().vestingTerm`)
+
+```java
+@External(readonly = true)
+public BigInteger debtDecay()
+```
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "debtDecay"
+}
+```
+
+Result:
+```java
+0xe4ffa9e425b2c779 // 16501094357058897785
+```
+
+---
+
+## `KarmaCustomBond::percentVestedFor`
+
+### 📜 Method Call
+
+- Calculate how far into vesting a depositor is
+- `bond` = `bondInfo.get(depositor)`
+- `percentVestedFor` = (`blockHeight` - `bond.lastBlock`) * 10**5 / `bond.vesting`
+
+```java
+@External(readonly = true)
+public BigInteger percentVestedFor (
+  Address depositor
+)
+```
+
+- `depositor`: The depositor address to calculate the vesting for
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "percentVestedFor",
+  "params": {
+    "depositor": alice
+  }
+}
+```
+
+Result:
+```java
+0x101b // 4123
+```
+
+---
+
+## `KarmaCustomBond::pendingPayoutFor`
+
+### 📜 Method Call
+
+- Calculate amount of payout token available for claim by depositor
+- `payout` = `bondInfo.get(depositor).payout`
+- If not vested: `pendingPayoutFor` = `payout`
+- Else: `pendingPayoutFor` = `payout` * `percentVestedFor(depositor)` / 10**5
+
+```java
+@External(readonly = true)
+public BigInteger pendingPayoutFor (
+  Address depositor
+)
+```
+
+- `depositor`: The depositor address to calculate the vesting for
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "pendingPayoutFor",
+  "params": {
+    "depositor": alice
+  }
+}
+```
+
+Result:
+```java
+0x433a6fc948839611cd5 // 19842282534854994238677
+```
+
+---
+
+## `KarmaCustomBond::currentKarmaFee`
+
+### 📜 Method Call
+
+- Get the current fee Karma takes of each bond
+
+```java
+@External(readonly = true)
+public BigInteger currentKarmaFee ()
+```
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "currentKarmaFee"
+}
+```
+
+Result:
+```java
+0x8214 // 33300, 3.33%
 ```
