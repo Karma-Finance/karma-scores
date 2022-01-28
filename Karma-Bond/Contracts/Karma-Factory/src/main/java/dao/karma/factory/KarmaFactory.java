@@ -104,10 +104,12 @@ public class KarmaFactory extends Ownable {
      * 
      * Access: SCORE Owner
      * 
-     * @param contractBytes The contract bytes
+     * @param contractBytes The treasury contract bytes
      */
     @External
-    public void setCustomTreasuryContractBytes (byte[] contractBytes) {
+    public void setCustomTreasuryContractBytes (
+        byte[] contractBytes
+    ) {
         final Address caller = Context.getCaller();
 
         // Access control
@@ -121,15 +123,17 @@ public class KarmaFactory extends Ownable {
     }
 
     /**
-     * Write the Custom Treasury Contract bytes. 
+     * Write the Custom Bond Contract bytes. 
      * Can only be called once after deploying.
      * 
      * Access: SCORE Owner
      * 
-     * @param contractBytes The contract bytes
+     * @param contractBytes The bond contract bytes
      */
     @External
-    public void setCustomBondContractBytes (byte[] contractBytes) {
+    public void setCustomBondContractBytes (
+        byte[] contractBytes
+    ) {
         final Address caller = Context.getCaller();
 
         // Access control
@@ -148,11 +152,13 @@ public class KarmaFactory extends Ownable {
      * 
      * Access: Policy
      * 
-     * @param payoutToken Address
-     * @param principleToken Address
-     * @param initialOwner Address
-     * @return treasury Address
-     * @return bond Address
+     * @param payoutToken The payout token address associated with the bond
+     * @param principleToken The principal token address associated with the bond
+     * @param initialOwner The initial owner of the bond
+     * @param tierCeilings Array of ceilings of principal bonded till next tier
+     * @param fees Array of fees tiers, in ten-thousandths (i.e. 33300 = 3.33%)
+     * 
+     * @return Addresses of newly deployed bond and treasury contracts
      */
     @External
     public TreasuryBond createBondAndTreasury (
@@ -303,17 +309,17 @@ public class KarmaFactory extends Ownable {
     public Address karmaTreasury() {
         return this.karmaTreasury;
     }
-    
+
     @External(readonly = true)
     public Address karmaFactoryStorage() {
         return this.karmaFactoryStorage;
     }
-    
+
     @External(readonly = true)
     public Address karmaSubsidyRouter() {
         return this.karmaSubsidyRouter;
     }
-    
+
     @External(readonly = true)
     public Address karmaDAO() {
         return this.karmaDAO;

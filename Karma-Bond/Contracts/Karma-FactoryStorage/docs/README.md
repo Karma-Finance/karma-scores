@@ -75,6 +75,7 @@ class BondDetails {
   BigInteger[] fees;
 }
 ```
+
 - `payoutToken`: The payout token address associated with the bond
 - `principleToken`: The principal token address associated with the bond
 - `customTreasury`: The custom treasury associated with the bond
