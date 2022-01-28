@@ -75,15 +75,15 @@ public void setCustomBondContractBytes (
 @External
 public TreasuryBond createBondAndTreasury (
   Address payoutToken, 
-  Address principleToken, 
+  Address principalToken, 
   Address initialOwner, 
   BigInteger[] tierCeilings, 
   BigInteger[] fees
 )
 ```
 
-- `payoutToken`: The payout token address associated with the bond
-- `principleToken`: The principal token address associated with the bond
+- `payoutToken`: The payout token address associated with the bond, token paid for principal
+- `principalToken`: The principal inflow token address associated with the bond
 - `initialOwner`: The initial owner of the bond
 - `tierCeilings`: Array of ceilings of principal bonded till next tier
 - `fees`: Array of fees tiers, in ten-thousandths (i.e. 33300 = 3.33%)
@@ -96,7 +96,7 @@ public TreasuryBond createBondAndTreasury (
   "method": "createBondAndTreasury",
   "params": {
     "payoutToken": payoutToken,
-    "principleToken": principleToken,
+    "principalToken": principalToken,
     "initialOwner": alice,
     "tierCeilings": [
       "0x3635c9adc5dea00000", 
@@ -124,7 +124,7 @@ public TreasuryBond createBondAndTreasury (
 @External
 public TreasuryBond createBond (
   Address payoutToken, 
-  Address principleToken, 
+  Address principalToken, 
   Address customTreasury, 
   Address initialOwner, 
   BigInteger[] tierCeilings, 
@@ -133,7 +133,7 @@ public TreasuryBond createBond (
 ```
 
 - `payoutToken`: The payout token address associated with the bond
-- `principleToken`: The principal token address associated with the bond
+- `principalToken`: The principal token address associated with the bond
 - `customTreasury`: The custom treasury associated with the bond
 - `initialOwner`: The initial owner of the bond
 - `tierCeilings`: Array of ceilings of principal bonded till next tier
@@ -147,7 +147,7 @@ public TreasuryBond createBond (
   "method": "createBondAndTreasury",
   "params": {
     "payoutToken": payoutToken,
-    "principleToken": principleToken,
+    "principalToken": principalToken,
     "customTreasury": customTreasury,
     "initialOwner": alice,
     "tierCeilings": [

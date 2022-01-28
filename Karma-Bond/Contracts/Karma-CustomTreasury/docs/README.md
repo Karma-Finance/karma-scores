@@ -19,7 +19,7 @@ public KarmaCustomTreasury (
 )
 ```
 
-- `payoutToken`: The payout token address
+- `payoutToken`: The payout token address, token paid for principal
 - `initialOwner`: The initial owner of the Custom Treasury
 
 ### 🧪 Example call
@@ -43,26 +43,26 @@ public KarmaCustomTreasury (
 // @External - this method is external through tokenFallback
 private void deposit (
   Address caller,
-  Address principleTokenAddress, 
-  BigInteger amountPrincipleToken,
+  Address principalTokenAddress, 
+  BigInteger amountPrincipalToken,
   BigInteger amountPayoutToken
 )
 ```
 
 - `caller`: The method caller. This field is handled by tokenFallback
-- `principleTokenAddress`: The principal token address. This field is handled by tokenFallback
-- `amountPrincipleToken`: The principal token amount sent. This field is handled by tokenFallback
+- `principalTokenAddress`: The principal inflow token address. This field is handled by tokenFallback
+- `amountPrincipalToken`: The principal token amount sent. This field is handled by tokenFallback
 - `amountPayoutToken`: The amount of payout token to be sent back to the bond contract
 
 ### 🧪 Example call
 
 ```java
 {
-  "to": principleTokenAddress,
+  "to": principalTokenAddress,
   "method": "transfer",
   "params": {
     "_to": KarmaCustomTreasury,
-    "_value": "0xde0b6b3a7640000", // 10**18 - equivalent to amountPrincipleToken
+    "_value": "0xde0b6b3a7640000", // 10**18 - equivalent to amountPrincipalToken
     "_data": hex({
       "method": "deposit",
       "params": {
@@ -200,18 +200,18 @@ Result:
 
 ### 📜 Method Call
 
-- Returns payout token valuation of principle token
+- Returns payout token valuation of principal token
 
 ```java
 @External(readonly = true)
 public BigInteger valueOfToken (
-    Address principleTokenAddress,
+    Address principalTokenAddress,
     BigInteger amount
 )
 ```
 
-- `principleTokenAddress`: The principle token address
-- `amount`: An amount of principle token
+- `principalTokenAddress`: The principal token address
+- `amount`: An amount of principal token
 
 ### 🧪 Example call
 
@@ -220,7 +220,7 @@ public BigInteger valueOfToken (
   "to": KarmaCustomTreasury,
   "method": "valueOfToken",
   "params": {
-    "principleTokenAddress": "cx000000000000000000000000000000000000000b",
+    "principalTokenAddress": "cx000000000000000000000000000000000000000b",
     "amount": "0x1158e460913d00000" // 20 * 10**18
   }
 }

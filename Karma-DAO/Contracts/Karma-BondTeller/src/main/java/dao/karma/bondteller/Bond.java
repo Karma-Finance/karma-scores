@@ -24,7 +24,7 @@ import score.Address;
 public class Bond {
     // token used to pay for bond
     public Address principal;
-    // amount of principal token paid for bond
+    // amount of principal inflow token paid for bond
     public BigInteger principalPaid;
     // sOHM remaining to be paid. agnostic balance
     public BigInteger payout;

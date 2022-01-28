@@ -27,7 +27,7 @@ public class IKarmaFactoryStorage {
   public static TreasuryBond pushBond (
     Address karmaFactoryStorage,
     Address payoutToken, 
-    Address principleToken, 
+    Address principalToken, 
     Address treasury,
     Address bond,
     Address initialOwner, 
@@ -37,7 +37,7 @@ public class IKarmaFactoryStorage {
     return TreasuryBond.fromMap (
       Context.call (karmaFactoryStorage, "pushBond",
       payoutToken, 
-      principleToken, 
+      principalToken, 
       treasury, 
       bond,
       initialOwner,

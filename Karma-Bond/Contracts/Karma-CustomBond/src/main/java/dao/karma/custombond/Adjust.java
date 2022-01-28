@@ -23,9 +23,9 @@ import score.ObjectWriter;
 
 // Info for incremental adjustments to control variable
 public class Adjust {
-    // addition or subtraction
+    // Addition (true) or subtraction (false) of BCV
     public boolean add;
-    // increment
+    // The increment value of the `controlVariable` value
     public BigInteger rate;
     // BCV when adjustment finished
     public BigInteger target;

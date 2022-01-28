@@ -44,7 +44,7 @@ public class KarmaCustomTreasury extends Ownable {
     // Contract name
     private final String name;
 
-    // The payout token contract address
+    // The payout token contract address, token paid for principal
     private final Address payoutToken;
 
     // Bond contracts
@@ -93,19 +93,19 @@ public class KarmaCustomTreasury extends Ownable {
     // --- Bond Contract Functions ---
     
     /**
-     * Deposit principle token and receive back payout token
+     * Deposit principal token and receive back payout token
      * 
      * Access: Everybody
      * 
-     * @param principleTokenAddress
-     * @param amountPrincipleToken
+     * @param principalTokenAddress
+     * @param amountPrincipalToken
      * @param amountPayoutToken
      */
     // @External - this method is external through tokenFallback
     private void deposit (
         Address caller,
-        Address principleTokenAddress, 
-        BigInteger amountPrincipleToken,
+        Address principalTokenAddress, 
+        BigInteger amountPrincipalToken,
         BigInteger amountPayoutToken
     ) {
         Context.require(bondContract.getOrDefault(caller, false), 
@@ -220,20 +220,20 @@ public class KarmaCustomTreasury extends Ownable {
     // View Functions
     // ================================================
     /**
-     * Returns payout token valuation of principle token
+     * Returns payout token valuation of principal token
      * 
-     * @param principleTokenAddress The principle token address
-     * @param amount An amount of principle token
+     * @param principalTokenAddress The principal token address
+     * @param amount An amount of principal token
      */
     @External(readonly = true)
     public BigInteger valueOfToken (
-        Address principleTokenAddress,
+        Address principalTokenAddress,
         BigInteger amount
     ) {
         // convert amount to match payout token decimals
         int payoutTokenDecimals = IIRC2.decimals(payoutToken);
-        int principleTokenAddressDecimals = IIRC2.decimals(principleTokenAddress);
+        int principalTokenAddressDecimals = IIRC2.decimals(principalTokenAddress);
 
-        return amount.multiply(MathUtils.pow10(payoutTokenDecimals)).divide(MathUtils.pow10(principleTokenAddressDecimals));
+        return amount.multiply(MathUtils.pow10(payoutTokenDecimals)).divide(MathUtils.pow10(principalTokenAddressDecimals));
     }
 }

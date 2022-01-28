@@ -152,8 +152,8 @@ public class KarmaFactory extends Ownable {
      * 
      * Access: Policy
      * 
-     * @param payoutToken The payout token address associated with the bond
-     * @param principleToken The principal token address associated with the bond
+     * @param payoutToken The payout token address associated with the bond, token paid for principal
+     * @param principalToken The principal inflow token address associated with the bond
      * @param initialOwner The initial owner of the bond
      * @param tierCeilings Array of ceilings of principal bonded till next tier
      * @param fees Array of fees tiers, in ten-thousandths (i.e. 33300 = 3.33%)
@@ -163,7 +163,7 @@ public class KarmaFactory extends Ownable {
     @External
     public TreasuryBond createBondAndTreasury (
         Address payoutToken, 
-        Address principleToken, 
+        Address principalToken, 
         Address initialOwner, 
         BigInteger[] tierCeilings, 
         BigInteger[] fees
@@ -186,7 +186,7 @@ public class KarmaFactory extends Ownable {
             customBondContractBytes.get(), 
             treasury, 
             payoutToken, 
-            principleToken, 
+            principalToken, 
             this.karmaTreasury, 
             this.karmaSubsidyRouter, 
             initialOwner, 
@@ -198,7 +198,7 @@ public class KarmaFactory extends Ownable {
         return IKarmaFactoryStorage.pushBond (
             this.karmaFactoryStorage,
             payoutToken, 
-            principleToken, 
+            principalToken, 
             treasury, 
             bond,
             initialOwner,
@@ -213,7 +213,7 @@ public class KarmaFactory extends Ownable {
      * Access: Policy
      * 
      * @param payoutToken address
-     * @param principleToken address
+     * @param principalToken address
      * @param initialOwner address
      * @return treasury address
      * @return bond address
@@ -221,7 +221,7 @@ public class KarmaFactory extends Ownable {
     @External
     public TreasuryBond createBond (
         Address payoutToken, 
-        Address principleToken, 
+        Address principalToken, 
         Address customTreasury, 
         Address initialOwner, 
         BigInteger[] tierCeilings, 
@@ -233,7 +233,7 @@ public class KarmaFactory extends Ownable {
             customBondContractBytes.get(), 
             customTreasury, 
             payoutToken, 
-            principleToken, 
+            principalToken, 
             this.karmaTreasury, 
             this.karmaSubsidyRouter, 
             initialOwner, 
@@ -245,7 +245,7 @@ public class KarmaFactory extends Ownable {
         return IKarmaFactoryStorage.pushBond (
             this.karmaFactoryStorage,
             payoutToken, 
-            principleToken, 
+            principalToken, 
             customTreasury, 
             bond,
             initialOwner,

@@ -25,7 +25,7 @@ import scorex.util.ArrayList;
 
 public class BondDetails {
     public Address payoutToken;
-    public Address principleToken;
+    public Address principalToken;
     public Address treasuryAddress;
     public Address bondAddress;
     public Address initialOwner;
@@ -34,7 +34,7 @@ public class BondDetails {
 
     public BondDetails (
         Address payoutToken, 
-        Address principleToken, 
+        Address principalToken, 
         Address treasuryAddress, 
         Address bondAddress,
         Address initialOwner,
@@ -42,7 +42,7 @@ public class BondDetails {
         BigInteger[] fees
     ) {
         this.payoutToken = payoutToken;
-        this.principleToken = principleToken;
+        this.principalToken = principalToken;
         this.treasuryAddress = treasuryAddress;
         this.bondAddress = bondAddress;
         this.initialOwner = initialOwner;
@@ -52,7 +52,7 @@ public class BondDetails {
     
     public static BondDetails readObject (ObjectReader r) {
         Address payoutToken = r.readAddress();
-        Address principleToken = r.readAddress();
+        Address principalToken = r.readAddress();
         Address treasuryAddress = r.readAddress();
         Address bondAddress = r.readAddress();
         Address initialOwner = r.readAddress();
@@ -73,7 +73,7 @@ public class BondDetails {
 
         return new BondDetails (
             payoutToken,
-            principleToken,
+            principalToken,
             treasuryAddress,
             bondAddress,
             initialOwner,
@@ -84,7 +84,7 @@ public class BondDetails {
 
     public static void writeObject (ObjectWriter w, BondDetails obj) {
         w.write(obj.payoutToken);
-        w.write(obj.principleToken);
+        w.write(obj.principalToken);
         w.write(obj.treasuryAddress);
         w.write(obj.bondAddress);
         w.write(obj.initialOwner);

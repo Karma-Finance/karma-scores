@@ -125,6 +125,16 @@ public class KarmaCustomBond extends Ownable {
     // ================================================
     /**
      * Contract constructor
+     * 
+     * @param customTreasury The custom treasury associated with the bond
+     * @param payoutToken The payout token address associated with the bond, token paid for principal
+     * @param principalToken The inflow token
+     * @param karmaTreasury The Karma treasury
+     * @param subsidyRouter pays subsidy in Karma to custom treasury
+     * @param initialOwner The initial policy role address
+     * @param karmaDAO The KarmaDAO contract address
+     * @param tierCeilings Array of ceilings of principal bonded till next tier
+     * @param fees Array of fees tiers, in ten-thousandths (i.e. 33300 = 3.33%)
      */
     public KarmaCustomBond (
         Address customTreasury,
@@ -181,6 +191,7 @@ public class KarmaCustomBond extends Ownable {
      * @param maxDebt
      * @param initialDebt
      */
+    @External
     public void initializeBond (
         BigInteger controlVariable,
         Long vestingTerm, // in blocks
@@ -217,12 +228,12 @@ public class KarmaCustomBond extends Ownable {
     private final int DEBT = 2;
 
     /**
-     * Set parameters for new bonds
+     * Change the parameters of a bond
      * 
      * Access: Policy
      * 
-     * @param parameter
-     * @param input
+     * @param parameter The input type, its value is either 0 (VESTING), 1 (PAYOUT) or 2 (DEBT)
+     * @param input The input value
      */
     @External
     public void setBondTerms (
@@ -267,13 +278,13 @@ public class KarmaCustomBond extends Ownable {
      * 
      * Access: Policy
      * 
-     * @param addition
-     * @param increment
-     * @param target
-     * @param buffer
+     * @param addition Addition (true) or subtraction (false) of BCV
+     * @param increment The increment value of the `controlVariable` value
+     * @param target BCV when adjustment finished
+     * @param buffer Minimum length (in blocks) between adjustments
      */
     @External
-    public void setBondTerms (
+    public void setAdjustment (
         boolean addition,
         BigInteger increment,
         BigInteger target,
@@ -283,7 +294,7 @@ public class KarmaCustomBond extends Ownable {
         onlyPolicy();
 
         Context.require(increment.compareTo(terms.get().controlVariable.multiply(BigInteger.valueOf(30)).divide(BigInteger.valueOf(1000))) <= 0, 
-            "setBondTerms: Increment too large");
+            "setAdjustment: Increment too large");
 
         // OK
         this.adjustment.set (
@@ -346,7 +357,7 @@ public class KarmaCustomBond extends Ownable {
     private void deposit (
         Address caller,
         Address token, // only principalToken is accepted
-        BigInteger amount, // amount of principal token received
+        BigInteger amount, // amount of principal inflow token received
         BigInteger maxPrice,
         Address depositor
     ) {
@@ -520,7 +531,7 @@ public class KarmaCustomBond extends Ownable {
             this.terms.set(terms);
             this.adjustment.set(adjustment);
 
-            this.ControlVariableAdjustment(initial, terms.controlVariable, adjustment.rate, adjustment.add );
+            this.ControlVariableAdjustment(initial, terms.controlVariable, adjustment.rate, adjustment.add);
         }
     }
 

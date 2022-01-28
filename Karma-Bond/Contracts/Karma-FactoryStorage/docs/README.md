@@ -41,7 +41,7 @@ public TreasuryBond pushBond (
   "params": {
     "bond": {
       "payoutToken": payoutToken,
-      "principleToken": principleToken,
+      "principalToken": principalToken,
       "customTreasury": customTreasury,
       "customBond": customBond,
       "initialOwner": alice,
@@ -67,7 +67,7 @@ public TreasuryBond pushBond (
 ```java
 class BondDetails {
   Address payoutToken;
-  Address principleToken;
+  Address principalToken;
   Address treasuryAddress;
   Address bondAddress;
   Address initialOwner;
@@ -76,8 +76,8 @@ class BondDetails {
 }
 ```
 
-- `payoutToken`: The payout token address associated with the bond
-- `principleToken`: The principal token address associated with the bond
+- `payoutToken`: The payout token address associated with the bond, token paid for principal
+- `principalToken`: The principal inflow token address associated with the bond
 - `customTreasury`: The custom treasury associated with the bond
 - `customBond`: The custom bond address
 - `initialOwner`: The initial owner of the bond
@@ -143,7 +143,7 @@ Result:
 ```java
 {
   "payoutToken": payoutToken,
-  "principleToken": principleToken,
+  "principalToken": principalToken,
   "customTreasury": customTreasury,
   "customBond": customBond,
   "initialOwner": alice,
