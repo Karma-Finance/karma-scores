@@ -1,6 +1,6 @@
 # Karma Factory Storage Documentation
 
-The Karma Factory Storage
+The Karma Factory Storage stores bond details in a bond details array.
 
 ---
 
