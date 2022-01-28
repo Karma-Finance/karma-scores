@@ -21,7 +21,7 @@ note over KarmaCustomBond : \
 
 group Deposit the principal tokens to the Custom Treasury
   KarmaCustomBond -> PrincipalToken : **transfer** ( \n\
-    KarmaCustomBond, \n\
+    KarmaCustomTreasury, \n\
     amount, { \n\
       "method": "deposit" \n\
     } \n\
@@ -55,7 +55,7 @@ end group
 
 group Transfer fee to the DAO Treasury
   KarmaCustomBond -> PrincipalToken : **transfer** ( \n\
-    KarmaCustomBond, \n\
+    KarmaDAOTreasury, \n\
     amount, { \n\
       "method": "deposit" \n\
     } \n\
