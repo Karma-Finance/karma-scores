@@ -201,6 +201,7 @@ Result:
 ### 📜 Method Call
 
 - Returns payout token valuation of principal token
+- Simply put, it returns `amount` * 10**(`payoutDecimals`) / 10**(`principalDecimals`)
 
 ```java
 @External(readonly = true)
