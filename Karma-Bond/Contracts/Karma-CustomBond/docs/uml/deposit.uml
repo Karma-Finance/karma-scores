@@ -72,7 +72,19 @@ end group
 
 
 note over KarmaCustomBond : \
-**Update totalDebt()**
+**Update totalDebt**
+
+note over KarmaCustomBond : \
+**Store Depositor Information**
+
+note over KarmaCustomBond : \
+**Increase total bonded**
+
+note over KarmaCustomBond : \
+**Increase total payout**
+
+note over KarmaCustomBond : \
+**Update subsidy counter**
 
 note over KarmaCustomBond : \
 **Adjust BCV**

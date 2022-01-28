@@ -432,7 +432,7 @@ public class KarmaCustomBond extends Ownable {
         BigInteger newPayout = oldPayout.add(payout);
         this.payoutSinceLastSubsidy.set(newPayout);
         this.PayoutUpdate(oldPayout, newPayout);
-        
+
         // control variable is adjusted
         adjust();
     }
