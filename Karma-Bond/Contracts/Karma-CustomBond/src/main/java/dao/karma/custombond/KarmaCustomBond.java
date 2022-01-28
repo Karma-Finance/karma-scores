@@ -317,7 +317,9 @@ public class KarmaCustomBond extends Ownable {
      * @param karmaTreasury
      */
     @External
-    public void changeKarmaTreasury (Address karmaTreasury) {
+    public void changeKarmaTreasury (
+        Address karmaTreasury
+    ) {
         final Address caller = Context.getCaller();
 
         // Access control
@@ -349,15 +351,16 @@ public class KarmaCustomBond extends Ownable {
     // --- User functions ---
     /**
      * Deposit bond
+     * 
      * @param amount
      * @param maxPrice
      * @param depositor
      */
     // @External - this method is external through tokenFallback
     private void deposit (
-        Address caller,
-        Address token, // only principalToken is accepted
-        BigInteger amount, // amount of principal inflow token received
+        Address caller, // the method caller. This field is handled by tokenFallback
+        Address token, // only principalToken is accepted. This field is handled by tokenFallback
+        BigInteger amount, // amount of principal inflow token received. This field is handled by tokenFallback
         BigInteger maxPrice,
         Address depositor
     ) {
@@ -457,15 +460,20 @@ public class KarmaCustomBond extends Ownable {
 
     /**
      * Redeem bond for user
+     * 
+     * Access: Everyone
+     * 
      * @param depositor destination address
      * @return Payout amount
      */
     @External
-    public BigInteger redeem (Address depositor) {
+    public BigInteger redeem (
+        Address depositor
+    ) {
         var info = this.bondInfo.get(depositor);
         Context.require(info != null, 
             "redeem: no bond registered for depositor");
-        
+
         // (blocks since last interaction / vesting term remaining)
         BigInteger percentVested = percentVestedFor(depositor);
         BigInteger denominator = BigInteger.valueOf(10000);

@@ -1,5 +1,7 @@
 # Karma Custom Bond Documentation
 
+
+## Initialization methods
 ---
 
 ## `KarmaCustomBond::constructor`
@@ -79,6 +81,8 @@ public void initializeBond (
 }
 ```
 
+## Policy Functions
+
 ---
 
 ## `KarmaCustomBond::setBondTerms`
@@ -142,6 +146,143 @@ public void setAdjustment (
 {
   "to": KarmaCustomBond,
   "method": "setAdjustment",
+  "params": {
+    "addition": "0x1", // true, add
+    "increment": "0x1", // increment BCV+1
+    "target": "0x6", // BCV+6
+    "buffer": "0x1" // 1 block
+  }
+}
+```
+
+## Custom Bond settings
+
+## `KarmaCustomBond::changeKarmaTreasury`
+
+### 📜 Method Call
+
+- Change the Karma Treasury address
+- Access: KarmaDAO
+
+```java
+@External
+public void changeKarmaTreasury (
+  Address karmaTreasury
+)
+```
+
+- `karmaTreasury`: The new Karma Treasury address
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "changeKarmaTreasury",
+  "params": {
+    "addition": "0x1", // true, add
+    "increment": "0x1", // increment BCV+1
+    "target": "0x6", // BCV+6
+    "buffer": "0x1" // 1 block
+  }
+}
+```
+
+---
+
+## `KarmaCustomBond::paySubsidy`
+
+### 📜 Method Call
+
+- Subsidy controller checks payouts since last subsidy and resets counter
+- Access: Subsidy Controller
+
+```java
+@External
+public BigInteger paySubsidy()
+```
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "paySubsidy"
+}
+```
+
+## User functions
+
+
+## `KarmaCustomBond::deposit`
+
+### 📜 Method Call
+
+- Deposit bond
+- Access: Subsidy Controller
+
+```java
+// @External - this method is external through tokenFallback
+private void deposit (
+  Address caller, 
+  Address token, 
+  BigInteger amount, 
+  BigInteger maxPrice,
+  Address depositor
+)
+```
+
+- `caller`: The method caller. This field is handled by tokenFallback
+- `token`: Only principalToken is accepted. This field is handled by tokenFallback
+- `amount`: Amount of principal inflow token received. This field is handled by tokenFallback
+- `maxPrice`: Max price for slippage protection. `maxPrice` value needs to be superior or equal to the bond price, otherwise the transaction will fail.
+- `depositor`: Registered depositor of the bond
+
+### 🧪 Example call
+
+```java
+{
+  "to": principalTokenAddress,
+  "method": "transfer",
+  "params": {
+    "_to": KarmaCustomBond,
+    "_value": "0xde0b6b3a7640000", // 10**18 - equivalent to amount parameter
+    "_data": hex({
+      "method": "deposit",
+      "params": {
+        "maxPrice": "0x1158e460913d00000" // 20 * 10**18
+        "depositor": alice
+      }
+    })
+  }
+}
+```
+
+---
+
+## `KarmaCustomBond::redeem`
+
+### 📜 Method Call
+
+- Redeem bond for user
+- Access: Everyone
+- Returns the payout amount
+
+```java
+@External
+public BigInteger redeem (
+    Address depositor
+)
+```
+
+- `depositor`: Depositor address, it will also be used as a destination address for the redeemed tokens
+
+### 🧪 Example call
+
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "redeem",
   "params": {
     "addition": "0x1", // true, add
     "increment": "0x1", // increment BCV+1
