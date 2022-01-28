@@ -1,0 +1,81 @@
+@startuml Karma Custom Bond deposit flow
+
+group Transfer amount of principal token to the bond
+  Callee -> PrincipalToken : **transfer** ( \n\
+    KarmaCustomBond, \n\
+    amount, { \n\
+      "method": "deposit" \n\
+    } \n\
+  )
+
+  PrincipalToken -> KarmaCustomBond : **tokenFallback** ( \n\
+    Callee, \n\
+    amount, { \n\
+      "method": "deposit" \n\
+    } \n\
+  )
+end group
+
+note over KarmaCustomBond : \
+**decayDebt()**
+
+group Deposit the principal tokens to the Custom Treasury
+  KarmaCustomBond -> PrincipalToken : **transfer** ( \n\
+    KarmaCustomBond, \n\
+    amount, { \n\
+      "method": "deposit" \n\
+    } \n\
+  )
+
+  PrincipalToken -> KarmaCustomTreasury : **tokenFallback** ( \n\
+    Callee, \n\
+    amount, { \n\
+      "method": "deposit" \n\
+    } \n\
+  )
+end group
+
+group Pay the payout token back to the Custom Bond
+  KarmaCustomTreasury -> PayoutToken : **transfer** ( \n\
+    KarmaCustomBond, \n\
+    amount, { \n\
+      "method": "pay" \n\
+    } \n\
+  )
+
+  PayoutToken -> KarmaCustomBond : **tokenFallback** ( \n\
+    Callee, \n\
+    amount, { \n\
+      "method": "pay" \n\
+    } \n\
+  )
+  
+end group
+
+
+group Transfer fee to the DAO Treasury
+  KarmaCustomBond -> PrincipalToken : **transfer** ( \n\
+    KarmaCustomBond, \n\
+    amount, { \n\
+      "method": "deposit" \n\
+    } \n\
+  )
+
+  PrincipalToken -> KarmaDAOTreasury : **tokenFallback** ( \n\
+    Callee, \n\
+    amount, { \n\
+      "method": "deposit" \n\
+    } \n\
+  )
+  
+end group
+
+
+note over KarmaCustomBond : \
+**Update totalDebt()**
+
+note over KarmaCustomBond : \
+**Adjust BCV**
+
+
+@enduml

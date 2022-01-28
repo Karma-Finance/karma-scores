@@ -219,6 +219,8 @@ public BigInteger paySubsidy()
 ## User functions
 
 
+![uml/deposit.svg](uml/deposit.svg)
+
 ## `KarmaCustomBond::deposit`
 
 ### 📜 Method Call

@@ -377,17 +377,17 @@ public class KarmaCustomBond extends Ownable {
 
         Context.require(totalDebt.compareTo(terms.maxDebt) <= 0,
             "deposit: Max capacity reached");
-        
+
         BigInteger nativePrice = trueBondPrice();
 
         // slippage protection
         Context.require(maxPrice.compareTo(nativePrice) >= 0,
             "deposit: Slippage limit: more than max price"); 
-        
+
         BigInteger value = ITreasury.valueOfToken(this.customTreasury, principalToken, amount);
         // payout to bonder is computed
         BigInteger payout = _payoutFor(value);
-        
+
         // must be > 0.01 payout token ( underflow protection )
         Context.require(payout.compareTo(MathUtils.pow10(IIRC2.decimals(payoutToken)).divide(BigInteger.valueOf(100))) >= 0,
             "deposit: Bond too small");
@@ -395,7 +395,7 @@ public class KarmaCustomBond extends Ownable {
         // size protection because there is no slippage
         Context.require(payout.compareTo(maxPayout()) <= 0, 
             "deposit: Bond too large");
-            
+
         // profits are calculated
         BigInteger fee = payout.multiply(currentKarmaFee()).divide(MathUtils.pow10(6));
         
@@ -403,11 +403,11 @@ public class KarmaCustomBond extends Ownable {
         // deposited into the treasury, returning (amount - profit) payout token
         ITreasury.deposit(this.customTreasury, this.principalToken, amount, payout);
 
-        // fee is transferred to dao
+        // Fee is transferred to DAO treasury
         if (!fee.equals(ZERO)) {
             IIRC2.transfer(payoutToken, karmaTreasury.get(), fee, JSONUtils.method("deposit"));
         }
-        
+
         // total debt is increased
         this.totalDebt.set(totalDebt.add(value));
         
