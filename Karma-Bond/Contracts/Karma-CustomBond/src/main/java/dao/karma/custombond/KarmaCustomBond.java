@@ -453,6 +453,12 @@ public class KarmaCustomBond extends Ownable {
                 break;
             }
 
+            case "pay": {
+                // Accept payoutToken as payment from the deposit
+                Context.require(token.equals(this.payoutToken), 
+                    "pay: Only payout token is accepted as payment");
+            }
+
             default:
                 Context.revert("tokenFallback: Unimplemented tokenFallback action");
         }
@@ -484,7 +490,7 @@ public class KarmaCustomBond extends Ownable {
             this.bondInfo.set(depositor, null);
             // emit bond data
             this.BondRedeemed(depositor, info.payout, ZERO);
-            IIRC2.transfer(payoutToken, depositor, info.payout, JSONUtils.method("redeem"));
+            IIRC2.transfer(this.payoutToken, depositor, info.payout, JSONUtils.method("redeem"));
             return info.payout;
         } else {
             // if unfinished
@@ -502,7 +508,7 @@ public class KarmaCustomBond extends Ownable {
             ));
 
             this.BondRedeemed(depositor, payout, newPayout);
-            IIRC2.transfer(payoutToken, depositor, payout, JSONUtils.method("redeem"));
+            IIRC2.transfer(this.payoutToken, depositor, payout, JSONUtils.method("redeem"));
             return payout;
         }
     }
@@ -559,7 +565,7 @@ public class KarmaCustomBond extends Ownable {
     private BigInteger _bondPrice() {
         var terms = this.terms.get();
 
-        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IIRC2.decimals(payoutToken) - 5));
+        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IIRC2.decimals(this.payoutToken) - 5));
 
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
@@ -597,7 +603,7 @@ public class KarmaCustomBond extends Ownable {
         var terms = this.terms.get();
 
         // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-5))
-        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IIRC2.decimals(payoutToken) - 5));
+        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IIRC2.decimals(this.payoutToken) - 5));
         
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
@@ -654,8 +660,8 @@ public class KarmaCustomBond extends Ownable {
     public BigInteger debtRatio() {
         // debtRatio = currentDebt() * IRC2(payoutToken).decimals() / IRC2(payoutToken).totalSupply() / 10**18
         return FixedPoint.fraction (
-            currentDebt().multiply(MathUtils.pow10(IIRC2.decimals(payoutToken))),
-            IIRC2.totalSupply(payoutToken)
+            currentDebt().multiply(MathUtils.pow10(IIRC2.decimals(this.payoutToken))),
+            IIRC2.totalSupply(this.payoutToken)
         ).decode112with18().divide(MathUtils.pow10(18));
     }
 
