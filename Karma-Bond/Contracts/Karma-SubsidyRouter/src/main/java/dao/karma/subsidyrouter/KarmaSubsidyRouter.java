@@ -101,6 +101,8 @@ public class KarmaSubsidyRouter extends Ownable {
      * Subsidy controller fetches and resets payout counter
      * 
      * Access: Subsidy Controller
+     * 
+     * Returns the old payout value before reset
      */
     @External
     public BigInteger getSubsidyInfo() {

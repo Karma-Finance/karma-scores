@@ -83,6 +83,7 @@ public void removeSubsidyController (
 - Subsidy controller fetches and resets payout counter
 - Access: Subsidy Controller
 - Emits a `PayoutUpdate` event in order to retrieve the payout new value
+- Returns the old payout value before reset
 
 ```java
 @External
