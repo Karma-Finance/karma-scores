@@ -65,11 +65,14 @@ public void setCustomBondContractBytes (
 
 ## `KarmaFactory::createBondAndTreasury`
 
+![uml/createBondAndTreasury.svg](uml/createBondAndTreasury.svg)
+
 ### 📜 Method Call
 
 - Deploys custom treasury and custom bond contracts and returns address of both
 - Access: Policy
 - Returns addresses of newly deployed bond and treasury contracts, encoded as [`TreasuryBond`](#karmafactorytreasurybond)
+- Pushes the new bond details to the Factory Storage
 
 ```java
 @External
@@ -114,11 +117,14 @@ public TreasuryBond createBondAndTreasury (
 
 ## `KarmaFactory::createBond`
 
+![uml/createbond.svg](uml/createbond.svg)
+
 ### 📜 Method Call
 
 - Deploys a custom bond contract and returns address of the factory and newly deployed bond
 - Access: Policy
 - Returns addresses of the factory and newly deployed bond contract, encoded as [`TreasuryBond`](#karmafactorytreasurybond)
+- Pushes the new bond details to the Factory Storage
 
 ```java
 @External

@@ -76,6 +76,8 @@ public void removeSubsidyController (
 
 ## `KarmaSubsidyRouter::getSubsidyInfo`
 
+![uml/getSubsidyInfo.svg](uml/getSubsidyInfo.svg)
+
 ### 📜 Method Call
 
 - Subsidy controller fetches and resets payout counter
