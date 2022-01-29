@@ -49,7 +49,7 @@ public KarmaCustomBond (
 @External
 public void initializeBond (
   BigInteger controlVariable,
-  Long vestingTerm, // in blocks
+  long vestingTerm, // in blocks
   BigInteger minimumPrice,
   BigInteger maxPayout,
   BigInteger maxDebt,
@@ -132,7 +132,7 @@ public void setAdjustment (
   boolean addition,
   BigInteger increment,
   BigInteger target,
-  Long buffer
+  long buffer
 )
 ```
 

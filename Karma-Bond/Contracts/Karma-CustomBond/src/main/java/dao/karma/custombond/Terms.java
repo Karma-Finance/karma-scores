@@ -26,7 +26,7 @@ public class Terms {
     // scaling variable for price
     public BigInteger controlVariable;
     // in blocks
-    public Long vestingTerm;
+    public long vestingTerm;
     // vs principal value
     public BigInteger minimumPrice;
     // in thousandths of a %. i.e. 500 = 0.5%
@@ -36,7 +36,7 @@ public class Terms {
 
     public Terms (
         BigInteger controlVariable,
-        Long vestingTerm,
+        long vestingTerm,
         BigInteger minimumPrice,
         BigInteger maxPayout,
         BigInteger maxDebt

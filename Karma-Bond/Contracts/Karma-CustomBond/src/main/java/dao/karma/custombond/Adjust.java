@@ -30,16 +30,16 @@ public class Adjust {
     // BCV when adjustment finished
     public BigInteger target;
     // minimum length (in blocks) between adjustments
-    public Long buffer;
+    public long buffer;
     // block when last adjustment made
-    public Long lastBlock;
+    public long lastBlock;
 
     public Adjust (
         boolean add,
         BigInteger rate,
         BigInteger target,
-        Long buffer,
-        Long lastBlock
+        long buffer,
+        long lastBlock
     ) {
         this.add = add;
         this.rate = rate;

@@ -23,7 +23,6 @@ import java.math.BigInteger;
 
 import com.eclipsesource.json.JsonObject;
 import dao.karma.interfaces.irc2.IIRC2;
-
 import dao.karma.interfaces.dao.ITreasury;
 import dao.karma.types.Ownable;
 import dao.karma.utils.JSONUtils;
@@ -90,7 +89,7 @@ public class KarmaCustomBond extends Ownable {
     public void BondCreated (
         BigInteger deposit,
         BigInteger payout,
-        Long expires
+        long expires
     ) {}
 
     @EventLog
@@ -194,7 +193,7 @@ public class KarmaCustomBond extends Ownable {
     @External
     public void initializeBond (
         BigInteger controlVariable,
-        Long vestingTerm, // in blocks
+        long vestingTerm, // in blocks
         BigInteger minimumPrice,
         BigInteger maxPayout,
         BigInteger maxDebt,
@@ -288,7 +287,7 @@ public class KarmaCustomBond extends Ownable {
         boolean addition,
         BigInteger increment,
         BigInteger target,
-        Long buffer
+        long buffer
     ) {
         // Access control
         onlyPolicy();
@@ -496,7 +495,7 @@ public class KarmaCustomBond extends Ownable {
             // if unfinished
             // calculate payout vested
             BigInteger payout = info.payout.multiply(percentVested).divide(denominator);
-            Long blockHeight = Context.getBlockHeight();
+            long blockHeight = Context.getBlockHeight();
 
             // store updated deposit info
             BigInteger newPayout = info.payout.subtract(payout);
@@ -521,9 +520,9 @@ public class KarmaCustomBond extends Ownable {
     private void adjust() {
         var adjustment = this.adjustment.get();
         var terms = this.terms.get();
-        Long blockHeight = Context.getBlockHeight();
+        long blockHeight = Context.getBlockHeight();
 
-        Long blockCanAdjust = adjustment.lastBlock + adjustment.buffer;
+        long blockCanAdjust = adjustment.lastBlock + adjustment.buffer;
 
         if (!adjustment.rate.equals(ZERO) && blockHeight >= blockCanAdjust ) {
             BigInteger initial = terms.controlVariable;
@@ -553,7 +552,7 @@ public class KarmaCustomBond extends Ownable {
      * Reduce total debt
      */
     private void decayDebt() {
-        Long blockHeight = Context.getBlockHeight();
+        long blockHeight = Context.getBlockHeight();
         this.totalDebt.set(this.totalDebt.get().subtract(debtDecay()));
         this.lastDecay.set(blockHeight);
     }
@@ -680,7 +679,7 @@ public class KarmaCustomBond extends Ownable {
     @External(readonly = true)
     public BigInteger debtDecay()  {
         var totalDebt = this.totalDebt.get();
-        Long blockHeight = Context.getBlockHeight();
+        long blockHeight = Context.getBlockHeight();
         BigInteger blocksSinceLast = BigInteger.valueOf(blockHeight - lastDecay.get());
         BigInteger vestingTerm = BigInteger.valueOf(this.terms.get().vestingTerm);
         // decay = totalDebt() * (blockHeight - lastDecay()) / (terms().vestingTerm)
@@ -702,9 +701,9 @@ public class KarmaCustomBond extends Ownable {
         Address depositor
     ) {
         Bond bond = bondInfo.get(depositor);
-        Long blockHeight = Context.getBlockHeight();
-        Long blocksSinceLast = blockHeight - bond.lastBlock;
-        Long vesting = bond.vesting;
+        long blockHeight = Context.getBlockHeight();
+        long blocksSinceLast = blockHeight - bond.lastBlock;
+        long vesting = bond.vesting;
 
         return vesting > 0 
             ? BigInteger.valueOf(blocksSinceLast).multiply(BigInteger.valueOf(10000)).divide(BigInteger.valueOf(vesting))
@@ -758,5 +757,55 @@ public class KarmaCustomBond extends Ownable {
     @External(readonly = true)
     public String name() {
         return this.name;
+    }
+
+    @External(readonly = true)
+    public Address karmaTreasury() {
+        return this.karmaTreasury.get();
+    }
+
+    @External(readonly = true)
+    public BigInteger totalPrincipalBonded() {
+        return this.totalPrincipalBonded.get();
+    }
+    
+    @External(readonly = true)
+    public BigInteger totalPayoutGiven() {
+        return this.totalPayoutGiven.get();
+    }
+    
+    @External(readonly = true)
+    public BigInteger totalDebt() {
+        return this.totalDebt.get();
+    }
+    
+    @External(readonly = true)
+    public BigInteger payoutSinceLastSubsidy() {
+        return this.payoutSinceLastSubsidy.get();
+    }
+
+    @External(readonly = true)
+    public long lastDecay() {
+        return this.lastDecay.get();
+    }
+
+    @External(readonly = true)
+    public Terms terms() {
+        return this.terms.get();
+    }
+
+    @External(readonly = true)
+    public Adjust adjustment() {
+        return this.adjustment.get();
+    }
+
+    @External(readonly = true)
+    public FeeTiers feeTiers(int index) {
+        return this.feeTiers.get(index);
+    }
+
+    @External(readonly = true)
+    public Bond bondInfo(Address index) {
+        return this.bondInfo.get(index);
     }
 }

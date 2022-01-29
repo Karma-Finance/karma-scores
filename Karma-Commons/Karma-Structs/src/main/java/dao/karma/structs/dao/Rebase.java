@@ -28,7 +28,7 @@ public class Rebase {
   public BigInteger totalStakedAfter;
   public BigInteger amountRebased;
   public BigInteger index;
-  public Long blockNumberOccured;
+  public long blockNumberOccured;
 
   public Rebase (
     BigInteger epoch,
@@ -37,7 +37,7 @@ public class Rebase {
     BigInteger totalStakedAfter,
     BigInteger amountRebased,
     BigInteger index,
-    Long blockNumberOccured
+    long blockNumberOccured
   ) {
     this.epoch = epoch;
     this.rebase = rebase;

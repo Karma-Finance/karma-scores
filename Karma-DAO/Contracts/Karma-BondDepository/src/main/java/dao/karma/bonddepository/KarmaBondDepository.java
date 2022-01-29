@@ -70,7 +70,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
     @EventLog
     public void BeforeBond(BigInteger index, BigInteger price, BigInteger internalPrice, BigInteger debtRatio) {}
     @EventLog
-    public void CreateBond(BigInteger index, BigInteger amount, BigInteger payout, Long expires) {}
+    public void CreateBond(BigInteger index, BigInteger amount, BigInteger payout, long expires) {}
     @EventLog
     public void AfterBond(BigInteger index, BigInteger price, BigInteger internalPrice, BigInteger debtRatio) {}
 
@@ -160,9 +160,9 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
         BigInteger id,
         BigInteger controlVariable,
         boolean fixedTerm,
-        Long vestingTerm,
-        Long expiration,
-        Long conclusion,
+        long vestingTerm,
+        long expiration,
+        long conclusion,
         BigInteger minimumPrice,
         BigInteger maxPayout,
         BigInteger maxDebt,
@@ -308,7 +308,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
         bondStorage.totalDebt = info.totalDebt.add(value);
         this.bonds.set(bondId, bondStorage);
 
-        Long expiration = info.terms.vestingTerm + blockHeight;
+        long expiration = info.terms.vestingTerm + blockHeight;
         if (!info.terms.fixedTerm) {
             expiration = info.terms.expiration;
         }
@@ -490,7 +490,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
      */
     public BigInteger debtDecay (BigInteger bondId) {
         var bond = this.bonds.get(bondId);
-        Long blocksSinceLast = Context.getBlockHeight() - bond.lastDecay;
+        long blocksSinceLast = Context.getBlockHeight() - bond.lastDecay;
 
         BigInteger decay = bond.totalDebt.multiply(BigInteger.valueOf(blocksSinceLast)).divide(BigInteger.valueOf(bond.terms.vestingTerm));
 

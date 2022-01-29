@@ -85,7 +85,7 @@ public class KarmaBondTeller implements IKarmaAccessControlled {
     // Event Logs
     // ================================================
     @EventLog(indexed = 1)
-    public void BondCreated(Address bonder, BigInteger payout, Long expires) {}
+    public void BondCreated(Address bonder, BigInteger payout, long expires) {}
 
     @EventLog(indexed = 1)
     public void Redeemed(Address bonder, BigInteger payout) {}
@@ -140,7 +140,7 @@ public class KarmaBondTeller implements IKarmaAccessControlled {
         Address principal,
         BigInteger principalPaid,
         BigInteger payout, // KARMA amount sent to newBond
-        Long expires,
+        long expires,
         Address frontEndOperator
     ) {
         // Access control
@@ -194,7 +194,7 @@ public class KarmaBondTeller implements IKarmaAccessControlled {
              *  Address principal,
              *  BigInteger principalPaid,
              *  BigInteger payout, // KARMA amount sent to newBond
-             *  Long expires,
+             *  long expires,
              *  Address frontEndOperator
              * ) 
              */
@@ -205,7 +205,7 @@ public class KarmaBondTeller implements IKarmaAccessControlled {
                 Address bonder = Address.fromString(params.get("bonder").asString());
                 Address principal = Address.fromString(params.get("principal").asString());
                 BigInteger principalPaid = StringUtils.toBigInt(params.get("principalPaid").asString());
-                Long expires = params.get("expires").asLong();
+                long expires = params.get("expires").asLong();
                 Address frontEndOperator = Address.fromString(params.get("frontEndOperator").asString());
 
                 newBond(_from, token, bonder, principal, principalPaid, payout, expires, frontEndOperator);

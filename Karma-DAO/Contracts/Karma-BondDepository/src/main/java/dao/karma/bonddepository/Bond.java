@@ -42,7 +42,7 @@ public class Bond {
     // total debt from bond
     public BigInteger totalDebt;
     // last block when debt was decayed
-    public Long lastDecay;
+    public long lastDecay;
 
     public Bond (
       Address principal,
@@ -52,7 +52,7 @@ public class Bond {
       BigInteger capacity,
       boolean capacityIsPayout,
       BigInteger totalDebt,
-      Long lastDecay
+      long lastDecay
     ) {
       this.principal = principal;
       this.calculator = calculator;

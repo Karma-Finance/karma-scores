@@ -95,9 +95,9 @@ public class KarmaStaking implements IKarmaAccessControlled {
         Address KARMA,
         Address sKARMA,
         Address gKARMA,
-        Long epochLength,
+        long epochLength,
         BigInteger firstEpochNumber,
-        Long firstEpochBlock,
+        long firstEpochBlock,
         Address authority
     ) {
         Context.require(!KARMA.equals(ZERO_ADDRESS));

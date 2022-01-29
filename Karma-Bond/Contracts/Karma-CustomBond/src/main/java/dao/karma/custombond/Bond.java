@@ -26,16 +26,16 @@ public class Bond {
     // payout token remaining to be paid
     public BigInteger payout;
     // Blocks left to vest
-    public Long vesting;
+    public long vesting;
     // Last interaction
-    public Long lastBlock;
+    public long lastBlock;
     // Price paid (principal tokens per payout token) in ten-millionths - 4000000 = 0.4
     public BigInteger truePricePaid;
     
     public Bond (
         BigInteger payout,
-        Long vesting,
-        Long lastBlock,
+        long vesting,
+        long lastBlock,
         BigInteger truePricePaid
     ) {
         this.payout = payout;

@@ -25,14 +25,14 @@ public class BondInfo  {
   public Address principal;
   public Address calculator;
   public BigInteger totalDebt;
-  public Long lastBondCreatedAt;
+  public long lastBondCreatedAt;
 
   public BondInfo () {}
   public BondInfo (
       Address principal,
       Address calculator,
       BigInteger totalDebt,
-      Long lastBondCreatedAt
+      long lastBondCreatedAt
   ) {
       this.principal = principal;
       this.calculator = calculator;

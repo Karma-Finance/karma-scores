@@ -30,11 +30,11 @@ public class Terms {
     // fixed term or fixed expiration
     public boolean fixedTerm; 
     // term in blocks (fixed-term)
-    public Long vestingTerm; 
+    public long vestingTerm; 
     // block number bond matures (fixed-expiration)
-    public Long expiration; 
+    public long expiration; 
     // block number bond no longer offered
-    public Long conclusion; 
+    public long conclusion; 
     // vs principal value
     public BigInteger minimumPrice; 
     // in thousandths of a %. i.e. 500 = 0.5%
@@ -45,9 +45,9 @@ public class Terms {
     public Terms (
         BigInteger controlVariable,
         boolean fixedTerm,
-        Long vestingTerm,
-        Long expiration,
-        Long conclusion,
+        long vestingTerm,
+        long expiration,
+        long conclusion,
         BigInteger minimumPrice,
         BigInteger maxPayout,
         BigInteger maxDebt
