@@ -37,14 +37,6 @@ public class KarmaFactoryClient {
     client.invoke(from, "createBondAndTreasury", payoutToken, principalToken, initialOwner, tierCeilings, fee);
   }
 
-  public static void setCustomTreasuryContractBytes(Score client, Account from, byte[] content) {
-    client.invoke(from, "setCustomTreasuryContractBytes", content);
-  }
-
-  public static void setCustomBondContractBytes(Score client, Account from, byte[] content) {
-    client.invoke(from, "setCustomBondContractBytes", content);
-  }
-
   public static void createBond (
     Score client, 
     Account from, 
@@ -56,5 +48,13 @@ public class KarmaFactoryClient {
     BigInteger[] fees
   ) {
     client.invoke (from, "createBond", payoutToken, principalToken, customTreasury, initialOwner, tierCeilings, fees);
+  }
+  
+  public static void setCustomTreasuryContractBytes(Score client, Account from, byte[] content) {
+    client.invoke(from, "setCustomTreasuryContractBytes", content);
+  }
+
+  public static void setCustomBondContractBytes(Score client, Account from, byte[] content) {
+    client.invoke(from, "setCustomBondContractBytes", content);
   }
 }
