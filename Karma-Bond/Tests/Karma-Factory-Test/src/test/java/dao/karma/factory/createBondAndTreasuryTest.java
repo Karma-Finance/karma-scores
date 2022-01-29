@@ -41,7 +41,7 @@ public class createBondAndTreasuryTest extends KarmaFactoryTest {
       EXA.multiply(BigInteger.valueOf(10)),
       EXA.multiply(BigInteger.valueOf(20))
     };
-    BigInteger[] fee = {
+    BigInteger[] fees = {
       BigInteger.valueOf(33300),
       BigInteger.valueOf(66600)
     };
@@ -65,7 +65,7 @@ public class createBondAndTreasuryTest extends KarmaFactoryTest {
       principalToken.getAddress(),
       initialOwner.getAddress(),
       tierCeilings,
-      fee
+      fees
     );
   }
 
@@ -75,7 +75,7 @@ public class createBondAndTreasuryTest extends KarmaFactoryTest {
       EXA.multiply(BigInteger.valueOf(10)),
       EXA.multiply(BigInteger.valueOf(20))
     };
-    BigInteger[] fee = {
+    BigInteger[] fees = {
       BigInteger.valueOf(33300),
       BigInteger.valueOf(66600)
     };
@@ -88,7 +88,7 @@ public class createBondAndTreasuryTest extends KarmaFactoryTest {
         principalToken.getAddress(),
         initialOwner.getAddress(),
         tierCeilings,
-        fee
+        fees
       ), 
       "checkCustomTreasuryContractBytesInitialized: not set");
     ;

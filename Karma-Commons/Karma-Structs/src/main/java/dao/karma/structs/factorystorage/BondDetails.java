@@ -17,6 +17,8 @@
 package dao.karma.structs.factorystorage;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Map;
 
 import score.Address;
 import score.ObjectReader;
@@ -56,7 +58,7 @@ public class BondDetails {
         Address treasuryAddress = r.readAddress();
         Address bondAddress = r.readAddress();
         Address initialOwner = r.readAddress();
-        
+
         ArrayList<BigInteger> tierCeilings = new ArrayList<>();
         r.beginList();
         while (r.hasNext()) {
@@ -77,8 +79,8 @@ public class BondDetails {
             treasuryAddress,
             bondAddress,
             initialOwner,
-            (BigInteger[]) tierCeilings.toArray(),
-            (BigInteger[]) fees.toArray()
+            Arrays.copyOfRange(tierCeilings.toArray(), 0, tierCeilings.size(), BigInteger[].class),
+            Arrays.copyOfRange(fees.toArray(), 0, fees.size(), BigInteger[].class)
         );
     }
 
@@ -98,5 +100,19 @@ public class BondDetails {
             w.write(obj.fees[i]);
         }
         w.end();
+    }
+
+    public static BondDetails fromMap(Object call) {
+        @SuppressWarnings("unchecked")
+        Map<String,Object> map = (Map<String,Object>) call;
+        return new BondDetails(
+            (Address) map.get("payoutToken"), 
+            (Address) map.get("principalToken"), 
+            (Address) map.get("treasuryAddress"), 
+            (Address) map.get("bondAddress"), 
+            (Address) map.get("initialOwner"),
+            (BigInteger[]) map.get("tierCeilings"),
+            (BigInteger[]) map.get("fees")
+        );
     }
 }

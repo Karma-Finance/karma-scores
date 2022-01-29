@@ -40,7 +40,7 @@ public class createBondTest extends KarmaFactoryTest {
       EXA.multiply(BigInteger.valueOf(10)),
       EXA.multiply(BigInteger.valueOf(20))
     };
-    BigInteger[] fee = {
+    BigInteger[] fees = {
       BigInteger.valueOf(33300),
       BigInteger.valueOf(66600)
     };
@@ -62,7 +62,7 @@ public class createBondTest extends KarmaFactoryTest {
       customTreasury.getAddress(),
       initialOwner.getAddress(),
       tierCeilings,
-      fee
+      fees
     );
   }
 }
