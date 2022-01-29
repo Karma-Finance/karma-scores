@@ -16,6 +16,45 @@
 
 package dao.karma.factory.client;
 
+import java.math.BigInteger;
+
+import com.iconloop.score.test.Account;
+import com.iconloop.score.test.Score;
+
+import score.Address;
+
 public class KarmaFactoryClient {
 
+  public static void createBondAndTreasury(
+    Score client, 
+    Account from, 
+    Address payoutToken, 
+    Address principalToken,
+    Address initialOwner,
+    BigInteger[] tierCeilings,
+    BigInteger[] fee
+  ) {
+    client.invoke(from, "createBondAndTreasury", payoutToken, principalToken, initialOwner, tierCeilings, fee);
+  }
+
+  public static void setCustomTreasuryContractBytes(Score client, Account from, byte[] content) {
+    client.invoke(from, "setCustomTreasuryContractBytes", content);
+  }
+
+  public static void setCustomBondContractBytes(Score client, Account from, byte[] content) {
+    client.invoke(from, "setCustomBondContractBytes", content);
+  }
+
+  public static void createBond (
+    Score client, 
+    Account from, 
+    Address payoutToken, 
+    Address principalToken, 
+    Address customTreasury, 
+    Address initialOwner, 
+    BigInteger[] tierCeilings, 
+    BigInteger[] fees
+  ) {
+    client.invoke (from, "createBond", payoutToken, principalToken, customTreasury, initialOwner, tierCeilings, fees);
+  }
 }

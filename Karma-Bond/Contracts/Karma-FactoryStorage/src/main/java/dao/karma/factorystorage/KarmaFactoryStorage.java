@@ -17,6 +17,7 @@
 package dao.karma.factorystorage;
 
 import dao.karma.structs.bond.TreasuryBond;
+import dao.karma.structs.factorystorage.BondDetails;
 import dao.karma.types.Ownable;
 import score.Address;
 import score.ArrayDB;

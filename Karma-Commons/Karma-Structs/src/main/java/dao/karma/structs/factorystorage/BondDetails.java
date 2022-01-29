@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dao.karma.factorystorage;
+package dao.karma.structs.factorystorage;
 
 import java.math.BigInteger;
 

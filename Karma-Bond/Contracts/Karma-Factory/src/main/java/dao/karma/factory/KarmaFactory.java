@@ -22,6 +22,7 @@ import java.math.BigInteger;
 
 import dao.karma.interfaces.bond.IKarmaFactoryStorage;
 import dao.karma.structs.bond.TreasuryBond;
+import dao.karma.structs.factorystorage.BondDetails;
 import dao.karma.types.Ownable;
 import score.Address;
 import score.Context;
@@ -195,8 +196,7 @@ public class KarmaFactory extends Ownable {
             fees
         );
 
-        return IKarmaFactoryStorage.pushBond (
-            this.karmaFactoryStorage,
+        BondDetails details = new BondDetails (
             payoutToken, 
             principalToken, 
             treasury, 
@@ -205,6 +205,8 @@ public class KarmaFactory extends Ownable {
             tierCeilings,
             fees
         );
+
+        return IKarmaFactoryStorage.pushBond (this.karmaFactoryStorage, details);
     }
     
     /**
@@ -242,8 +244,7 @@ public class KarmaFactory extends Ownable {
             fees
         );
 
-        return IKarmaFactoryStorage.pushBond (
-            this.karmaFactoryStorage,
+        BondDetails details = new BondDetails (
             payoutToken, 
             principalToken, 
             customTreasury, 
@@ -252,6 +253,8 @@ public class KarmaFactory extends Ownable {
             tierCeilings,
             fees
         );
+
+        return IKarmaFactoryStorage.pushBond (this.karmaFactoryStorage, details);
     }
 
     // ================================================

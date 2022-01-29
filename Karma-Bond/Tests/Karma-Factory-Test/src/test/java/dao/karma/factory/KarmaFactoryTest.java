@@ -18,12 +18,24 @@ package dao.karma.factory;
 
 import dao.karma.test.KarmaTest;
 import dao.karma.test.ScoreSpy;
+import score.Address;
 
 public class KarmaFactoryTest extends KarmaTest {
 
   ScoreSpy<KarmaFactory> factory;
   
-  void setup_factory () throws Exception {
-    factory = deploy(KarmaFactory.class);
+  void setup_factory (
+    Address karmaTreasury,
+    Address karmaFactoryStorage,
+    Address karmaSubsidyRouter,
+    Address karmaDAO
+  ) throws Exception {
+    factory = deploy(
+      KarmaFactory.class,
+      karmaTreasury,
+      karmaFactoryStorage,
+      karmaSubsidyRouter,
+      karmaDAO
+    );
   }
 }
