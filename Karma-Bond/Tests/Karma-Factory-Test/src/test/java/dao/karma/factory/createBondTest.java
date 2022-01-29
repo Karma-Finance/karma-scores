@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dao.karma.factory.client.KarmaFactoryClient;
-import dao.karma.mocks.FactoryStorageMock;
+import dao.karma.factory.mocks.FactoryStorageMock;
 
 public class createBondTest extends KarmaFactoryTest {
 

@@ -1,4 +1,4 @@
-package dao.karma.mocks;
+package dao.karma.factory.mocks;
 
 import dao.karma.structs.bond.TreasuryBond;
 import dao.karma.structs.factorystorage.BondDetails;
