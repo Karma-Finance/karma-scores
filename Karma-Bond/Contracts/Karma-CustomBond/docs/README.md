@@ -74,7 +74,7 @@ public void initializeBond (
     "controlVariable": "0x61a80", // 400000
     "vestingTerm": "0x49d40", // 302400, 1 week (7*24*3600/2) considering 2 seconds blocks
     "minimumPrice": "0x151b", // 5403
-    "maxPayout": "1",
+    "maxPayout": "0x1f4", // 500 = 0.5%
     "maxDebt": "0x12a05f200", // 5000000000
     "initialDebt": "0x5cfbb600" // 1560000000
   }
