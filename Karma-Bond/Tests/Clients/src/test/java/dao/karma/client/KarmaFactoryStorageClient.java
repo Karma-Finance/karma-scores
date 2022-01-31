@@ -14,34 +14,42 @@
  * limitations under the License.
  */
 
-package dao.karma.custombond.client;
+package dao.karma.client;
 
 import java.math.BigInteger;
 
 import com.iconloop.score.test.Account;
 import com.iconloop.score.test.Score;
 
-public class KarmaCustomBondClient {
+import dao.karma.structs.factorystorage.BondDetails;
+import score.Address;
 
-  public static void initializeBond (
+public class KarmaFactoryStorageClient {
+
+  public static void pushBond (
     Score client, 
-    Account from,
-    BigInteger controlVariable,
-    long vestingTerm,
-    BigInteger minimumPrice,
-    BigInteger maxPayout,
-    BigInteger maxDebt,
-    BigInteger initialDebt
+    Account from, 
+    BondDetails details
   ) {
-    client.invoke(from, "initializeBond", controlVariable, vestingTerm, minimumPrice, maxPayout, maxDebt, initialDebt);
+    client.invoke(from, "pushBond", details);
   }
 
-  public static void setBondTerms (
-    Score client,
-    Account from,
-    int parameter,
-    BigInteger input
+  public static void setFactoryAddress (
+    Score client, 
+    Account from, 
+    Address address
   ) {
-    client.invoke(from, "setBondTerms", parameter, input);
+    client.invoke(from, "setFactoryAddress", address);
+  }
+
+  public static int indexOfBond (
+    Score client, 
+    Address bondAddress
+  ) {
+    return ((BigInteger) client.call("indexOfBond", bondAddress)).intValue();
+  }
+
+  public static BondDetails bondDetails(Score score, int index) {
+    return BondDetails.fromMap(score.call("bondDetails", index));
   }
 }

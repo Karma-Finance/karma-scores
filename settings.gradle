@@ -18,6 +18,7 @@ include (
   ':Karma-Bond:Tests:Karma-Factory-Test',
   ':Karma-Bond:Tests:Karma-FactoryStorage-Test',
   ':Karma-Bond:Tests:Karma-SubsidyRouter-Test',
+  ':Karma-Bond:Tests:Clients',
 
   // -----------------
   // --- Karma-DAO ---

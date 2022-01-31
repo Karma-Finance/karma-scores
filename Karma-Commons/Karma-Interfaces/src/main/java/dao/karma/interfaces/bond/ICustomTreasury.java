@@ -18,11 +18,23 @@ package dao.karma.interfaces.bond;
 
 import java.math.BigInteger;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+
+import dao.karma.interfaces.irc2.IIRC2;
+import dao.karma.utils.JSONUtils;
 import score.Address;
 import score.Context;
 
-public class IBond {
-  public static BigInteger paySubsidy (Address bond) {
-    return (BigInteger) Context.call(bond, "paySubsidy");
+public abstract class ICustomTreasury {
+  public static BigInteger valueOfToken(Address treasury, Address principalToken, BigInteger amount) {
+    return (BigInteger) Context.call(treasury, "valueOfToken", principalToken, amount);
+  }
+
+  public static void deposit(Address treasury, Address principalToken, BigInteger amount, BigInteger amountPayoutToken) {
+    JsonObject params = Json.object()
+      .add("amountPayoutToken", amountPayoutToken.toString());
+
+    IIRC2.transfer(principalToken, treasury, amount, JSONUtils.method("deposit", params));
   }
 }

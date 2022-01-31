@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dao.karma.subsidyrouter.client.KarmaSubsidyRouterClient;
+import dao.karma.client.KarmaSubsidyRouterClient;
 import dao.karma.test.AssertUtils;
 import score.Address;
 

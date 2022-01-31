@@ -22,8 +22,10 @@ import static java.math.BigInteger.ZERO;
 import java.math.BigInteger;
 
 import com.eclipsesource.json.JsonObject;
-import dao.karma.interfaces.irc2.IIRC2;
+
+import dao.karma.interfaces.bond.ICustomTreasury;
 import dao.karma.interfaces.dao.ITreasury;
+import dao.karma.interfaces.irc2.IIRC2;
 import dao.karma.types.Ownable;
 import dao.karma.utils.JSONUtils;
 import dao.karma.utils.MathUtils;
@@ -185,8 +187,24 @@ public class KarmaCustomBond extends Ownable {
             this.totalDebt.set(ZERO);
         }
 
+        if (this.payoutSinceLastSubsidy.get() == null) {
+            this.payoutSinceLastSubsidy.set(ZERO);
+        }
+
+        if (this.totalPrincipalBonded.get() == null) {
+            this.totalPrincipalBonded.set(ZERO);
+        }
+
+        if (this.totalPayoutGiven.get() == null) {
+            this.totalPayoutGiven.set(ZERO);
+        }
+
         if (this.terms.get() == null) {
             this.terms.set(Terms.empty());
+        }
+
+        if (this.adjustment.get() == null) {
+            this.adjustment.set(Adjust.empty());
         }
     }
 
@@ -282,10 +300,10 @@ public class KarmaCustomBond extends Ownable {
             default:
                 Context.revert("setBondTerms: invalid parameter");
         }
-        
+
         this.terms.set(terms);
     }
-    
+
     /**
      * Set control variable adjustment
      * 
@@ -306,6 +324,7 @@ public class KarmaCustomBond extends Ownable {
         // Access control
         onlyPolicy();
 
+        // require(increment <= BCV*30/1000)
         Context.require(increment.compareTo(terms.get().controlVariable.multiply(BigInteger.valueOf(30)).divide(BigInteger.valueOf(1000))) <= 0, 
             "setAdjustment: Increment too large");
 
@@ -397,12 +416,13 @@ public class KarmaCustomBond extends Ownable {
         Context.require(maxPrice.compareTo(nativePrice) >= 0,
             "deposit: Slippage limit: more than max price"); 
 
-        BigInteger value = ITreasury.valueOfToken(this.customTreasury, principalToken, amount);
+        BigInteger value = ICustomTreasury.valueOfToken(this.customTreasury, this.principalToken, amount);
         // payout to bonder is computed
         BigInteger payout = _payoutFor(value);
 
-        // must be > 0.01 payout token ( underflow protection )
-        Context.require(payout.compareTo(MathUtils.pow10(IIRC2.decimals(payoutToken)).divide(BigInteger.valueOf(100))) >= 0,
+        // must be > 0.01 payout token (underflow protection)
+        // payout >= (10**payoutDecimals)/100
+        Context.require(payout.compareTo(MathUtils.pow10(IIRC2.decimals(this.payoutToken)).divide(BigInteger.valueOf(100))) >= 0,
             "deposit: Bond too small");
 
         // size protection because there is no slippage
@@ -414,19 +434,21 @@ public class KarmaCustomBond extends Ownable {
         
         // principal is transferred in, and 
         // deposited into the treasury, returning (amount - profit) payout token
-        ITreasury.deposit(this.customTreasury, this.principalToken, amount, payout);
+        ICustomTreasury.deposit(this.customTreasury, this.principalToken, amount, payout);
 
         // Fee is transferred to DAO treasury
         if (!fee.equals(ZERO)) {
-            IIRC2.transfer(payoutToken, karmaTreasury.get(), fee, JSONUtils.method("deposit"));
+            ITreasury.deposit(this.karmaTreasury.get(), this.payoutToken, fee);
         }
 
         // total debt is increased
         this.totalDebt.set(totalDebt.add(value));
         
         // depositor info is stored
+        var depositorBondInfo = this.bondInfo.getOrDefault(depositor, Bond.empty());
+
         this.bondInfo.set(depositor, new Bond(
-            this.bondInfo.get(depositor).payout.add(payout.subtract(fee)),
+            depositorBondInfo.payout.add(payout.subtract(fee)),
             terms.vestingTerm,
             Context.getBlockHeight(),
             trueBondPrice()
@@ -437,11 +459,11 @@ public class KarmaCustomBond extends Ownable {
         this.BondPriceChanged(_bondPrice(), debtRatio());
 
         // total bonded increased
-        this.totalPrincipalBonded.set(totalPrincipalBonded.get().add(amount));
+        this.totalPrincipalBonded.set(this.totalPrincipalBonded.get().add(amount));
         // total payout increased
-        this.totalPayoutGiven.set(totalPayoutGiven.get().add(payout));
+        this.totalPayoutGiven.set(this.totalPayoutGiven.get().add(payout));
         // subsidy counter increased
-        BigInteger oldPayout = payoutSinceLastSubsidy.get();
+        BigInteger oldPayout = this.payoutSinceLastSubsidy.get();
         BigInteger newPayout = oldPayout.add(payout);
         this.payoutSinceLastSubsidy.set(newPayout);
         this.PayoutUpdate(oldPayout, newPayout);
@@ -470,6 +492,7 @@ public class KarmaCustomBond extends Ownable {
                 // Accept payoutToken as payment from the deposit
                 Context.require(token.equals(this.payoutToken), 
                     "pay: Only payout token is accepted as payment");
+                break;
             }
 
             default:
@@ -601,7 +624,7 @@ public class KarmaCustomBond extends Ownable {
 
     private void checkSubsidy(Address caller) {
         Context.require(caller.equals(this.subsidyRouter),
-            "checkKarmaDao: only Subsidy Router can call this method");
+            "checkSubsidy: only Subsidy Router can call this method");
     }
 
     // ================================================

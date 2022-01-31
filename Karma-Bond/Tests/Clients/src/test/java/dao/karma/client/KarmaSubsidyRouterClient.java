@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dao.karma.subsidyrouter.client;
+package dao.karma.client;
 
 import com.iconloop.score.test.Account;
 import com.iconloop.score.test.Score;

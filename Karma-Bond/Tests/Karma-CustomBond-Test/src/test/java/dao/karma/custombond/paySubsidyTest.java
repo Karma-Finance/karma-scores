@@ -1,21 +1,28 @@
 package dao.karma.custombond;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+
 import java.math.BigInteger;
+
+import com.iconloop.score.test.Account;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import dao.karma.client.KarmaCustomBondClient;
 import dao.karma.structs.factorystorage.BondDetails;
 import dao.karma.test.AssertUtils;
 import score.Address;
 
-public class initializeBondTest extends KarmaCustomBondTest {
-  
+public class paySubsidyTest extends KarmaCustomBondTest {
   // Fake contracts
+  final Account subsidyRouterAccount = sm.createAccount();
   final Address customTreasury = sm.createAccount().getAddress();
   final Address karmaTreasury = sm.createAccount().getAddress();
-  final Address subsidyRouter = sm.createAccount().getAddress();
+  final Address subsidyRouter = subsidyRouterAccount.getAddress();
   final Address karmaDAO = sm.createAccount().getAddress();
   final Address payoutToken = sm.createAccount().getAddress();
   final Address principalToken = sm.createAccount().getAddress();
@@ -56,54 +63,30 @@ public class initializeBondTest extends KarmaCustomBondTest {
   }
 
   @Test
-  void testInitializeBondVesting () {
-    BigInteger controlVariable = BigInteger.valueOf(400000);
-    long vestingTerm = 302400; // 1 week
-    BigInteger minimumPrice = BigInteger.valueOf(5403);
-    BigInteger maxPayout = BigInteger.valueOf(500);
-    BigInteger maxDebt = new BigInteger("5000000000");
-    BigInteger initialDebt = new BigInteger("1560000000");
-
-    // Set bond terms must be called beforehand
-    KarmaCustomBondClient.setBondTerms (
+  void testPaySubsidy () {
+    reset(bond.spy);
+    KarmaCustomBondClient.paySubsidy (
       bond.score,
-      owner,
-      KarmaCustomBond.VESTING,
-      BigInteger.valueOf(vestingTerm)
+      subsidyRouterAccount
     );
+    ArgumentCaptor<BigInteger> oldPayout = ArgumentCaptor.forClass(BigInteger.class);
+    ArgumentCaptor<BigInteger> newPayout = ArgumentCaptor.forClass(BigInteger.class);
+    verify(bond.spy).PayoutUpdate(oldPayout.capture(), newPayout.capture());
 
-    KarmaCustomBondClient.initializeBond (
-      bond.score,
-      owner,
-      controlVariable,
-      vestingTerm,
-      minimumPrice,
-      maxPayout,
-      maxDebt,
-      initialDebt
-    );
+    // check if reset
+    assertEquals(BigInteger.ZERO, newPayout.getValue());
+    BigInteger payoutSinceLastSubsidy = KarmaCustomBondClient.payoutSinceLastSubsidy(bond.score);
+    assertEquals(BigInteger.ZERO, payoutSinceLastSubsidy);
   }
 
   @Test
-  void testTermsNotInitialized () {
-    BigInteger controlVariable = BigInteger.valueOf(400000);
-    long vestingTerm = 302400; // 1 week
-    BigInteger minimumPrice = BigInteger.valueOf(5403);
-    BigInteger maxPayout = BigInteger.valueOf(500);
-    BigInteger maxDebt = new BigInteger("5000000000");
-    BigInteger initialDebt = new BigInteger("1560000000");
-
+  void testNotSubsidy () {
     AssertUtils.assertThrowsMessage(() ->
-      KarmaCustomBondClient.initializeBond (
+      KarmaCustomBondClient.paySubsidy (
         bond.score,
-        owner,
-        controlVariable,
-        vestingTerm,
-        minimumPrice,
-        maxPayout,
-        maxDebt,
-        initialDebt
+        alice
       ),
-      "debtDecay: The vesting term must be initialized first");
+      "checkSubsidy: only Subsidy Router can call this method"
+    );
   }
 }

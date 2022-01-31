@@ -21,9 +21,9 @@ import static java.math.BigInteger.ZERO;
 
 import java.math.BigInteger;
 
+import dao.karma.interfaces.bond.ICustomTreasury;
 import dao.karma.interfaces.dao.ICalculator;
 import dao.karma.interfaces.dao.ITeller;
-import dao.karma.interfaces.dao.ITreasury;
 import dao.karma.interfaces.irc2.IIRC2;
 import dao.karma.types.IKarmaAccessControlled;
 import dao.karma.types.KarmaAccessControlled;
@@ -271,7 +271,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
         Context.require(maxPrice.compareTo(_bondPrice(bondId)) >= 0,
             "deposit: Slippage limit: more than max price");
 
-        BigInteger value = ITreasury.tokenValue(treasury, info.principal, amount);
+        BigInteger value = ICustomTreasury.valueOfToken(treasury, info.principal, amount);
         // payout to bonder is computed
         BigInteger payout = payoutFor(value, bondId);
 
@@ -394,7 +394,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
     @External(readonly = true)
     public BigInteger payoutForAmount (BigInteger amount, BigInteger bondId) {
         Address principal = this.bonds.get(bondId).principal;
-        return payoutFor (ITreasury.tokenValue(this.treasury, principal, amount), bondId);
+        return payoutFor (ICustomTreasury.valueOfToken(this.treasury, principal, amount), bondId);
     }
 
     // --- Bond Price ---

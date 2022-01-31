@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dao.karma.customtreasury.client;
+package dao.karma.client;
 
 import java.math.BigInteger;
 

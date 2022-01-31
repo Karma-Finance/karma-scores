@@ -20,7 +20,7 @@ import static dao.karma.utils.AddressUtils.ZERO_ADDRESS;
 
 import java.math.BigInteger;
 
-import dao.karma.interfaces.bond.IBond;
+import dao.karma.interfaces.bond.ICustomBond;
 import dao.karma.types.Ownable;
 import score.Address;
 import score.Context;
@@ -112,7 +112,7 @@ public class KarmaSubsidyRouter extends Ownable {
         Context.require (bond != null,
             "getSubsidyInfo: Address not mapped");
 
-        return IBond.paySubsidy(bond);
+        return ICustomBond.paySubsidy(bond);
     }
 
     // ================================================

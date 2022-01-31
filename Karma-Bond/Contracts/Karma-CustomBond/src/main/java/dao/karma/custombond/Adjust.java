@@ -16,7 +16,10 @@
 
 package dao.karma.custombond;
 
+import static java.math.BigInteger.ZERO;
+
 import java.math.BigInteger;
+import java.util.Map;
 
 import score.ObjectReader;
 import score.ObjectWriter;
@@ -64,5 +67,21 @@ public class Adjust {
         w.write(obj.target);
         w.write(obj.buffer);
         w.write(obj.lastBlock);
+    }
+
+    public static Adjust fromMap (Object call) {
+        @SuppressWarnings("unchecked")
+        Map<String,Object> map = (Map<String,Object>) call;
+        return new Adjust (
+            (boolean) map.get("add"),
+            (BigInteger) map.get("rate"),
+            (BigInteger) map.get("target"),
+            ((BigInteger) map.get("buffer")).longValue(),
+            ((BigInteger) map.get("lastBlock")).longValue()
+        );
+    }
+
+    public static Adjust empty() {
+      return new Adjust(false, ZERO, ZERO, 0L, 0L);
     }
 }

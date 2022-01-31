@@ -24,8 +24,8 @@ import java.math.BigInteger;
 
 import com.eclipsesource.json.JsonObject;
 
-import dao.karma.interfaces.dao.IStaking;
 import dao.karma.interfaces.dao.ITreasury;
+import dao.karma.interfaces.dao.IStaking;
 import dao.karma.interfaces.dao.IsKARMA;
 import dao.karma.interfaces.irc2.IIRC2;
 import dao.karma.types.IKarmaAccessControlled;

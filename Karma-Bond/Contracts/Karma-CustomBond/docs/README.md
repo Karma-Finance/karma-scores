@@ -129,6 +129,7 @@ public void setBondTerms (
 
 - Set control variable adjustment
 - Access: Policy
+- The increment value must be inferior or equal to `BCV * 30 / 1000`
 
 ```java
 @External

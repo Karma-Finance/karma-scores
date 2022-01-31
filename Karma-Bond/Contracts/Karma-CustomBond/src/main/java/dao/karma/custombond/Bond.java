@@ -16,6 +16,8 @@
 
 package dao.karma.custombond;
 
+import static java.math.BigInteger.ZERO;
+
 import java.math.BigInteger;
 
 import score.ObjectReader;
@@ -58,5 +60,9 @@ public class Bond {
         w.write(obj.vesting);
         w.write(obj.lastBlock);
         w.write(obj.truePricePaid);
+    }
+
+    public static Bond empty() {
+      return new Bond(ZERO, 0L, 0L, ZERO);
     }
 }

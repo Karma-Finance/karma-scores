@@ -14,10 +14,11 @@ dependencies {
     testImplementation 'com.github.sink772:minimal-json:0.9.6'
     testImplementation project(':Karma-Commons:ICON:unittest')
 
+    testImplementation project(':Karma-Commons:ICON:irc2')
     testImplementation project(':Karma-Commons:Karma-Test')
     testImplementation project(':Karma-Commons:Karma-Utils')
-    testImplementation project(':Karma-Bond:Contracts:Karma-FactoryStorage')
-    testImplementation project(':Karma-Bond:Tests:Clients')
+    testImplementation project(':Karma-Bond:Contracts:Karma-CustomBond')
+    testImplementation project(':Karma-Bond:Contracts:Karma-CustomTreasury')
 }
 
 test {
