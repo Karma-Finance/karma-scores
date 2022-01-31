@@ -37,7 +37,7 @@ public class KarmaCustomBondTest extends KarmaTest {
     BigInteger[] tierCeilings,
     BigInteger[] fees
   ) throws Exception {
-    bond = deploy(
+    bond = deploy (
       KarmaCustomBond.class,
       customTreasury,
       payoutToken,

@@ -39,10 +39,14 @@ public KarmaCustomBond (
 
 ## `KarmaCustomBond::initializeBond`
 
+![uml/initializeBond.svg](uml/initializeBond.svg)
+
 ### 📜 Method Call
 
 - Initializes bond parameters
 - Access: Policy
+- The debt must be 0 for initialization
+- The vesting term must be initialized first with `setBondTerms(VESTING, ...)`
 - Once the Custom Bond contract is initialized, users can start purchasing bonds
 
 ```java

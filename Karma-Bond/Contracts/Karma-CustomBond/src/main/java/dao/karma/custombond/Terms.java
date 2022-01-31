@@ -16,6 +16,8 @@
 
 package dao.karma.custombond;
 
+import static java.math.BigInteger.ZERO;
+
 import java.math.BigInteger;
 
 import score.ObjectReader;
@@ -64,5 +66,9 @@ public class Terms {
         w.write(obj.minimumPrice);
         w.write(obj.maxPayout);
         w.write(obj.maxDebt);
+    }
+
+    public static Terms empty() {
+      return new Terms(ZERO, 0L, ZERO, ZERO, ZERO);
     }
 }

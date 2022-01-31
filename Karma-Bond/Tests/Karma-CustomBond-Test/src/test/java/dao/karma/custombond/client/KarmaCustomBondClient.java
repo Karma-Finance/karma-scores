@@ -16,6 +16,32 @@
 
 package dao.karma.custombond.client;
 
+import java.math.BigInteger;
+
+import com.iconloop.score.test.Account;
+import com.iconloop.score.test.Score;
+
 public class KarmaCustomBondClient {
 
+  public static void initializeBond (
+    Score client, 
+    Account from,
+    BigInteger controlVariable,
+    long vestingTerm,
+    BigInteger minimumPrice,
+    BigInteger maxPayout,
+    BigInteger maxDebt,
+    BigInteger initialDebt
+  ) {
+    client.invoke(from, "initializeBond", controlVariable, vestingTerm, minimumPrice, maxPayout, maxDebt, initialDebt);
+  }
+
+  public static void setBondTerms (
+    Score client,
+    Account from,
+    int parameter,
+    BigInteger input
+  ) {
+    client.invoke(from, "setBondTerms", parameter, input);
+  }
 }

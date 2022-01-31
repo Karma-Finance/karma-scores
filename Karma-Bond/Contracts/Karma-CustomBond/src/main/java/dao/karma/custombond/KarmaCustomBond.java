@@ -175,6 +175,19 @@ public class KarmaCustomBond extends Ownable {
         if (this.karmaTreasury.get() == null) {
             this.karmaTreasury.set(karmaTreasury);
         }
+
+        // Default initialization
+        if (this.lastDecay.get() == null) {
+            this.lastDecay.set(0L);
+        }
+
+        if (this.totalDebt.get() == null) {
+            this.totalDebt.set(ZERO);
+        }
+
+        if (this.terms.get() == null) {
+            this.terms.set(Terms.empty());
+        }
     }
 
     // --- Initialization ---
@@ -222,9 +235,9 @@ public class KarmaCustomBond extends Ownable {
 
     // --- Policy Functions ---
     // PARAMETER
-    private final int VESTING = 0;
-    private final int PAYOUT = 1;
-    private final int DEBT = 2;
+    public static final int VESTING = 0;
+    public static final int PAYOUT = 1;
+    public static final int DEBT = 2;
 
     /**
      * Change the parameters of a bond
@@ -678,11 +691,15 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger debtDecay()  {
+        var terms = this.terms.get();
+        Context.require(terms.vestingTerm != 0,
+            "debtDecay: The vesting term must be initialized first");
+
         var totalDebt = this.totalDebt.get();
         long blockHeight = Context.getBlockHeight();
         BigInteger blocksSinceLast = BigInteger.valueOf(blockHeight - lastDecay.get());
-        BigInteger vestingTerm = BigInteger.valueOf(this.terms.get().vestingTerm);
-        // decay = totalDebt() * (blockHeight - lastDecay()) / (terms().vestingTerm)
+        BigInteger vestingTerm = BigInteger.valueOf(terms.vestingTerm);
+        // decay = totalDebt() * (blockHeight - lastDecay()) / (terms.vestingTerm)
         BigInteger decay = totalDebt.multiply(blocksSinceLast).divide(vestingTerm);
 
         if (decay.compareTo(totalDebt) > 0) {
