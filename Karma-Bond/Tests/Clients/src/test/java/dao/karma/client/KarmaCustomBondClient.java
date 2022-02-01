@@ -100,4 +100,13 @@ public class KarmaCustomBondClient {
 
     IRC2Client.transfer(principalToken, from, client.getAddress(), amount, JSONUtils.method("deposit", params));
   }
+
+  public static void pay (
+    Score client,
+    Account from,
+    Score payoutToken,
+    BigInteger amount
+  ) {
+    IRC2Client.transfer(payoutToken, from, client.getAddress(), amount, JSONUtils.method("pay"));
+  }
 }
