@@ -1,11 +1,17 @@
 package dao.karma.custombond;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+
 import java.math.BigInteger;
 
 import com.iconloop.score.test.Account;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import dao.karma.client.KarmaCustomBondClient;
 import dao.karma.client.KarmaCustomTreasuryClient;
@@ -93,6 +99,11 @@ public class depositTest extends KarmaCustomBondTest {
     KarmaCustomTreasuryClient.toggleBondContract(customTreasury.score, owner, bond.getAddress());
 
     // Do the deposit from alice
+    BigInteger alicePrincipalBefore = IRC2Client.balanceOf(principalToken.score, alice);
+    BigInteger bondPayoutBefore     = IRC2Client.balanceOf(payoutToken.score, bond.getAddress());
+    
+    reset(payoutToken.spy);
+    reset(principalToken.spy);
     KarmaCustomBondClient.deposit(
       bond.score,
       alice, 
@@ -101,5 +112,23 @@ public class depositTest extends KarmaCustomBondTest {
       maxPrice,
       depositor
     );
+    BigInteger alicePrincipalAfter = IRC2Client.balanceOf(principalToken.score, alice);
+    BigInteger bondPayoutAfter     = IRC2Client.balanceOf(payoutToken.score, bond.getAddress());
+
+    // verify token transfers
+    ArgumentCaptor<Address> from = ArgumentCaptor.forClass(Address.class);
+    ArgumentCaptor<Address> to = ArgumentCaptor.forClass(Address.class);
+    ArgumentCaptor<BigInteger> _amount = ArgumentCaptor.forClass(BigInteger.class);
+    ArgumentCaptor<byte[]> data = ArgumentCaptor.forClass(byte[].class);
+
+    // Alice -> Bond
+    verify(principalToken.spy, atLeastOnce()).Transfer(from.capture(), to.capture(), _amount.capture(), data.capture());
+    assertEquals(from.getValue(), alice.getAddress());
+    assertEquals(to.getValue(), bond.getAddress());
+    assertEquals(_amount.getValue(), amount);
+
+    assertEquals(alicePrincipalBefore.subtract(amount), alicePrincipalAfter);
+    assertEquals(new BigInteger("0"), bondPayoutBefore);
+    assertEquals(new BigInteger("178919119007958563209"), bondPayoutAfter);
   }
 }
