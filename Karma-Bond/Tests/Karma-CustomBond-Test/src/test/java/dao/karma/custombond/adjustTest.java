@@ -202,7 +202,7 @@ public class adjustTest extends KarmaCustomBondTest {
     setAdjustment(false, increment, controlVariable.subtract(BigInteger.valueOf(3)), buffer);
 
     // sleep buffer
-    SleepUtils.sleep(10);
+    SleepUtils.sleep(buffer);
 
     // Check BCV before
     Terms terms0 = KarmaCustomBondClient.terms(bond.score);
@@ -221,6 +221,25 @@ public class adjustTest extends KarmaCustomBondTest {
     // --- Check BCV 1 ---
     Terms terms1 = KarmaCustomBondClient.terms(bond.score);
     assertEquals(terms0.controlVariable.subtract(increment), terms1.controlVariable);
+
+    for (int i = 0; i < 3; i++) {
+      // sleep buffer
+      SleepUtils.sleep(buffer);
+  
+      // call adjust() with deposit
+      KarmaCustomBondClient.deposit(
+        bond.score,
+        alice, 
+        principalToken.score,
+        amount,
+        maxPrice,
+        depositor
+      );
+    }
+
+    // --- Check BCV N ---
+    Terms termsN = KarmaCustomBondClient.terms(bond.score);
+    assertEquals(controlVariable.subtract(BigInteger.valueOf(3)), termsN.controlVariable);
   }
 
   @Test
