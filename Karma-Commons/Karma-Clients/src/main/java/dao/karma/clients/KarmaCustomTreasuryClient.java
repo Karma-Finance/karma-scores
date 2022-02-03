@@ -22,7 +22,6 @@ import com.eclipsesource.json.Json;
 import com.iconloop.score.test.Account;
 import com.iconloop.score.test.Score;
 
-import dao.karma.standards.token.irc2.client.IRC2Client;
 import dao.karma.utils.JSONUtils;
 import score.Address;
 

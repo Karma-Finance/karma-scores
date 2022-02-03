@@ -43,9 +43,9 @@ public interface IRC2 {
     BigInteger totalSupply();
 
     /**
-     * Returns the account balance of another account with address {@code owner}.
+     * Returns the account balance of another account with address {@code _owner}.
      */
-    BigInteger balanceOf(Address owner);
+    BigInteger balanceOf(Address _owner);
 
     /**
      * Transfers {@code _value} amount of tokens to address {@code _to}, and MUST fire the {@code Transfer} event.

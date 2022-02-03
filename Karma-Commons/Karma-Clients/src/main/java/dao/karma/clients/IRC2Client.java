@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dao.karma.standards.token.irc2.client;
+package dao.karma.clients;
 
 import java.math.BigInteger;
 

@@ -99,7 +99,7 @@ public class KarmaTokenStaked extends IRC2Basic {
      */
     public KarmaTokenStaked (
     ) {
-        super("Karma Token Staked", "sKARMA", decimals);
+        super("Karma Token Staked", "sKARMA", decimals, BigInteger.ZERO);
         final Address caller = Context.getCaller();
 
         if (this.initializer.get() == null) {

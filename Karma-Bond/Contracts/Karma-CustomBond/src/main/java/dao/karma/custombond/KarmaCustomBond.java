@@ -849,7 +849,7 @@ public class KarmaCustomBond extends Ownable {
     }
 
     @External(readonly = true)
-    public Bond bondInfo(Address index) {
-        return this.bondInfo.get(index);
+    public Bond bondInfo(Address depositor) {
+        return this.bondInfo.get(depositor);
     }
 }

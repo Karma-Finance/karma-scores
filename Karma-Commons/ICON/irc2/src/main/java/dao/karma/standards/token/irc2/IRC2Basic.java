@@ -26,7 +26,9 @@ import score.annotation.Optional;
 
 import java.math.BigInteger;
 
-public abstract class IRC2Basic implements IRC2 {
+import dao.karma.utils.MathUtils;
+
+public class IRC2Basic implements IRC2 {
     protected static final Address ZERO_ADDRESS = new Address(new byte[Address.LENGTH]);
     private final VarDB<String> name = Context.newVarDB("token_name", String.class);
     private final VarDB<String> symbol = Context.newVarDB("token_symbol", String.class);
@@ -34,7 +36,7 @@ public abstract class IRC2Basic implements IRC2 {
     protected final VarDB<BigInteger> totalSupply = Context.newVarDB("total_supply", BigInteger.class);
     private final DictDB<Address, BigInteger> balances = Context.newDictDB("balances", BigInteger.class);
 
-    public IRC2Basic(String _name, String _symbol, int _decimals) {
+    public IRC2Basic(String _name, String _symbol, int _decimals, BigInteger _initialSupply) {
         // initialize values only at first deployment
         if (this.name.get() == null) {
             this.name.set(ensureNotEmpty(_name));
@@ -44,6 +46,12 @@ public abstract class IRC2Basic implements IRC2 {
             Context.require(_decimals >= 0, "decimals needs to be positive");
             Context.require(_decimals <= 21, "decimals needs to be equal or lower than 21");
             this.decimals.set(BigInteger.valueOf(_decimals));
+            
+            // mint the initial token supply here
+            Context.require(_initialSupply.compareTo(BigInteger.ZERO) >= 0);
+            if (_initialSupply.compareTo(BigInteger.ZERO) > 0) {
+                _mint(Context.getCaller(), _initialSupply.multiply(MathUtils.pow10(_decimals)));
+            }
         }
     }
 

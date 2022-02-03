@@ -18,7 +18,7 @@ dependencies {
     testImplementation project(':Karma-Commons:Karma-Utils')
     testImplementation project(':Karma-Bond:Contracts:Karma-CustomTreasury')
     testImplementation project(':Karma-Commons:ICON:irc2')
-    testImplementation project(':Karma-Bond:Tests:Clients')
+    testImplementation project(':Karma-Commons:Karma-Clients')
 }
 
 test {

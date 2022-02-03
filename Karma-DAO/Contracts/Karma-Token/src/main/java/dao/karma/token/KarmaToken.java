@@ -56,7 +56,7 @@ public class KarmaToken extends IRC2Basic implements IKarmaAccessControlled {
     public KarmaToken (
         Address authority
     ) {
-        super("Karma Token", "KARMA", decimals);
+        super("Karma Token", "KARMA", decimals, BigInteger.ZERO);
         this.accessControlled = new KarmaAccessControlled(NAME + "_accessControlled", authority);
     }
 

@@ -17,13 +17,11 @@
 package dao.karma.structs.factorystorage;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Map;
 
 import score.Address;
 import score.ObjectReader;
 import score.ObjectWriter;
-import scorex.util.ArrayList;
 
 public class BondDetails {
     public Address payoutToken;
@@ -33,6 +31,8 @@ public class BondDetails {
     public Address initialOwner;
     public BigInteger[] tierCeilings;
     public BigInteger[] fees;
+
+    public BondDetails() {}
 
     public BondDetails (
         Address payoutToken, 
@@ -59,17 +59,19 @@ public class BondDetails {
         Address bondAddress = r.readAddress();
         Address initialOwner = r.readAddress();
 
-        ArrayList<BigInteger> tierCeilings = new ArrayList<>();
+        int tierCeilingsLength = r.readInt();
+        BigInteger[] tierCeilings = new BigInteger[tierCeilingsLength];
         r.beginList();
-        while (r.hasNext()) {
-            tierCeilings.add(r.readBigInteger());
+        for (int i = 0; i < tierCeilingsLength; i++) {
+            tierCeilings[i] = r.readBigInteger();
         }
         r.end();
 
-        ArrayList<BigInteger> fees = new ArrayList<>();
+        int feesLength = r.readInt();
+        BigInteger[] fees = new BigInteger[feesLength];
         r.beginList();
-        while (r.hasNext()) {
-            fees.add(r.readBigInteger());
+        for (int i = 0; i < feesLength; i++) {
+            fees[i] = r.readBigInteger();
         }
         r.end();
 
@@ -79,8 +81,8 @@ public class BondDetails {
             treasuryAddress,
             bondAddress,
             initialOwner,
-            Arrays.copyOfRange(tierCeilings.toArray(), 0, tierCeilings.size(), BigInteger[].class),
-            Arrays.copyOfRange(fees.toArray(), 0, fees.size(), BigInteger[].class)
+            tierCeilings,
+            fees
         );
     }
 
@@ -90,11 +92,13 @@ public class BondDetails {
         w.write(obj.treasuryAddress);
         w.write(obj.bondAddress);
         w.write(obj.initialOwner);
+        w.write(obj.tierCeilings.length);
         w.beginList(obj.tierCeilings.length);
         for (int i = 0; i < obj.tierCeilings.length; i++) {
             w.write(obj.tierCeilings[i]);
         }
         w.end();
+        w.write(obj.fees.length);
         w.beginList(obj.fees.length);
         for (int i = 0; i < obj.fees.length; i++) {
             w.write(obj.fees[i]);

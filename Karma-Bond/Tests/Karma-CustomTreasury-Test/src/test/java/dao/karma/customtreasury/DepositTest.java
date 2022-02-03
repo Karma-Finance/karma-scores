@@ -9,8 +9,8 @@ import com.iconloop.score.test.Account;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dao.karma.clients.IRC2Client;
 import dao.karma.clients.KarmaCustomTreasuryClient;
-import dao.karma.standards.token.irc2.client.IRC2Client;
 import dao.karma.test.AssertUtils;
 import dao.karma.test.ScoreSpy;
 import dao.karma.test.tokens.Bnusd;

@@ -184,15 +184,15 @@ public class KarmaFactory extends Ownable {
         );
 
         Address bond = Context.deploy (
-            customBondContractBytes.get(), 
-            treasury, 
-            payoutToken, 
-            principalToken, 
-            this.karmaTreasury, 
-            this.karmaSubsidyRouter, 
-            initialOwner, 
-            this.karmaDAO, 
-            tierCeilings, 
+            customBondContractBytes.get(),
+            treasury,
+            payoutToken,
+            principalToken,
+            this.karmaTreasury,
+            this.karmaSubsidyRouter,
+            initialOwner,
+            this.karmaDAO,
+            tierCeilings,
             fees
         );
 
@@ -207,7 +207,8 @@ public class KarmaFactory extends Ownable {
         );
 
         return IKarmaFactoryStorage.pushBond (this.karmaFactoryStorage, details);
-    }
+ 
+ }
 
     /**
      * Deploys custom bond contract and returns address

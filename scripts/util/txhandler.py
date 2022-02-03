@@ -68,7 +68,7 @@ class TxHandler:
         return self._icon_service.call(_call)
 
     def invoke(self, wallet, to, method, params, limit=None):
-        print(f"Calling {method}({params}) ...")
+        print(f"Invoking {method}({params}) ...")
         transaction = CallTransactionBuilder() \
             .from_(wallet.get_address()) \
             .to(to) \
@@ -88,7 +88,7 @@ class TxHandler:
         return self._send_transaction(transaction, wallet, limit)
 
     def ensure_tx_result(self, tx_hash, verbose=False):
-        count = 5
+        count = 20
         while True:
             result = self._icon_service.get_transaction_result(tx_hash, True)
             if 'error' in result:

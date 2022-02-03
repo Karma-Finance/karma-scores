@@ -23,7 +23,6 @@ import com.eclipsesource.json.JsonObject;
 import com.iconloop.score.test.Account;
 import com.iconloop.score.test.Score;
 
-import dao.karma.standards.token.irc2.client.IRC2Client;
 import dao.karma.structs.bond.Adjust;
 import dao.karma.structs.bond.Terms;
 import dao.karma.utils.JSONUtils;

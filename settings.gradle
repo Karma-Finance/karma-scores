@@ -18,7 +18,6 @@ include (
   ':Karma-Bond:Tests:Karma-Factory-Test',
   ':Karma-Bond:Tests:Karma-FactoryStorage-Test',
   ':Karma-Bond:Tests:Karma-SubsidyRouter-Test',
-  ':Karma-Bond:Tests:Clients',
 
   // -----------------
   // --- Karma-DAO ---
@@ -56,6 +55,7 @@ include (
   ':Karma-Commons:Karma-Structs',
   ':Karma-Commons:Karma-Types',
   ':Karma-Commons:Karma-Interfaces',
+  ':Karma-Commons:Karma-Clients',
 
   // ICON related code
   ':Karma-Commons:ICON:irc2',

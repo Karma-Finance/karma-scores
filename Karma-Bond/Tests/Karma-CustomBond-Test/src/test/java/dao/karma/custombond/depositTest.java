@@ -13,12 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import dao.karma.clients.IRC2Client;
 import dao.karma.clients.KarmaCustomBondClient;
 import dao.karma.clients.KarmaCustomTreasuryClient;
 import dao.karma.custombond.tokens.PayoutToken;
 import dao.karma.custombond.tokens.PrincipalToken;
 import dao.karma.customtreasury.KarmaCustomTreasury;
-import dao.karma.standards.token.irc2.client.IRC2Client;
 import dao.karma.test.ScoreSpy;
 import dao.karma.utils.JSONUtils;
 import score.Address;

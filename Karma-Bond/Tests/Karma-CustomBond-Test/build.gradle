@@ -19,7 +19,7 @@ dependencies {
     implementation project(':Karma-Commons:Karma-Utils')
     implementation project(':Karma-Commons:Karma-Types')
     implementation project(':Karma-Commons:Karma-Structs')
-    implementation project(':Karma-Bond:Tests:Clients')
+    implementation project(':Karma-Commons:Karma-Clients')
     implementation project(':Karma-Bond:Contracts:Karma-CustomBond')
     implementation project(':Karma-Bond:Contracts:Karma-CustomTreasury')
 }
