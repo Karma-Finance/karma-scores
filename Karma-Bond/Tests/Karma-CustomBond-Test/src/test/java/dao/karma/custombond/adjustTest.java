@@ -195,4 +195,102 @@ public class adjustTest extends KarmaCustomBondTest {
     Terms terms4 = KarmaCustomBondClient.terms(bond.score);
     assertEquals(terms3.controlVariable, terms4.controlVariable);
   }
+  
+  @Test
+  void testNegativeAdjust () {
+    initializeBond();
+    setAdjustment(false, increment, controlVariable.subtract(BigInteger.valueOf(3)), buffer);
+
+    // sleep buffer
+    SleepUtils.sleep(10);
+
+    // Check BCV before
+    Terms terms0 = KarmaCustomBondClient.terms(bond.score);
+    assertEquals(controlVariable, terms0.controlVariable);
+
+    // call adjust() with deposit
+    KarmaCustomBondClient.deposit(
+      bond.score,
+      alice, 
+      principalToken.score,
+      amount,
+      maxPrice,
+      depositor
+    );
+
+    // --- Check BCV 1 ---
+    Terms terms1 = KarmaCustomBondClient.terms(bond.score);
+    assertEquals(terms0.controlVariable.subtract(increment), terms1.controlVariable);
+  }
+  
+  @Test
+  void testAdjustHighIncrement () {
+    initializeBond();
+    setAdjustment(true, BigInteger.TEN, controlVariable.add(BigInteger.valueOf(5)), buffer);
+
+    // sleep buffer
+    SleepUtils.sleep(10);
+
+    // Check BCV before
+    Terms terms0 = KarmaCustomBondClient.terms(bond.score);
+    assertEquals(controlVariable, terms0.controlVariable);
+
+    // call adjust() with deposit
+    KarmaCustomBondClient.deposit(
+      bond.score,
+      alice, 
+      principalToken.score,
+      amount,
+      maxPrice,
+      depositor
+    );
+
+    // --- Check BCV 1 ---
+    Terms terms1 = KarmaCustomBondClient.terms(bond.score);
+    assertEquals(terms0.controlVariable.add(BigInteger.TEN), terms1.controlVariable);
+  }
+  
+  @Test
+  void testAdjustBuffer () {
+    initializeBond();
+    setAdjustment(true, BigInteger.TEN, controlVariable.add(BigInteger.TEN), 10);
+
+    // sleep buffer - not enough
+    SleepUtils.sleep(9);
+
+    // Check BCV before
+    Terms terms0 = KarmaCustomBondClient.terms(bond.score);
+    assertEquals(controlVariable, terms0.controlVariable);
+
+    // call adjust() with deposit
+    KarmaCustomBondClient.deposit(
+      bond.score,
+      alice, 
+      principalToken.score,
+      amount,
+      maxPrice,
+      depositor
+    );
+
+    // --- Check BCV 1 ---
+    Terms terms1 = KarmaCustomBondClient.terms(bond.score);
+    assertEquals(terms0.controlVariable, terms1.controlVariable);
+
+    // Sleep enough
+    SleepUtils.sleep(1);
+    
+    // call adjust() with deposit
+    KarmaCustomBondClient.deposit(
+      bond.score,
+      alice, 
+      principalToken.score,
+      amount,
+      maxPrice,
+      depositor
+    );
+
+    // --- Check BCV 2 ---
+    Terms terms2 = KarmaCustomBondClient.terms(bond.score);
+    assertEquals(terms0.controlVariable.add(BigInteger.TEN), terms2.controlVariable);
+  }
 }
