@@ -158,7 +158,7 @@ public class adjustTest extends KarmaCustomBondTest {
       maxPrice,
       depositor
     );
-    
+
     // --- Check BCV 2 ---
     Terms terms2 = KarmaCustomBondClient.terms(bond.score);
     assertEquals(terms1.controlVariable.add(increment), terms2.controlVariable);
@@ -174,11 +174,11 @@ public class adjustTest extends KarmaCustomBondTest {
       maxPrice,
       depositor
     );
-    
+
     // --- Check BCV 3 ---
     Terms terms3 = KarmaCustomBondClient.terms(bond.score);
     assertEquals(terms2.controlVariable.add(increment), terms3.controlVariable);
-    
+
     // Sleep again, but shouldn't adjust
     SleepUtils.sleep(10);
     // That deposit shouldn't trigger adjustment
@@ -195,7 +195,7 @@ public class adjustTest extends KarmaCustomBondTest {
     Terms terms4 = KarmaCustomBondClient.terms(bond.score);
     assertEquals(terms3.controlVariable, terms4.controlVariable);
   }
-  
+
   @Test
   void testNegativeAdjust () {
     initializeBond();
@@ -222,7 +222,7 @@ public class adjustTest extends KarmaCustomBondTest {
     Terms terms1 = KarmaCustomBondClient.terms(bond.score);
     assertEquals(terms0.controlVariable.subtract(increment), terms1.controlVariable);
   }
-  
+
   @Test
   void testAdjustHighIncrement () {
     initializeBond();
@@ -249,7 +249,7 @@ public class adjustTest extends KarmaCustomBondTest {
     Terms terms1 = KarmaCustomBondClient.terms(bond.score);
     assertEquals(terms0.controlVariable.add(BigInteger.TEN), terms1.controlVariable);
   }
-  
+
   @Test
   void testAdjustBuffer () {
     initializeBond();
@@ -278,7 +278,7 @@ public class adjustTest extends KarmaCustomBondTest {
 
     // Sleep enough
     SleepUtils.sleep(1);
-    
+
     // call adjust() with deposit
     KarmaCustomBondClient.deposit(
       bond.score,
