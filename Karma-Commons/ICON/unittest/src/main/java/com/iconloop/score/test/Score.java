@@ -137,7 +137,7 @@ public class Score extends TestBase {
         } catch (EmptyStackException e) {
             // No frame pushed yet, pass
         }
-        
+
         sm.pushFrame(from, this.score, readonly, method, value);
         Class<?>[] paramClasses = new Class<?>[params.length];
         for (int i = 0; i < params.length; i++) {

@@ -89,7 +89,7 @@ public final class Context extends TestBase {
                             Address targetAddress, String method, Object... params) {
         return null;
     }
-    
+
     public static Class<?> walkScore(Stream<StackFrame> stackFrameStream) {
         // skip(1) because it's always "Context.call"
         for (var stackFrame : stackFrameStream.skip(1).collect(Collectors.toList())) {

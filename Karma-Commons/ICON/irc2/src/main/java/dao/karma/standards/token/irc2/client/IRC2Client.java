@@ -48,7 +48,7 @@ public class IRC2Client {
   public static void transfer(Score irc2, Account from, Account to, BigInteger amount) {
     transfer(irc2, from, to.getAddress(), amount, "".getBytes());
   }
-  
+
   public static void mint(Score irc2, Account from, BigInteger amount) {
     irc2.invoke(from, "mint", amount);
   }

@@ -49,7 +49,7 @@ group Pay the payout token back to the Custom Bond
       "method": "pay" \n\
     } \n\
   )
-  
+
 end group
 
 
@@ -67,7 +67,7 @@ group Transfer fee to the DAO Treasury
       "method": "deposit" \n\
     } \n\
   )
-  
+
 end group
 
 

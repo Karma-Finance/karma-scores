@@ -25,7 +25,7 @@ import score.Address;
 public class KarmaCustomBondTest extends KarmaTest {
 
   ScoreSpy<KarmaCustomBond> bond;
-  
+
   void setup_bond (
     Address customTreasury,
     Address payoutToken,

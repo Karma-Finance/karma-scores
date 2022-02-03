@@ -25,7 +25,7 @@ public class BitMath {
 
   public byte mostSignificantBit (BigInteger x) {
     Context.require(x.compareTo(ZERO) > 0, "BitMath::mostSignificantBit: zero");
-    
+
     byte r = 0;
 
     if (x.compareTo(new BigInteger("100000000000000000000000000000000", 16)) >= 0) {

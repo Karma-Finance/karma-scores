@@ -10,7 +10,7 @@ import dao.karma.test.ScoreSpy;
 import dao.karma.test.tokens.Bnusd;
 
 public class DeployTest extends KarmaCustomTreasuryTest {
-  
+
   ScoreSpy<Bnusd> payoutToken;
 
   @BeforeEach

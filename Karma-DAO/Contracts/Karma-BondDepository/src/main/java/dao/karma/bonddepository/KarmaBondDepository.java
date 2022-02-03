@@ -255,18 +255,18 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
 
         Context.require(info.termsSet, 
             "deposit: Bond not initialized");
-        
+
         long blockHeight = Context.getBlockHeight();
         Context.require(blockHeight < info.terms.conclusion,
             "deposit: Bond concluded");
-        
+
         this.BeforeBond(bondId, bondPriceInUsd(bondId), bondPrice(bondId), debtRatio(bondId));
-        
+
         decayDebt(bondId);
 
         Context.require(info.totalDebt.compareTo(info.terms.maxDebt) <= 0,
             "deposit: Max debt exceeded");
-        
+
         // slippage protection            
         Context.require(maxPrice.compareTo(_bondPrice(bondId)) >= 0,
             "deposit: Slippage limit: more than max price");
@@ -295,7 +295,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
 
         Context.require(payout.compareTo(minimalPayout) >= 0,
             "deposit: Bond too small");
-        
+
         // size protection because there is no slippage
         Context.require(payout.compareTo(maxPayout(bondId)) <= 0,
             "deposit: Bond too large");

@@ -9,7 +9,7 @@ import dao.karma.structs.factorystorage.BondDetails;
 import score.Address;
 
 public class DeployTest extends KarmaCustomBondTest {
-  
+
   // Fake contracts
   final Address customTreasury = sm.createAccount().getAddress();
   final Address karmaTreasury = sm.createAccount().getAddress();
@@ -40,7 +40,7 @@ public class DeployTest extends KarmaCustomBondTest {
 
   @BeforeEach
   void setup() throws Exception {
-    
+
   }
 
   @Test

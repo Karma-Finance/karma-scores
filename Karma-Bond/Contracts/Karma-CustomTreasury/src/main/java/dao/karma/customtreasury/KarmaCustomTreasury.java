@@ -81,7 +81,7 @@ public class KarmaCustomTreasury extends Ownable {
         Address initialOwner
     ) {
         super(initialOwner);
-        
+
         Context.require(!payoutToken.equals(AddressUtils.ZERO_ADDRESS));
         Context.require(!initialOwner.equals(AddressUtils.ZERO_ADDRESS));
 
@@ -91,7 +91,7 @@ public class KarmaCustomTreasury extends Ownable {
     }
 
     // --- Bond Contract Functions ---
-    
+
     /**
      * Deposit principal token and receive back payout token
      * 
@@ -113,7 +113,7 @@ public class KarmaCustomTreasury extends Ownable {
 
         IIRC2.transfer(this.payoutToken, caller, amountPayoutToken, JSONUtils.method("pay"));
     }
-    
+
     @External
     public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) {
         JsonObject root = JSONUtils.parseData(_data);
@@ -215,7 +215,7 @@ public class KarmaCustomTreasury extends Ownable {
     public boolean bondContract (Address address) {
         return this.bondContract.getOrDefault(address, false);
     }
-    
+
     // ================================================
     // View Functions
     // ================================================

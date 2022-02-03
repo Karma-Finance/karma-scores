@@ -120,7 +120,7 @@ public class redeemTest extends KarmaCustomBondTest {
 
     // Sleep 1 day
     SleepUtils.sleep(TimeUtils.ONE_DAY);
-    
+
     ownerBefore = IRC2Client.balanceOf(payoutToken.score, owner);
     KarmaCustomBondClient.redeem (
       bond.score,
@@ -130,10 +130,10 @@ public class redeemTest extends KarmaCustomBondTest {
     ownerAfter = IRC2Client.balanceOf(payoutToken.score, owner);
     // depositor should have received payout tokens
     assertTrue(ownerAfter.compareTo(ownerBefore) > 0);
-    
+
     // Sleep 1 week (vestingTerm)
     SleepUtils.sleep(TimeUtils.ONE_WEEK);
-    
+
     ownerBefore = IRC2Client.balanceOf(payoutToken.score, owner);
     KarmaCustomBondClient.redeem (
       bond.score,

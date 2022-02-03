@@ -34,7 +34,7 @@ public class FeeTiers {
         this.tierCeilings = tierCeilings;
         this.fees = fees;
     }
-    
+
     public static FeeTiers readObject (ObjectReader r) {
         return new FeeTiers(
             r.readBigInteger(),

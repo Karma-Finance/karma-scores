@@ -11,7 +11,7 @@ import dao.karma.test.AssertUtils;
 import score.Address;
 
 public class initializeBondTest extends KarmaCustomBondTest {
-  
+
   // Fake contracts
   final Address customTreasury = sm.createAccount().getAddress();
   final Address karmaTreasury = sm.createAccount().getAddress();

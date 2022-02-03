@@ -61,7 +61,7 @@ public class Terms {
         this.maxPayout = maxPayout;
         this.maxDebt = maxDebt;
     }
-    
+
     public static Terms readObject (ObjectReader r) {
         return new Terms (
           r.readBigInteger(),
@@ -74,7 +74,7 @@ public class Terms {
           r.readBigInteger()
         );
       }
-  
+
       public static void writeObject (ObjectWriter w, Terms obj) {
         w.write(obj.controlVariable);
         w.write(obj.fixedTerm);

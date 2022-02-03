@@ -57,7 +57,7 @@ public class KarmaSubsidyRouter extends Ownable {
         super(Context.getCaller());
         this.name = "Karma Subsidy Router";
     }
-    
+
     /**
      * Add new subsidy controller for bond contract
      * 

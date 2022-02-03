@@ -11,7 +11,7 @@ import dao.karma.test.AssertUtils;
 import dao.karma.test.ScoreSpy;
 
 public class GetSubsidyInfoTest extends KarmaSubsidyRouterTest {
-  
+
   ScoreSpy<BondMock> bond;
   ScoreSpy<SubsidyControllerMock> subsidyController;
 

@@ -22,7 +22,7 @@ import dao.karma.test.ScoreSpy;
 public class KarmaFactoryStorageTest extends KarmaTest {
 
   ScoreSpy<KarmaFactoryStorage> factoryStorage;
-  
+
   void setup_factory_storage () throws Exception {
     factoryStorage = deploy(KarmaFactoryStorage.class);
   }

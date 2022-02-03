@@ -25,7 +25,7 @@ public class AddSubsidyControllerTest extends KarmaSubsidyRouterTest {
     assertEquals(null, KarmaSubsidyRouterClient.bondForController(subsidyRouter.score, subsidyController));
 
     KarmaSubsidyRouterClient.addSubsidyController(subsidyRouter.score, owner, subsidyController, bond);
-    
+
     // Check if written correctly
     assertEquals(bond, KarmaSubsidyRouterClient.bondForController(subsidyRouter.score, subsidyController));
   }

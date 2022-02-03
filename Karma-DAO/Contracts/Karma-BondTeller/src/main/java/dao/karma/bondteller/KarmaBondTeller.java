@@ -403,7 +403,7 @@ public class KarmaBondTeller implements IKarmaAccessControlled {
     public String name() {
         return this.name;
     }
-    
+
     // --- Implement IKarmaAccessControlled ---
     // ================================================
     // Event Logs

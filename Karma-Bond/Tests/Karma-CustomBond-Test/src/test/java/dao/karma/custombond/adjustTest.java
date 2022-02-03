@@ -20,7 +20,7 @@ import dao.karma.utils.JSONUtils;
 import score.Address;
 
 public class adjustTest extends KarmaCustomBondTest {
-  
+
   // Fake contracts
   Address karmaTreasury = sm.createAccount().getAddress();
   Address subsidyRouter = sm.createAccount().getAddress();
@@ -40,7 +40,7 @@ public class adjustTest extends KarmaCustomBondTest {
     BigInteger.valueOf(33300),
     BigInteger.valueOf(66600)
   };
-  
+
   // Initialization
   BigInteger controlVariable = BigInteger.valueOf(400000);
   long vestingTerm = 302400; // 1 week
@@ -104,7 +104,7 @@ public class adjustTest extends KarmaCustomBondTest {
       maxDebt,
       initialDebt
     );
-    
+
     // Enable the bond contract in the custom treasury
     KarmaCustomTreasuryClient.toggleBondContract(customTreasury.score, owner, bond.getAddress());
   }
@@ -190,7 +190,7 @@ public class adjustTest extends KarmaCustomBondTest {
       maxPrice,
       depositor
     );
-    
+
     // --- Check BCV 4 ---
     Terms terms4 = KarmaCustomBondClient.terms(bond.score);
     assertEquals(terms3.controlVariable, terms4.controlVariable);

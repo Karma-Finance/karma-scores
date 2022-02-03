@@ -22,7 +22,7 @@ import dao.karma.test.ScoreSpy;
 public class KarmaTreasuryTest extends KarmaTest {
 
   ScoreSpy<KarmaTreasury> treasury;
-  
+
   void setup_treasury () throws Exception {
     treasury = deploy(KarmaTreasury.class);
   }

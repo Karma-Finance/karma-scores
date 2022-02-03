@@ -341,7 +341,7 @@ public class KarmaCustomBond extends Ownable {
             )
         );
     }
-    
+
     // --- Custom Bond settings ---
     /**
      * Change address of Karma Treasury
@@ -434,7 +434,7 @@ public class KarmaCustomBond extends Ownable {
 
         // profits are calculated
         BigInteger fee = payout.multiply(currentKarmaFee()).divide(MathUtils.pow10(6));
-        
+
         // principal is transferred in, and 
         // deposited into the treasury, returning (amount - profit) payout token
         ICustomTreasury.deposit(this.customTreasury, this.principalToken, amount, payout);
@@ -446,7 +446,7 @@ public class KarmaCustomBond extends Ownable {
 
         // total debt is increased
         this.totalDebt.set(totalDebt.add(value));
-        
+
         // depositor info is stored
         var depositorBondInfo = this.bondInfo.getOrDefault(depositor, Bond.empty());
 
@@ -456,7 +456,7 @@ public class KarmaCustomBond extends Ownable {
             Context.getBlockHeight(),
             trueBondPrice()
         ));
-        
+
         // indexed events are emitted
         this.BondCreated(amount, payout, Context.getBlockHeight() + terms.vestingTerm);
         this.BondPriceChanged(_bondPrice(), debtRatio());
@@ -566,7 +566,7 @@ public class KarmaCustomBond extends Ownable {
 
         if (!adjustment.rate.equals(ZERO) && blockHeight >= blockCanAdjust ) {
             BigInteger initial = terms.controlVariable;
-            
+
             if (adjustment.add) {
                 terms.controlVariable = terms.controlVariable.add(adjustment.rate);
                 if (terms.controlVariable.compareTo(adjustment.target) >= 0) {
@@ -643,7 +643,7 @@ public class KarmaCustomBond extends Ownable {
 
         // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-5))
         BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IIRC2.decimals(this.payoutToken) - 5));
-        
+
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
         }
@@ -812,17 +812,17 @@ public class KarmaCustomBond extends Ownable {
     public BigInteger totalPrincipalBonded() {
         return this.totalPrincipalBonded.get();
     }
-    
+
     @External(readonly = true)
     public BigInteger totalPayoutGiven() {
         return this.totalPayoutGiven.get();
     }
-    
+
     @External(readonly = true)
     public BigInteger totalDebt() {
         return this.totalDebt.get();
     }
-    
+
     @External(readonly = true)
     public BigInteger payoutSinceLastSubsidy() {
         return this.payoutSinceLastSubsidy.get();

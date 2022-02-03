@@ -177,7 +177,7 @@ public class ServiceManager {
 
     public void revertFrame (long frameId) {
         var curFrameMemory = frameMemoryStorage.get(frameId);
-        
+
         // revert child frames
         var childFrames = frameTree.get(frameId);
         if (childFrames != null) {

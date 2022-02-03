@@ -23,7 +23,7 @@ import score.Address;
 public class KarmaFactoryTest extends KarmaTest {
 
   ScoreSpy<KarmaFactory> factory;
-  
+
   void setup_factory (
     Address karmaTreasury,
     Address karmaFactoryStorage,

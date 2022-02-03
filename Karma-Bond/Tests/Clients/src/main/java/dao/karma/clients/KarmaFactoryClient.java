@@ -49,7 +49,7 @@ public class KarmaFactoryClient {
   ) {
     client.invoke (from, "createBond", payoutToken, principalToken, customTreasury, initialOwner, tierCeilings, fees);
   }
-  
+
   public static void setCustomTreasuryContractBytes(Score client, Account from, byte[] content) {
     client.invoke(from, "setCustomTreasuryContractBytes", content);
   }

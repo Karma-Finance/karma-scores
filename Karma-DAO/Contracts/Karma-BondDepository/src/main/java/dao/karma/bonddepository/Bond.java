@@ -63,7 +63,7 @@ public class Bond {
       this.totalDebt = totalDebt;
       this.lastDecay = lastDecay;
     }
-    
+
     public static Bond readObject (ObjectReader r) {
       return new Bond (
         r.readAddress(),

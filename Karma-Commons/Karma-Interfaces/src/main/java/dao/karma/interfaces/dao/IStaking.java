@@ -30,7 +30,7 @@ public abstract class IStaking {
     var params = Json.object()
       .add("rebasing", rebasing.toString())
       .add("claim", claim.toString());
-    
+
     IIRC2.transfer(KARMA, staking, amount, JSONUtils.method("stake", params));
   }
 

@@ -141,7 +141,7 @@ public class KarmaStaking implements IKarmaAccessControlled {
         boolean claim
     ) {
         onlyKarma(token);
-        
+
         Context.require(token.equals(this.KARMA),
             "stake: only KARMA can be staked");
 
@@ -353,7 +353,7 @@ public class KarmaStaking implements IKarmaAccessControlled {
             }
         }
     }
-    
+
     @External
     public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) {
         JsonObject root = JSONUtils.parseData(_data);
@@ -478,7 +478,7 @@ public class KarmaStaking implements IKarmaAccessControlled {
     public BigInteger totalStaked () {
         return IsKARMA.circulatingSupply(this.sKARMA);
     }
-    
+
     /**
      * @return Total supply staked
      */
@@ -581,7 +581,7 @@ public class KarmaStaking implements IKarmaAccessControlled {
     public BigInteger warmupPeriod () {
         return this.warmupPeriod.get();
     }
-    
+
     // --- Implement IKarmaAccessControlled ---
     // ================================================
     // Event Logs

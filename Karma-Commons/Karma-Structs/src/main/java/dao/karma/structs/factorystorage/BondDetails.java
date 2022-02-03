@@ -51,7 +51,7 @@ public class BondDetails {
         this.tierCeilings = tierCeilings;
         this.fees = fees;
     }
-    
+
     public static BondDetails readObject (ObjectReader r) {
         Address payoutToken = r.readAddress();
         Address principalToken = r.readAddress();

@@ -26,11 +26,11 @@ public class uq112x112 {
   public BigInteger decode112with18 () {
     return this._x.divide(new BigInteger("5192296858534827"));
   }
-  
+
   public BigInteger decode(BigInteger zero) {
     return uint112(this._x.shiftRight(FixedPoint.RESOLUTION));
   }
-  
+
   public uq112x112(BigInteger x) {
     this._x = x;
   }

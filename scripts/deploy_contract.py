@@ -35,7 +35,7 @@ def get_params(package, endpoint):
 def deploy(config: Config, package: str, verbose=print_empty):
     owner = config.owner
     tx_handler = config.tx_handler
-    
+
     params = get_params(package, config.endpoint)
     javaPkg, version, build = get_meta(package, config.endpoint)
 

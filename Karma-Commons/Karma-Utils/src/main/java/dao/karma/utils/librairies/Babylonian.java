@@ -22,7 +22,7 @@ import static java.math.BigInteger.ZERO;
 import java.math.BigInteger;
 
 public class Babylonian {
-    
+
   public BigInteger sqrt (BigInteger x) {
     if (x.equals(ZERO)) {
       return ZERO;

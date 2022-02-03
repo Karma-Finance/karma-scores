@@ -22,7 +22,7 @@ import score.Address;
 import score.Context;
 
 public class IKarmaFactoryStorage {
-  
+
   public static TreasuryBond pushBond (
     Address karmaFactoryStorage,
     BondDetails details

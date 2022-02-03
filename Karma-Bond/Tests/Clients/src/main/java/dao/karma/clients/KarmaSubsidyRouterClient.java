@@ -26,7 +26,7 @@ public class KarmaSubsidyRouterClient {
   public static void addSubsidyController(Score client, Account from, Address subsidyController, Address bond) {
     client.invoke(from, "addSubsidyController", subsidyController, bond);
   }
-  
+
   public static void removeSubsidyController(Score client, Account from, Address subsidyController) {
     client.invoke(from, "removeSubsidyController", subsidyController);
   }

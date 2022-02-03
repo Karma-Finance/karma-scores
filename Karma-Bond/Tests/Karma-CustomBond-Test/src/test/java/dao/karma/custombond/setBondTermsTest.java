@@ -11,7 +11,7 @@ import dao.karma.test.AssertUtils;
 import score.Address;
 
 public class setBondTermsTest extends KarmaCustomBondTest {
-  
+
   // Fake contracts
   final Address customTreasury = sm.createAccount().getAddress();
   final Address karmaTreasury = sm.createAccount().getAddress();
@@ -82,7 +82,7 @@ public class setBondTermsTest extends KarmaCustomBondTest {
       value
     );
   }
-  
+
   @Test
   void testSetBondTermsVestingMustBeLongerThan36Hours () {
     int minHours = 36;
@@ -102,7 +102,7 @@ public class setBondTermsTest extends KarmaCustomBondTest {
       "setBondTerms: Vesting must be longer than 36 hours"
     );
   }
-  
+
   @Test
   void testSetBondTermsPayout () {
     var value = BigInteger.valueOf(500); // 500 = 0.5%

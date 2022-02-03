@@ -18,7 +18,7 @@ import dao.karma.test.tokens.Usdc;
 import dao.karma.utils.JSONUtils;
 
 public class WithdrawTest extends KarmaCustomTreasuryTest {
-  
+
   ScoreSpy<Bnusd> depositToken;
   ScoreSpy<Bnusd> payoutToken;
 
@@ -34,14 +34,14 @@ public class WithdrawTest extends KarmaCustomTreasuryTest {
     payoutToken = deploy(Bnusd.class, "bnUSD", "bnUSD", 18);
 
     setup_treasury(payoutToken.getAddress(), owner.getAddress());
-    
+
     // Mint depositToken to bondingContract
     IRC2Client.mint(depositToken.score, owner, EXA.multiply(BigInteger.valueOf(1000)));
     IRC2Client.transfer(depositToken.score, owner, bondContract, BigInteger.valueOf(1000));
     // Mint payoutToken to treasury 
     IRC2Client.mint(payoutToken.score, owner, EXA.multiply(BigInteger.valueOf(1000)));
     IRC2Client.transfer(payoutToken.score, owner, treasury.getAddress(), BigInteger.valueOf(1000), JSONUtils.method("funding"));
-  
+
     // Do the deposit to the treasury
     BigInteger amountPayoutToken = BigInteger.valueOf(1000);
     KarmaCustomTreasuryClient.toggleBondContract(treasury.score, owner, bondContract.getAddress());

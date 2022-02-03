@@ -22,7 +22,7 @@ import dao.karma.test.ScoreSpy;
 public class KarmaStandardBondingCalculatorTest extends KarmaTest {
 
   ScoreSpy<KarmaStandardBondingCalculator> standardbondingcalculator;
-  
+
   void setup_standardbondingcalculator () throws Exception {
     standardbondingcalculator = deploy(KarmaStandardBondingCalculator.class);
   }

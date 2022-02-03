@@ -10,7 +10,7 @@ import dao.karma.test.AssertUtils;
 import score.Address;
 
 public class RemoveSubsidyControllerTest extends KarmaSubsidyRouterTest {
-  
+
   Address bond = sm.createAccount().getAddress();
   Address subsidyController = sm.createAccount().getAddress();
 
@@ -23,17 +23,17 @@ public class RemoveSubsidyControllerTest extends KarmaSubsidyRouterTest {
   void testRemoveSubsidyController () {
     KarmaSubsidyRouterClient.addSubsidyController(subsidyRouter.score, owner, subsidyController, bond);
     KarmaSubsidyRouterClient.removeSubsidyController(subsidyRouter.score, owner, subsidyController);
-    
+
     // Check if correctly removed
     assertEquals(null, KarmaSubsidyRouterClient.bondForController(subsidyRouter.score, subsidyController));
   }
-  
+
   @Test
   void testSilentlyRemoveNotExists () {
     // Shouldn't raise if it doesn't exist
     KarmaSubsidyRouterClient.removeSubsidyController(subsidyRouter.score, owner, subsidyController);
   }
-  
+
   @Test
   void testNotOwner () {
     KarmaSubsidyRouterClient.addSubsidyController(subsidyRouter.score, owner, subsidyController, bond);

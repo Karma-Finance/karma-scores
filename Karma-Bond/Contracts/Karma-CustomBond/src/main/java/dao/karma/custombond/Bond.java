@@ -33,7 +33,7 @@ public class Bond {
     public long lastBlock;
     // Price paid (principal tokens per payout token) in ten-millionths - 4000000 = 0.4
     public BigInteger truePricePaid;
-    
+
     public Bond (
         BigInteger payout,
         long vesting,

@@ -39,7 +39,7 @@ public class KarmaCustomTreasuryClient {
   public static void deposit(Score client, Score depositToken, Account from, BigInteger amountDepositToken, BigInteger amountPayoutToken) {
     var params = Json.object()
       .add("amountPayoutToken", amountPayoutToken.toString());
-    
+
     IRC2Client.transfer(depositToken, from, client.getAddress(), amountDepositToken, JSONUtils.method("deposit", params));
   }
 

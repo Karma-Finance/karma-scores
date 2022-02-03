@@ -25,7 +25,7 @@ import score.annotation.EventLog;
 import score.annotation.External;
 
 public class Ownable {
-  
+
   // ================================================
   // Consts
   // ================================================
@@ -37,7 +37,7 @@ public class Ownable {
   // ================================================
   @EventLog(indexed = 2)
   public void OwnershipPushed(Address previousOwner, Address newOwner) {}
-  
+
   @EventLog(indexed = 2)
   public void OwnershipPulled(Address previousOwner, Address newOwner) {}
 
@@ -68,7 +68,7 @@ public class Ownable {
     this.OwnershipPushed (this.owner.get(), ZERO_ADDRESS);
     this.owner.set(ZERO_ADDRESS);
   }
-  
+
   @External
   public void pushManagement (Address newOwner) {
     onlyPolicy();

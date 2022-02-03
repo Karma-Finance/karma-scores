@@ -132,7 +132,7 @@ public class KarmaAuthority implements IKarmaAccessControlled {
             this.GovernorPushed(this.governor.get(), newGovernor, effectiveImmediately);
         }
     }
-    
+
     /**
      * Push a new guardian
      * 
@@ -221,7 +221,7 @@ public class KarmaAuthority implements IKarmaAccessControlled {
         // Access control
         Context.require(caller.equals(this.newGovernor.get()),
             "pullGovernor: Only new governor can call this method");
-        
+
         // OK
         this.GovernorPulled(this.governor(), this.newGovernor.get());
         this.governor.set(this.newGovernor.get());
@@ -240,7 +240,7 @@ public class KarmaAuthority implements IKarmaAccessControlled {
         // Access control
         Context.require(caller.equals(this.newGuardian.get()),
             "pullGuardian: Only new guardian can call this method");
-        
+
         // OK
         this.GuardianPulled(this.guardian(), this.newGuardian.get());
         this.guardian.set(this.newGuardian.get());
@@ -259,7 +259,7 @@ public class KarmaAuthority implements IKarmaAccessControlled {
         // Access control
         Context.require(caller.equals(this.newPolicy.get()),
             "pullPolicy: Only new policy can call this method");
-        
+
         // OK
         this.PolicyPulled(this.policy(), this.newPolicy.get());
         this.policy.set(this.newPolicy.get());
@@ -278,7 +278,7 @@ public class KarmaAuthority implements IKarmaAccessControlled {
         // Access control
         Context.require(caller.equals(this.newVault.get()),
             "pullVault: Only new vault can call this method");
-        
+
         // OK
         this.VaultPulled(this.vault(), this.newVault.get());
         this.vault.set(this.newVault.get());
@@ -295,22 +295,22 @@ public class KarmaAuthority implements IKarmaAccessControlled {
     public String name() {
         return this.name;
     }
-    
+
     @External(readonly = true)
     public Address governor() {
         return this.governor.get();
     }
-    
+
     @External(readonly = true)
     public Address guardian() {
         return this.guardian.get();
     }
-    
+
     @External(readonly = true)
     public Address policy() {
         return this.policy.get();
     }
-    
+
     @External(readonly = true)
     public Address vault() {
         return this.vault.get();

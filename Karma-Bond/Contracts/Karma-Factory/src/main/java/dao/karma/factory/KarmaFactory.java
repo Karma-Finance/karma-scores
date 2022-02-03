@@ -118,7 +118,7 @@ public class KarmaFactory extends Ownable {
 
         // The Custom Treasury Contract bytes cannot be set more than once
         checkCustomTreasuryContractBytesNotInitialized();
-        
+
         // OK
         this.customTreasuryContractBytes.set(contractBytes);
     }
@@ -208,7 +208,7 @@ public class KarmaFactory extends Ownable {
 
         return IKarmaFactoryStorage.pushBond (this.karmaFactoryStorage, details);
     }
-    
+
     /**
      * Deploys custom bond contract and returns address
      * 

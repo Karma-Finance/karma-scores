@@ -14,7 +14,7 @@ import dao.karma.test.AssertUtils;
 import score.Address;
 
 public class setAdjustmentTest extends KarmaCustomBondTest {
-  
+
   // Fake contracts
   Address customTreasury = sm.createAccount().getAddress();
   Address karmaTreasury = sm.createAccount().getAddress();
@@ -89,7 +89,7 @@ public class setAdjustmentTest extends KarmaCustomBondTest {
   @Test
   void testSetAdjustment () {
     initializeBond();
-    
+
     boolean addition = true;
     BigInteger increment = BigInteger.valueOf(1);
     BigInteger target = BigInteger.valueOf(6);
@@ -115,7 +115,7 @@ public class setAdjustmentTest extends KarmaCustomBondTest {
   @Test
   void testSetAdjustmentIncrementTooLarge () {
     initializeBond();
-    
+
     boolean addition = true;
     BigInteger increment = BigInteger.valueOf(12000); // 400000*30/1000
     BigInteger target = BigInteger.valueOf(6);

@@ -23,7 +23,7 @@ public class JSONUtils {
   public static byte[] method (String method) {
     return ("{\"method\": \"" + method + "\"}").getBytes();
   }
-  
+
   public static byte[] method (String method, JsonObject params) {
     JsonObject data = Json.object()
         .add("method", method)

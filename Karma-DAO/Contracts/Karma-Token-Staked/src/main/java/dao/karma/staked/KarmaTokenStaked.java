@@ -74,7 +74,7 @@ public class KarmaTokenStaked extends IRC2Basic {
 
     private final VarDB<BigInteger> _gonsPerFragment = Context.newVarDB(NAME + "_gonsPerFragment", BigInteger.class);
     private final DictDB<Address, BigInteger> _gonBalances = Context.newDictDB(NAME + "_gonBalances", BigInteger.class);
-    
+
     public final VarDB<Address> treasury = Context.newVarDB(NAME + "_treasury", Address.class);
     public final DictDB<Address, BigInteger> debtBalances = Context.newDictDB(NAME + "_debtBalances", BigInteger.class);
 
@@ -165,7 +165,7 @@ public class KarmaTokenStaked extends IRC2Basic {
     public void initialize (Address stakingContract, Address treasury) {
         // Access control
         onlyInitializer();
-        
+
         Context.require(!stakingContract.equals(ZERO_ADDRESS) && stakingContract.isContract(),
             "initialize: stakingContract is not a valid contract");
 
@@ -222,7 +222,7 @@ public class KarmaTokenStaked extends IRC2Basic {
         this.totalSupply.set(totalSupply);
 
         this._gonsPerFragment.set(TOTAL_GONS.divide(totalSupply));
-        
+
         _storeRebase(circulatingSupply, profit, epoch);
 
         return totalSupply;

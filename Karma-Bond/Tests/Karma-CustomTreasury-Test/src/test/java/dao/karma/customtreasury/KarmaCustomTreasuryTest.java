@@ -23,7 +23,7 @@ import score.Address;
 public class KarmaCustomTreasuryTest extends KarmaTest {
 
   ScoreSpy<KarmaCustomTreasury> treasury;
-  
+
   void setup_treasury (
     Address payoutToken, 
     Address initialOwner
