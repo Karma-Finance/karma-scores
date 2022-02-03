@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package dao.karma.custombond;
+package dao.karma.structs.bond;
 
 import static java.math.BigInteger.ZERO;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 import score.ObjectReader;
 import score.ObjectWriter;
@@ -69,6 +70,18 @@ public class Terms {
     }
 
     public static Terms empty() {
-      return new Terms(ZERO, 0L, ZERO, ZERO, ZERO);
+        return new Terms(ZERO, 0L, ZERO, ZERO, ZERO);
+    }
+
+    public static Terms fromMap(Object call) {
+        @SuppressWarnings("unchecked")
+        Map<String,Object> map = (Map<String,Object>) call;
+        return new Terms (
+            (BigInteger) map.get("controlVariable"),
+            ((BigInteger) map.get("vestingTerm")).longValue(),
+            (BigInteger) map.get("minimumPrice"),
+            (BigInteger) map.get("maxPayout"),
+            (BigInteger) map.get("maxDebt")
+        );
     }
 }

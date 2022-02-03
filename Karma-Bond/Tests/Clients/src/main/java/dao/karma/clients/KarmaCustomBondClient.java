@@ -25,6 +25,7 @@ import com.iconloop.score.test.Score;
 
 import dao.karma.standards.token.irc2.client.IRC2Client;
 import dao.karma.structs.bond.Adjust;
+import dao.karma.structs.bond.Terms;
 import dao.karma.utils.JSONUtils;
 import score.Address;
 
@@ -116,5 +117,9 @@ public class KarmaCustomBondClient {
     Address address
   ) {
     client.invoke(from, "redeem", address);
+  }
+
+  public static Terms terms(Score client) {
+    return Terms.fromMap(client.call("terms"));
   }
 }

@@ -27,6 +27,7 @@ import dao.karma.interfaces.bond.ICustomTreasury;
 import dao.karma.interfaces.dao.ITreasury;
 import dao.karma.interfaces.irc2.IIRC2;
 import dao.karma.structs.bond.Adjust;
+import dao.karma.structs.bond.Terms;
 import dao.karma.types.Ownable;
 import dao.karma.utils.JSONUtils;
 import dao.karma.utils.MathUtils;
@@ -408,9 +409,6 @@ public class KarmaCustomBond extends Ownable {
         BigInteger totalDebt = this.totalDebt.get();
         var terms = this.terms.get();
 
-        Context.require(totalDebt.compareTo(terms.maxDebt) <= 0,
-            "deposit: Max capacity reached");
-
         BigInteger nativePrice = trueBondPrice();
 
         // slippage protection
@@ -420,6 +418,10 @@ public class KarmaCustomBond extends Ownable {
         BigInteger value = ICustomTreasury.valueOfToken(this.customTreasury, this.principalToken, amount);
         // payout to bonder is computed
         BigInteger payout = _payoutFor(value);
+
+        // Check if the deposit doesn't exceed the max debt
+        Context.require(totalDebt.add(value).compareTo(terms.maxDebt) <= 0,
+            "deposit: Max capacity reached");
 
         // must be > 0.01 payout token (underflow protection)
         // payout >= (10**payoutDecimals)/100

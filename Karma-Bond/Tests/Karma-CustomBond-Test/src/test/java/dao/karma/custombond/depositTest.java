@@ -80,7 +80,7 @@ public class depositTest extends KarmaCustomBondTest {
     long vestingTerm = 302400; // 1 week
     BigInteger minimumPrice = BigInteger.valueOf(5403);
     BigInteger maxPayout = BigInteger.valueOf(500);
-    BigInteger maxDebt = new BigInteger("5000000000");
+    BigInteger maxDebt = EXA.multiply(BigInteger.valueOf(5000));
     BigInteger initialDebt = new BigInteger("1560000000");
 
     KarmaCustomBondClient.setBondTerms(bond.score, owner, KarmaCustomBond.VESTING, BigInteger.valueOf(302400));
@@ -101,7 +101,7 @@ public class depositTest extends KarmaCustomBondTest {
     // Do the deposit from alice
     BigInteger alicePrincipalBefore = IRC2Client.balanceOf(principalToken.score, alice);
     BigInteger bondPayoutBefore     = IRC2Client.balanceOf(payoutToken.score, bond.getAddress());
-    
+
     reset(payoutToken.spy);
     reset(principalToken.spy);
     KarmaCustomBondClient.deposit(
