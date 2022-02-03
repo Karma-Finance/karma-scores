@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dao.karma.client.KarmaFactoryStorageClient;
+import dao.karma.clients.KarmaFactoryStorageClient;
 import dao.karma.structs.factorystorage.BondDetails;
 import score.Address;
 

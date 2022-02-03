@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dao.karma.client.KarmaCustomTreasuryClient;
+import dao.karma.clients.KarmaCustomTreasuryClient;
 import dao.karma.test.ScoreSpy;
 import dao.karma.test.tokens.Bnusd;
 

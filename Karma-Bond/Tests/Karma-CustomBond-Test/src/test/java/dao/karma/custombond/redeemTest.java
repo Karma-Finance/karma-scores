@@ -1,9 +1,7 @@
 package dao.karma.custombond;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigInteger;
 
@@ -11,7 +9,6 @@ import com.iconloop.score.test.Account;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import dao.karma.clients.KarmaCustomBondClient;
 import dao.karma.clients.KarmaCustomTreasuryClient;
@@ -19,11 +16,14 @@ import dao.karma.custombond.tokens.PayoutToken;
 import dao.karma.custombond.tokens.PrincipalToken;
 import dao.karma.customtreasury.KarmaCustomTreasury;
 import dao.karma.standards.token.irc2.client.IRC2Client;
+import dao.karma.test.AssertUtils;
 import dao.karma.test.ScoreSpy;
+import dao.karma.test.SleepUtils;
 import dao.karma.utils.JSONUtils;
+import dao.karma.utils.TimeUtils;
 import score.Address;
 
-public class depositTest extends KarmaCustomBondTest {
+public class redeemTest extends KarmaCustomBondTest {
   // Fake contracts
   final Account subsidyRouterAccount = sm.createAccount();
   final Address karmaTreasury = sm.createAccount().getAddress();
@@ -65,7 +65,7 @@ public class depositTest extends KarmaCustomBondTest {
   }
 
   @Test
-  void testDeposit () {
+  void testRedeem () {
     BigInteger amount = EXA.divide(BigInteger.TEN);
     BigInteger maxPrice = BigInteger.valueOf(6000);
     Address depositor = owner.getAddress();
@@ -99,11 +99,6 @@ public class depositTest extends KarmaCustomBondTest {
     KarmaCustomTreasuryClient.toggleBondContract(customTreasury.score, owner, bond.getAddress());
 
     // Do the deposit from alice
-    BigInteger alicePrincipalBefore = IRC2Client.balanceOf(principalToken.score, alice);
-    BigInteger bondPayoutBefore     = IRC2Client.balanceOf(payoutToken.score, bond.getAddress());
-    
-    reset(payoutToken.spy);
-    reset(principalToken.spy);
     KarmaCustomBondClient.deposit(
       bond.score,
       alice, 
@@ -112,23 +107,51 @@ public class depositTest extends KarmaCustomBondTest {
       maxPrice,
       depositor
     );
-    BigInteger alicePrincipalAfter = IRC2Client.balanceOf(principalToken.score, alice);
-    BigInteger bondPayoutAfter     = IRC2Client.balanceOf(payoutToken.score, bond.getAddress());
 
-    // verify token transfers
-    ArgumentCaptor<Address> from = ArgumentCaptor.forClass(Address.class);
-    ArgumentCaptor<Address> to = ArgumentCaptor.forClass(Address.class);
-    ArgumentCaptor<BigInteger> _amount = ArgumentCaptor.forClass(BigInteger.class);
-    ArgumentCaptor<byte[]> data = ArgumentCaptor.forClass(byte[].class);
+    // Redeem immediatly in the same block : there should be no payout
+    BigInteger ownerBefore = IRC2Client.balanceOf(payoutToken.score, owner);
+    KarmaCustomBondClient.redeem (
+      bond.score,
+      alice,
+      owner.getAddress()
+      );
+    BigInteger ownerAfter = IRC2Client.balanceOf(payoutToken.score, owner);
+    assertEquals(ownerBefore, ownerAfter);
 
-    // Alice -> Bond
-    verify(principalToken.spy, atLeastOnce()).Transfer(from.capture(), to.capture(), _amount.capture(), data.capture());
-    assertEquals(from.getValue(), alice.getAddress());
-    assertEquals(to.getValue(), bond.getAddress());
-    assertEquals(_amount.getValue(), amount);
+    // Sleep 1 day
+    SleepUtils.sleep(TimeUtils.ONE_DAY);
+    
+    ownerBefore = IRC2Client.balanceOf(payoutToken.score, owner);
+    KarmaCustomBondClient.redeem (
+      bond.score,
+      alice,
+      owner.getAddress()
+      );
+    ownerAfter = IRC2Client.balanceOf(payoutToken.score, owner);
+    // depositor should have received payout tokens
+    assertTrue(ownerAfter.compareTo(ownerBefore) > 0);
+    
+    // Sleep 1 week (vestingTerm)
+    SleepUtils.sleep(TimeUtils.ONE_WEEK);
+    
+    ownerBefore = IRC2Client.balanceOf(payoutToken.score, owner);
+    KarmaCustomBondClient.redeem (
+      bond.score,
+      alice,
+      owner.getAddress()
+    );
+    ownerAfter = IRC2Client.balanceOf(payoutToken.score, owner);
+    // depositor should have received payout tokens
+    assertTrue(ownerAfter.compareTo(ownerBefore) > 0);
 
-    assertEquals(alicePrincipalBefore.subtract(amount), alicePrincipalAfter);
-    assertEquals(new BigInteger("0"), bondPayoutBefore);
-    assertEquals(new BigInteger("178919119007958563209"), bondPayoutAfter);
+    // There shouldn't be anything left to redeem, the bond info should have been deleted
+    AssertUtils.assertThrowsMessage(() ->
+      KarmaCustomBondClient.redeem (
+        bond.score,
+        alice,
+        owner.getAddress()
+      ),
+      "redeem: no bond registered for depositor"
+    );
   }
 }

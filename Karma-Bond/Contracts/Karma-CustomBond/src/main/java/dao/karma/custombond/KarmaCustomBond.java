@@ -26,6 +26,7 @@ import com.eclipsesource.json.JsonObject;
 import dao.karma.interfaces.bond.ICustomTreasury;
 import dao.karma.interfaces.dao.ITreasury;
 import dao.karma.interfaces.irc2.IIRC2;
+import dao.karma.structs.bond.Adjust;
 import dao.karma.types.Ownable;
 import dao.karma.utils.JSONUtils;
 import dao.karma.utils.MathUtils;
@@ -513,7 +514,7 @@ public class KarmaCustomBond extends Ownable {
         Address depositor
     ) {
         var info = this.bondInfo.get(depositor);
-        Context.require(info != null, 
+        Context.require(info != null,
             "redeem: no bond registered for depositor");
 
         // (blocks since last interaction / vesting term remaining)
@@ -531,11 +532,11 @@ public class KarmaCustomBond extends Ownable {
         } else {
             // if unfinished
             // calculate payout vested
-            BigInteger payout = info.payout.multiply(percentVested).divide(denominator);
+            BigInteger fractionPayout = info.payout.multiply(percentVested).divide(denominator);
             long blockHeight = Context.getBlockHeight();
 
             // store updated deposit info
-            BigInteger newPayout = info.payout.subtract(payout);
+            BigInteger newPayout = info.payout.subtract(fractionPayout);
             bondInfo.set(depositor, new Bond(
                 newPayout,
                 info.vesting - (blockHeight - info.lastBlock),
@@ -543,9 +544,9 @@ public class KarmaCustomBond extends Ownable {
                 info.truePricePaid
             ));
 
-            this.BondRedeemed(depositor, payout, newPayout);
-            IIRC2.transfer(this.payoutToken, depositor, payout, JSONUtils.method("redeem"));
-            return payout;
+            this.BondRedeemed(depositor, fractionPayout, newPayout);
+            IIRC2.transfer(this.payoutToken, depositor, fractionPayout, JSONUtils.method("redeem"));
+            return fractionPayout;
         }
     }
 

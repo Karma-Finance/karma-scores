@@ -274,6 +274,8 @@ private void deposit (
 
 ## `KarmaCustomBond::redeem`
 
+![svg/redeem.svg](svg/redeem.svg)
+
 ### 📜 Method Call
 
 - Redeem bond for user

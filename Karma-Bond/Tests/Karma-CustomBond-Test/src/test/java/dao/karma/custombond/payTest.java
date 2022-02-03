@@ -7,7 +7,7 @@ import com.iconloop.score.test.Account;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dao.karma.client.KarmaCustomBondClient;
+import dao.karma.clients.KarmaCustomBondClient;
 import dao.karma.custombond.tokens.PayoutToken;
 import dao.karma.custombond.tokens.PrincipalToken;
 import dao.karma.customtreasury.KarmaCustomTreasury;

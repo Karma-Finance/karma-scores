@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dao.karma.client;
+package dao.karma.clients;
 
 import java.math.BigInteger;
 
@@ -23,8 +23,8 @@ import com.eclipsesource.json.JsonObject;
 import com.iconloop.score.test.Account;
 import com.iconloop.score.test.Score;
 
-import dao.karma.custombond.Adjust;
 import dao.karma.standards.token.irc2.client.IRC2Client;
+import dao.karma.structs.bond.Adjust;
 import dao.karma.utils.JSONUtils;
 import score.Address;
 
@@ -108,5 +108,13 @@ public class KarmaCustomBondClient {
     BigInteger amount
   ) {
     IRC2Client.transfer(payoutToken, from, client.getAddress(), amount, JSONUtils.method("pay"));
+  }
+
+  public static void redeem (
+    Score client, 
+    Account from, 
+    Address address
+  ) {
+    client.invoke(from, "redeem", address);
   }
 }

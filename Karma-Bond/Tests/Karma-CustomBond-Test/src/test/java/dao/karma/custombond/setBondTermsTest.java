@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dao.karma.client.KarmaCustomBondClient;
+import dao.karma.clients.KarmaCustomBondClient;
 import dao.karma.structs.factorystorage.BondDetails;
 import dao.karma.test.AssertUtils;
 import score.Address;

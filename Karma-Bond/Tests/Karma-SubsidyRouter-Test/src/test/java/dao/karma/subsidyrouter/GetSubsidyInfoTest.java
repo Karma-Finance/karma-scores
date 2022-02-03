@@ -3,7 +3,7 @@ package dao.karma.subsidyrouter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dao.karma.client.KarmaSubsidyRouterClient;
+import dao.karma.clients.KarmaSubsidyRouterClient;
 import dao.karma.subsidyrouter.client.SubsidyControllerMockClient;
 import dao.karma.subsidyrouter.mocks.BondMock;
 import dao.karma.subsidyrouter.mocks.SubsidyControllerMock;

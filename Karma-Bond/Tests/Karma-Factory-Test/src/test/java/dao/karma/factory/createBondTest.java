@@ -8,7 +8,7 @@ import com.iconloop.score.test.Score;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dao.karma.client.KarmaFactoryClient;
+import dao.karma.clients.KarmaFactoryClient;
 import dao.karma.factory.mocks.FactoryStorageMock;
 
 public class createBondTest extends KarmaFactoryTest {

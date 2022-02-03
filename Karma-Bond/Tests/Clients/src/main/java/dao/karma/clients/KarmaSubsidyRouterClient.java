@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dao.karma.client;
+package dao.karma.clients;
 
 import com.iconloop.score.test.Account;
 import com.iconloop.score.test.Score;

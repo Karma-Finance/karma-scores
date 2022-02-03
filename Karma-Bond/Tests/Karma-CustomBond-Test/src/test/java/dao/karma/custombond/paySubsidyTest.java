@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import dao.karma.client.KarmaCustomBondClient;
+import dao.karma.clients.KarmaCustomBondClient;
 import dao.karma.structs.factorystorage.BondDetails;
 import dao.karma.test.AssertUtils;
 import score.Address;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dao.karma.custombond;
+package dao.karma.structs.bond;
 
 import static java.math.BigInteger.ZERO;
 
