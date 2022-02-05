@@ -231,9 +231,9 @@ public class KarmaCustomTreasury extends Ownable {
         BigInteger amount
     ) {
         // convert amount to match payout token decimals
-        int payoutTokenDecimals = IIRC2.decimals(payoutToken);
-        int principalTokenDecimals = IIRC2.decimals(principalTokenAddress);
+        int payoutDecimals = IIRC2.decimals(payoutToken);
+        int principalDecimals = IIRC2.decimals(principalTokenAddress);
 
-        return amount.multiply(MathUtils.pow10(payoutTokenDecimals)).divide(MathUtils.pow10(principalTokenDecimals));
+        return amount.multiply(MathUtils.pow10(payoutDecimals)).divide(MathUtils.pow10(principalDecimals));
     }
 }
