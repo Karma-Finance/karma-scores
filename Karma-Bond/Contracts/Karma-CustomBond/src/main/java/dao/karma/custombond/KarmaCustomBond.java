@@ -365,14 +365,14 @@ public class KarmaCustomBond extends Ownable {
     /**
      * Subsidy controller checks payouts since last subsidy and resets counter
      * 
-     * Access: Subsidy Controller
+     * Access: Subsidy Router
      */
     @External
     public BigInteger paySubsidy() {
         final Address caller = Context.getCaller();
 
         // Access control
-        checkSubsidy(caller);
+        checkSubsidyRouter(caller);
 
         // OK
         BigInteger result = payoutSinceLastSubsidy.get();
@@ -625,7 +625,7 @@ public class KarmaCustomBond extends Ownable {
             "checkKarmaDao: only KarmaDAO can call this method");
     }
 
-    private void checkSubsidy(Address caller) {
+    private void checkSubsidyRouter(Address caller) {
         Context.require(caller.equals(this.subsidyRouter),
             "checkSubsidy: only Subsidy Router can call this method");
     }

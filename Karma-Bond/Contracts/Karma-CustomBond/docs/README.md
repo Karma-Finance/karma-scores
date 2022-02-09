@@ -203,7 +203,7 @@ public void changeKarmaTreasury (
 ### 📜 Method Call
 
 - Subsidy controller checks payouts since last subsidy and resets counter
-- Access: Subsidy Controller
+- Access: Subsidy Router
 
 ```java
 @External
