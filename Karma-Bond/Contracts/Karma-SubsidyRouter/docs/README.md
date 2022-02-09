@@ -1,5 +1,7 @@
 # Karma Subsidy Router Documentation
 
+Subsidy Router is a contract that routes between Karma Bond and subsidy controllers.
+Allows for subsidies on bonds offered through bond contracts.
 
 ---
 
