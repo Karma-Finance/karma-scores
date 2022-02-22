@@ -107,8 +107,10 @@ public class KarmaSubsidyRouter extends Ownable {
     @External
     public BigInteger getSubsidyInfo() {
         final Address caller = Context.getCaller();
-        Address bond = this.bondForController.get(caller);
 
+        // Access control
+        Address bond = this.bondForController.get(caller);
+        // Only a registred subsidy controller can call this method
         Context.require (bond != null,
             "getSubsidyInfo: Address not mapped");
 
