@@ -23,7 +23,7 @@ import java.math.BigInteger;
 
 import com.eclipsesource.json.JsonObject;
 
-import dao.karma.interfaces.bond.ICustomTreasury;
+import dao.karma.interfaces.bond.ICustomTreasuryBalanced;
 import dao.karma.interfaces.dao.ITreasury;
 import dao.karma.interfaces.irc2.IIRC2;
 import dao.karma.structs.bond.Adjust;
@@ -54,7 +54,8 @@ public class KarmaCustomBondBalanced extends Ownable {
     private final String name;
 
     private final Address payoutToken; // token paid for principal
-    private final Address principalToken; // inflow token
+    private final Address principalToken; // inflow token - should always be a Balanced LP token. In the current Balanced Protocol implementation, this is the DEX contract.
+    private final BigInteger principalPoolId; // The Balanced LP token Pool ID
     private final Address customTreasury; // pays for and receives principal
     private final Address karmaDAO; // The KarmaDAO contract address
     private final Address subsidyRouter; // pays subsidy in Karma to custom treasury
@@ -131,7 +132,8 @@ public class KarmaCustomBondBalanced extends Ownable {
      * 
      * @param customTreasury The custom treasury associated with the bond
      * @param payoutToken The payout token address associated with the bond, token paid for principal
-     * @param principalToken The inflow token
+     * @param principalToken The inflow token (should always be a Balanced LP Token)
+     * @param principalPoolId The inflow token pool ID
      * @param karmaTreasury The Karma treasury
      * @param subsidyRouter pays subsidy in Karma to custom treasury
      * @param initialOwner The initial policy role address
@@ -143,6 +145,7 @@ public class KarmaCustomBondBalanced extends Ownable {
         Address customTreasury,
         Address payoutToken,
         Address principalToken,
+        BigInteger principalPoolId,
         Address karmaTreasury,
         Address subsidyRouter,
         Address initialOwner,
@@ -169,6 +172,7 @@ public class KarmaCustomBondBalanced extends Ownable {
         this.customTreasury = customTreasury;
         this.payoutToken = payoutToken;
         this.principalToken = principalToken;
+        this.principalPoolId = principalPoolId;
         this.subsidyRouter = subsidyRouter;
         this.karmaDAO = karmaDAO;
 
@@ -395,11 +399,15 @@ public class KarmaCustomBondBalanced extends Ownable {
         Address caller, // the method caller. This field is handled by tokenFallback
         Address token, // only principalToken is accepted. This field is handled by tokenFallback
         BigInteger amount, // amount of principal inflow token received. This field is handled by tokenFallback
+        BigInteger poolId, // The LP token Pool ID. This field is handled by tokenFallback
         BigInteger maxPrice,
         Address depositor
     ) {
         Context.require(token.equals(this.principalToken),
             "deposit: Only principal token accepted for deposit");
+
+        Context.require(poolId.equals(this.principalPoolId),
+            "deposit: Wrong LP token Pool ID");
 
         Context.require(!depositor.equals(ZERO_ADDRESS), 
             "deposit: invalid depositor");
@@ -415,7 +423,7 @@ public class KarmaCustomBondBalanced extends Ownable {
         Context.require(maxPrice.compareTo(nativePrice) >= 0,
             "deposit: Slippage limit: more than max price"); 
 
-        BigInteger value = ICustomTreasury.valueOfToken(this.customTreasury, this.principalToken, amount);
+        BigInteger value = ICustomTreasuryBalanced.valueOfToken(this.customTreasury, this.principalToken, amount);
         // payout to bonder is computed
         BigInteger payout = _payoutFor(value);
 
@@ -437,7 +445,7 @@ public class KarmaCustomBondBalanced extends Ownable {
 
         // principal is transferred in, and 
         // deposited into the treasury, returning (amount - profit) payout token
-        ICustomTreasury.deposit(this.customTreasury, this.principalToken, amount, payout);
+        ICustomTreasuryBalanced.deposit(this.customTreasury, this.principalToken, amount, this.principalPoolId, payout);
 
         // Fee is transferred to DAO treasury
         if (!fee.equals(ZERO)) {
@@ -476,7 +484,7 @@ public class KarmaCustomBondBalanced extends Ownable {
     }
 
     @External
-    public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) {
+    public void onIRC31Received (Address _from, BigInteger _value, BigInteger _id, @Optional byte[] _data) {
         JsonObject root = JSONUtils.parseData(_data);
         String method = root.get("method").asString();
         Address token = Context.getCaller();
@@ -487,10 +495,23 @@ public class KarmaCustomBondBalanced extends Ownable {
                 JsonObject params = root.get("params").asObject();
                 BigInteger maxPrice = StringUtils.toBigInt(params.get("maxPrice").asString());
                 Address depositor = Address.fromString(params.get("depositor").asString());
-                deposit(_from, token, _value, maxPrice, depositor);
+                deposit(_from, token, _value, _id, maxPrice, depositor);
                 break;
             }
 
+            default:
+                Context.revert("onIRC31Received: Unimplemented tokenFallback action");
+        }
+    }
+
+    @External
+    public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) {
+        JsonObject root = JSONUtils.parseData(_data);
+        String method = root.get("method").asString();
+        Address token = Context.getCaller();
+
+        switch (method)
+        {
             case "pay": {
                 // Accept payoutToken as payment from the deposit
                 Context.require(token.equals(this.payoutToken), 

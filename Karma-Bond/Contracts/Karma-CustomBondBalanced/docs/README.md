@@ -16,6 +16,7 @@ public KarmaCustomBondBalanced (
   Address customTreasury,
   Address payoutToken,
   Address principalToken,
+  BigInteger principalPoolId,
   Address karmaTreasury,
   Address subsidyRouter,
   Address initialOwner,
@@ -27,7 +28,8 @@ public KarmaCustomBondBalanced (
 
 - `customTreasury`: The custom treasury associated with the bond
 - `payoutToken`: The payout token address associated with the bond, token paid for principal
-- `principalToken`: The inflow token
+- `principalToken`: inflow token - should always be a Balanced LP token. In the current Balanced Protocol implementation, this is the DEX contract.
+- `principalPoolId`: The inflow token pool ID
 - `karmaTreasury`: The Karma treasury
 - `subsidyRouter`: pays subsidy in Karma to custom treasury
 - `initialOwner`: The initial policy role address
@@ -239,6 +241,7 @@ private void deposit (
   Address caller, 
   Address token, 
   BigInteger amount, 
+  BigInteger poolId, 
   BigInteger maxPrice,
   Address depositor
 )
@@ -247,6 +250,7 @@ private void deposit (
 - `caller`: The method caller. This field is handled by tokenFallback
 - `token`: Only principalToken is accepted. This field is handled by tokenFallback
 - `amount`: Amount of principal inflow token received. This field is handled by tokenFallback
+- `poolId`: The LP token Pool ID. This field is handled by tokenFallback
 - `maxPrice`: Max price for slippage protection. `maxPrice` value needs to be superior or equal to the bond price, otherwise the transaction will fail.
 - `depositor`: Registered depositor of the bond
 
@@ -259,6 +263,7 @@ private void deposit (
   "params": {
     "_to": KarmaCustomBondBalanced,
     "_value": "0xde0b6b3a7640000", // 10**18 - equivalent to amount parameter
+    "_id": "0x3", // pool ID = 3
     "_data": hex({
       "method": "deposit",
       "params": {
