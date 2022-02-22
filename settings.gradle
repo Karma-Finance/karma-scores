@@ -9,6 +9,7 @@ include (
   ':Karma-Bond:Contracts:Karma-CustomBond',
   ':Karma-Bond:Contracts:Karma-CustomBondBalanced',
   ':Karma-Bond:Contracts:Karma-CustomTreasury',
+  ':Karma-Bond:Contracts:Karma-CustomTreasuryBalanced',
   ':Karma-Bond:Contracts:Karma-Factory',
   ':Karma-Bond:Contracts:Karma-FactoryStorage',
   ':Karma-Bond:Contracts:Karma-SubsidyRouter',
