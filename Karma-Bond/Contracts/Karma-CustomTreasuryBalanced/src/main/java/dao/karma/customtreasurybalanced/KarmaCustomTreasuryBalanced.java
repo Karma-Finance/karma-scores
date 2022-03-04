@@ -139,7 +139,7 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
     public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) {
         JsonObject root = JSONUtils.parseData(_data);
         String method = root.get("method").asString();
-        Address token = Context.getCaller();
+        // Address token = Context.getCaller();
 
         switch (method)
         {
