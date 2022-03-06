@@ -230,8 +230,8 @@ public BigInteger paySubsidy()
 
 ### 📜 Method Call
 
-- Deposit bond
-- Access: Subsidy Controller
+- Deposit the principal IRC2 token to the bond
+- Access: Everyone
 
 ```java
 // @External - this method is external through tokenFallback
@@ -269,6 +269,21 @@ private void deposit (
   }
 }
 ```
+
+## `KarmaCustomBond::depositIcx`
+
+### 📜 Method Call
+
+- Deposit ICX (principal token) to the bond
+- Access: Everyone
+
+```java
+@External
+@Payable
+public void depositIcx (BigInteger maxPrice, Address depositor)
+```
+
+- See `KarmaCustomBond::deposit` documentation
 
 ---
 
