@@ -494,7 +494,7 @@ public class KarmaCustomBond extends Ownable {
             }
 
             case "pay": {
-                pay(token);
+                pay(token, _value);
                 break;
             }
 
@@ -503,33 +503,12 @@ public class KarmaCustomBond extends Ownable {
         }
     }
 
-    private void pay (Address token) {
+    private void pay (Address token, BigInteger value) {
+        Context.require(value.compareTo(BigInteger.ZERO) > 0,
+            "pay: Nothing paid");
         // Only accept payoutToken as payment from the deposit
         Context.require(token.equals(this.payoutToken), 
             "pay: Only payout token is accepted as payment");
-    }
-
-    // --- ICX token implementation ---
-    @Payable
-    public void fallback () {
-        Context.revert("fallback: Cannot transfer ICX to custom bond directly");
-    }
-
-    @External
-    @Payable
-    public void depositIcx (BigInteger maxPrice, Address depositor) {
-        final BigInteger value = Context.getValue();
-        final Address token = ICX.TOKEN_ADDRESS;
-        final Address caller = Context.getCaller();
-        deposit(caller, token, value, maxPrice, depositor);
-    }
-
-    @External
-    @Payable
-    public void payIcx () {
-        // Accept payoutToken as payment from the deposit
-        final Address token = ICX.TOKEN_ADDRESS;
-        pay(token);
     }
 
     /**
@@ -579,6 +558,27 @@ public class KarmaCustomBond extends Ownable {
             IToken.transfer(this.payoutToken, depositor, fractionPayout);
             return fractionPayout;
         }
+    }
+
+    // --- ICX token implementation ---
+    @Payable
+    public void fallback () {
+        Context.revert("fallback: Cannot transfer ICX to custom bond directly");
+    }
+
+    @External
+    @Payable
+    public void depositIcx (BigInteger maxPrice, Address depositor) {
+        final BigInteger value = Context.getValue();
+        final Address token = ICX.TOKEN_ADDRESS;
+        final Address caller = Context.getCaller();
+        deposit(caller, token, value, maxPrice, depositor);
+    }
+
+    @External
+    @Payable
+    public void payIcx () {
+        pay(ICX.TOKEN_ADDRESS, Context.getValue());
     }
 
     // --- Internal help functions ---

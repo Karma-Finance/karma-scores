@@ -72,8 +72,7 @@ public class redeemIcxTest extends KarmaCustomBondTest {
     // send some principal token to alice
     IRC2Client.transfer(principalToken.score, owner, alice, amount);
     // send some payout token
-    bond.getAccount().addBalance("ICX", EXA.multiply(BigInteger.valueOf(10_000_000)));
-    customTreasury.getAccount().addBalance("ICX", EXA.multiply(BigInteger.valueOf(5000)));
+    customTreasury.getAccount().addBalance("ICX", EXA.multiply(BigInteger.valueOf(2_000_000)));
 
     // Initialize bond
     BigInteger controlVariable = BigInteger.valueOf(4_000);
