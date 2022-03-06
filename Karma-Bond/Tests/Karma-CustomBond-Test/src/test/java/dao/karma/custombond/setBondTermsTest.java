@@ -99,7 +99,7 @@ public class setBondTermsTest extends KarmaCustomBondTest {
         KarmaCustomBond.VESTING,
         value.subtract(BigInteger.ONE) // -1 so it should throw
       ),
-      "setBondTerms: Vesting must be longer than 36 hours"
+      "setBondTerms: Vesting must be longer than " + KarmaCustomBond.BOND_TERMS_VESTING_MIN_SECONDS + " seconds"
     );
   }
 

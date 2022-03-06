@@ -63,8 +63,8 @@ public class KarmaCustomBond extends Ownable {
 
     // --- Bond constants ---
     // When calling setBondTerms(VESTING), 
-    // vesting must be longer than `VESTING_MIN_HOURS` hours
-    private final int BOND_TERMS_VESTING_MIN_HOURS = 36;
+    // vesting must be longer than `BOND_TERMS_VESTING_MIN_SECONDS` hours
+    public final static int BOND_TERMS_VESTING_MIN_SECONDS = 36 * 3600; // 36 hours
     // When calling setBondTerms(VESTING), 
     // maxPayout must be <= 1000 (= 1%)
     private final BigInteger BOND_TERMS_PAYOUT_MAX_PERCENT = BigInteger.valueOf(1000);
@@ -75,6 +75,7 @@ public class KarmaCustomBond extends Ownable {
     // Arbitrary payout precision
     private final int PAYOUT_PRECISION = 6;
     // Arbitrary vesting precision
+    // 10000 = 100%
     private final BigInteger FULLY_VESTED = BigInteger.valueOf(10000);
 
     // ================================================
@@ -300,9 +301,9 @@ public class KarmaCustomBond extends Ownable {
         switch (parameter) {
             case VESTING: {
                 int averageBlockTimeInSeconds = 2;
-                int minVesting = BOND_TERMS_VESTING_MIN_HOURS * 3600 / averageBlockTimeInSeconds;
+                int minVesting = BOND_TERMS_VESTING_MIN_SECONDS / averageBlockTimeInSeconds;
                 Context.require(input.compareTo(BigInteger.valueOf(minVesting)) >= 0, 
-                    "setBondTerms: Vesting must be longer than " + BOND_TERMS_VESTING_MIN_HOURS + " hours");
+                    "setBondTerms: Vesting must be longer than " + BOND_TERMS_VESTING_MIN_SECONDS + " seconds");
                 terms.vestingTerm = input.longValueExact();
             } break;
 
@@ -660,7 +661,6 @@ public class KarmaCustomBond extends Ownable {
 
         return price;
     }
-
 
     // ================================================
     // Checks
