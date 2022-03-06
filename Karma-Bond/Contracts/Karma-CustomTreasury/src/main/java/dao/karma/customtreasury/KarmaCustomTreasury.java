@@ -19,7 +19,8 @@ package dao.karma.customtreasury;
 import java.math.BigInteger;
 
 import com.eclipsesource.json.JsonObject;
-import dao.karma.interfaces.irc2.IIRC2;
+
+import dao.karma.interfaces.bond.IToken;
 
 import dao.karma.utils.AddressUtils;
 import dao.karma.utils.JSONUtils;
@@ -111,7 +112,7 @@ public class KarmaCustomTreasury extends Ownable {
         Context.require(bondContract.getOrDefault(caller, false), 
             "deposit: caller is not a bond contract");
 
-        IIRC2.transfer(this.payoutToken, caller, amountPayoutToken, JSONUtils.method("pay"));
+        IToken.transfer(this.payoutToken, caller, amountPayoutToken, "pay");
     }
 
     @External
@@ -159,7 +160,7 @@ public class KarmaCustomTreasury extends Ownable {
         // Access control
         onlyPolicy();
 
-        IIRC2.transfer(token, destination, amount, JSONUtils.method("withdraw"));
+        IToken.transfer(token, destination, amount);
         this.Withdraw(token, destination, amount);
     }
 
@@ -231,8 +232,8 @@ public class KarmaCustomTreasury extends Ownable {
         BigInteger amount
     ) {
         // convert amount to match payout token decimals
-        int payoutDecimals = IIRC2.decimals(payoutToken);
-        int principalDecimals = IIRC2.decimals(principalTokenAddress);
+        int payoutDecimals = IToken.decimals(payoutToken);
+        int principalDecimals = IToken.decimals(principalTokenAddress);
 
         return amount.multiply(MathUtils.pow10(payoutDecimals)).divide(MathUtils.pow10(principalDecimals));
     }

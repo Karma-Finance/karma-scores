@@ -20,14 +20,18 @@ import java.math.BigInteger;
 
 import score.Address;
 import score.Context;
-
 import dao.karma.interfaces.irc2.IIRC2;
+import dao.karma.utils.ICX;
 import dao.karma.utils.JSONUtils;
 
 public abstract class ITreasury {
 
-  public static void deposit(Address treasury, Address principalToken, BigInteger amount) {
-    IIRC2.transfer(principalToken, treasury, amount, JSONUtils.method("deposit"));
+  public static void deposit (Address treasury, Address token, BigInteger amount) {
+    if (ICX.isICX(token)) {
+      Context.call(amount, treasury, "depositIcx");
+    } else {
+      IIRC2.transfer(token, treasury, amount, JSONUtils.method("deposit"));
+    }
   }
 
   public static void mint(Address treasury, Address to, BigInteger amount) {

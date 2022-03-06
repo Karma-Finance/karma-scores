@@ -24,8 +24,8 @@ import java.math.BigInteger;
 import com.eclipsesource.json.JsonObject;
 
 import dao.karma.interfaces.bond.ICustomTreasuryBalanced;
+import dao.karma.interfaces.bond.IToken;
 import dao.karma.interfaces.dao.ITreasury;
-import dao.karma.interfaces.irc2.IIRC2;
 import dao.karma.structs.bond.Adjust;
 import dao.karma.structs.bond.Terms;
 import dao.karma.types.Ownable;
@@ -433,7 +433,7 @@ public class KarmaCustomBondBalanced extends Ownable {
 
         // must be > 0.01 payout token (underflow protection)
         // payout >= (10**payoutDecimals)/100
-        Context.require(payout.compareTo(MathUtils.pow10(IIRC2.decimals(this.payoutToken)).divide(BigInteger.valueOf(100))) >= 0,
+        Context.require(payout.compareTo(MathUtils.pow10(IToken.decimals(this.payoutToken)).divide(BigInteger.valueOf(100))) >= 0,
             "deposit: Bond too small");
 
         // size protection because there is no slippage
@@ -550,7 +550,7 @@ public class KarmaCustomBondBalanced extends Ownable {
             this.bondInfo.set(depositor, null);
             // emit bond data
             this.BondRedeemed(depositor, info.payout, ZERO);
-            IIRC2.transfer(this.payoutToken, depositor, info.payout, JSONUtils.method("redeem"));
+            IToken.transfer(this.payoutToken, depositor, info.payout);
             return info.payout;
         } else {
             // if unfinished
@@ -568,7 +568,7 @@ public class KarmaCustomBondBalanced extends Ownable {
             ));
 
             this.BondRedeemed(depositor, fractionPayout, newPayout);
-            IIRC2.transfer(this.payoutToken, depositor, fractionPayout, JSONUtils.method("redeem"));
+            IToken.transfer(this.payoutToken, depositor, fractionPayout);
             return fractionPayout;
         }
     }
@@ -625,7 +625,7 @@ public class KarmaCustomBondBalanced extends Ownable {
     private BigInteger _bondPrice() {
         var terms = this.terms.get();
 
-        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IIRC2.decimals(this.payoutToken) - 5));
+        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - 5));
 
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
@@ -663,7 +663,7 @@ public class KarmaCustomBondBalanced extends Ownable {
         var terms = this.terms.get();
 
         // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-5))
-        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IIRC2.decimals(this.payoutToken) - 5));
+        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - 5));
 
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
@@ -689,7 +689,7 @@ public class KarmaCustomBondBalanced extends Ownable {
     @External(readonly = true)
     public BigInteger maxPayout() {
         // IRC2(payoutToken).totalSupply() * terms().maxPayout / 10**5
-        return IIRC2.totalSupply(this.payoutToken).multiply(this.terms.get().maxPayout).divide(BigInteger.valueOf(100000));
+        return IToken.totalSupply(this.payoutToken).multiply(this.terms.get().maxPayout).divide(BigInteger.valueOf(100000));
     }
 
     /**
@@ -720,8 +720,8 @@ public class KarmaCustomBondBalanced extends Ownable {
     public BigInteger debtRatio() {
         // debtRatio = currentDebt() * IRC2(payoutToken).decimals() / IRC2(payoutToken).totalSupply() / 10**18
         return FixedPoint.fraction (
-            currentDebt().multiply(MathUtils.pow10(IIRC2.decimals(this.payoutToken))),
-            IIRC2.totalSupply(this.payoutToken)
+            currentDebt().multiply(MathUtils.pow10(IToken.decimals(this.payoutToken))),
+            IToken.totalSupply(this.payoutToken)
         ).decode112with18().divide(MathUtils.pow10(18));
     }
 

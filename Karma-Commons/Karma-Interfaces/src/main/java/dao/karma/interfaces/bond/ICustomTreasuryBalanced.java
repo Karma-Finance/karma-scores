@@ -22,6 +22,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
 import dao.karma.interfaces.irc31.IIRC31;
+import dao.karma.utils.ICX;
 import dao.karma.utils.JSONUtils;
 import score.Address;
 import score.Context;
@@ -32,9 +33,13 @@ public abstract class ICustomTreasuryBalanced {
   }
 
   public static void deposit(Address treasury, Address principalToken, BigInteger amount, BigInteger id, BigInteger amountPayoutToken) {
-    JsonObject params = Json.object()
-      .add("amountPayoutToken", amountPayoutToken.toString());
+    if (ICX.isICX(principalToken)) {
+      Context.call(amount, treasury, "depositIcx", amountPayoutToken);
+    } else {
+      JsonObject params = Json.object()
+        .add("amountPayoutToken", amountPayoutToken.toString());
 
-    IIRC31.transfer(principalToken, treasury, amount, id, JSONUtils.method("deposit", params));
+      IIRC31.transfer(principalToken, treasury, amount, id, JSONUtils.method("deposit", params));
+    }
   }
 }

@@ -124,15 +124,19 @@ public class ServiceManager {
     public Object call(Class<?> caller, BigInteger value, Address targetAddress, String method, Object... params) {
         Score from = getScoreFromClass(caller);
         if ("fallback".equals(method) || "".equals(method)) {
-            transfer(from.getAccount(), targetAddress, value);
+            getBlock().increase();
+            transferIcx(from.getAccount(), targetAddress, value);
+            if (targetAddress.isContract()) {
+                call(from.getAccount(), value, targetAddress, "fallback");
+            }
             return null;
         } else {
+            transferIcx(from.getAccount(), targetAddress, value);
             return call(from.getAccount(), value, targetAddress, method, params);
         }
     }
 
-    public void transfer(Account from, Address targetAddress, BigInteger value) {
-        getBlock().increase();
+    public void transferIcx (Account from, Address targetAddress, BigInteger value) {
         var fromBalance = from.getBalance();
         if (fromBalance.compareTo(value) < 0) {
             throw new IllegalStateException("OutOfBalance");
@@ -143,9 +147,6 @@ public class ServiceManager {
         }
         from.subtractBalance("ICX", value);
         to.addBalance("ICX", value);
-        if (targetAddress.isContract()) {
-            call(from, value, targetAddress, "fallback");
-        }
     }
 
     public void putStorage(String key, Object value) {
