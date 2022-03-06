@@ -49,6 +49,9 @@ public KarmaCustomBond (
 - The vesting term must be initialized first with `setBondTerms(VESTING, ...)`
 - Once the Custom Bond contract is initialized, users can start purchasing bonds
 
+- Requirements:
+  - The `currentDebt()` value must be equal to 0 when calling this method
+
 ```java
 @External
 public void initializeBond (
@@ -107,6 +110,9 @@ public void setBondTerms (
 
 - `parameter`: The input type, its value is either 0 (VESTING, set the `vestingTerm` blocks value), 1 (PAYOUT, set the `maxPayout` value) or 2 (DEBT, set the `maxDebt` value)
 - `input`: The input value
+- Requirements:
+  - For `VESTING`, the vesting time must be longer than 36 hours
+  - For `PAYOUT`, the max payout cannot be above 1 percent
 
 ### 🧪 Example call
 
@@ -121,6 +127,17 @@ public void setBondTerms (
 }
 ```
 
+```java
+{
+  "to": KarmaCustomBond,
+  "method": "setBondTerms",
+  "params": {
+    "parameter": "0x1", // PAYOUT, set the max payout
+    "input": "0x1f4", // 500 = 0.5%
+  }
+}
+```
+
 ---
 
 ## `KarmaCustomBond::setAdjustment`
@@ -129,7 +146,8 @@ public void setBondTerms (
 
 - Set control variable adjustment
 - Access: Policy
-- The increment value must be inferior or equal to `BCV * 30 / 1000`
+- Requirements:
+  - The increment value must be inferior or equal to `BCV * 3 / 100`
 
 ```java
 @External
@@ -250,6 +268,13 @@ private void deposit (
 - `maxPrice`: Max price for slippage protection. `maxPrice` value needs to be superior or equal to the bond price, otherwise the transaction will fail.
 - `depositor`: Registered depositor of the bond
 
+- Requirements:
+  - Only principal token accepted for deposit
+  - `maxPrice` must be superior or equal to `trueBondPrice`
+  - The `amount` deposited mustn't overflow the max debt
+  - The `payout` deposited must be > 0.01 payout token (underflow protection)
+  - The `payout` deposited mustn't superior to `maxPayout()`
+
 ### 🧪 Example call
 
 ```java
@@ -294,7 +319,7 @@ public void depositIcx (BigInteger maxPrice, Address depositor)
 ### 📜 Method Call
 
 - Redeem bond for user
-- Access: Everyone
+- Access: Everyone who made a bond deposit
 - Returns the payout amount
 
 ```java
@@ -305,6 +330,9 @@ public BigInteger redeem (
 ```
 
 - `depositor`: Depositor address, it will also be used as a destination address for the redeemed tokens
+
+- Requirements:
+  - Only the depositor with an existing bond can call this method
 
 ### 🧪 Example call
 
