@@ -26,3 +26,5 @@ ${setupScriptsDir}/2.1.tokens.sh ${bondId}
 
 # --- Deploy Custom Treasury ---
 ${setupScriptsDir}/2.2.customtreasury.sh ${bondId}
+
+success "Karma Custom Treasury contract has been successfully deployed!"

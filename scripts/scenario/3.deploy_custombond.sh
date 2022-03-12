@@ -23,3 +23,5 @@ info "Cleaning..."
 
 # --- Deploy Custom Bond ---
 ${setupScriptsDir}/3.1.custombond.sh ${bondId}
+
+success "Karma Custom Bond contract has been successfully deployed!"
