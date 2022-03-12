@@ -22,15 +22,15 @@ import score.ObjectReader;
 import score.ObjectWriter;
 
 public class Epoch {
-  public Long length;
+  public long length;
   public BigInteger number;
-  public Long endBlock;
+  public long endBlock;
   public BigInteger distribute;
 
   public Epoch (
-    Long length,
+    long length,
     BigInteger number,
-    Long endBlock,
+    long endBlock,
     BigInteger distribute
   ) {
     this.length = length;

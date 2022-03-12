@@ -22,7 +22,7 @@ import dao.karma.test.ScoreSpy;
 public class KarmaAuthorityTest extends KarmaTest {
 
   ScoreSpy<KarmaAuthority> authority;
-  
+
   void setup_authority () throws Exception {
     authority = deploy(KarmaAuthority.class);
   }

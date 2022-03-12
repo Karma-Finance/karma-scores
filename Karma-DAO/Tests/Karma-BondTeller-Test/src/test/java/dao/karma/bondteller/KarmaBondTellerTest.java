@@ -22,7 +22,7 @@ import dao.karma.test.ScoreSpy;
 public class KarmaBondTellerTest extends KarmaTest {
 
   ScoreSpy<KarmaBondTeller> bondTeller;
-  
+
   void setup_bondTeller () throws Exception {
     bondTeller = deploy(KarmaBondTeller.class);
   }

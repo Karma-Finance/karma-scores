@@ -16,7 +16,9 @@ dependencies {
 
     testImplementation project(':Karma-Commons:Karma-Test')
     testImplementation project(':Karma-Commons:Karma-Utils')
+    testImplementation project(':Karma-Commons:Karma-Structs')
     testImplementation project(':Karma-Bond:Contracts:Karma-Factory')
+    testImplementation project(':Karma-Commons:Karma-Clients')
 }
 
 test {

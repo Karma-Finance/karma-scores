@@ -70,7 +70,7 @@ public class AnyDBImpl extends TestBase implements AnyDB {
     }
 
     private void setValue(String key, Object value) {
-        
+
         if (sm.getCurrentFrame().isReadonly()) {
             throw new IllegalStateException("read-only context");
         }

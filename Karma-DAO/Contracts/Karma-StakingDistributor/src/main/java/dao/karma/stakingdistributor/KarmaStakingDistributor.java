@@ -165,7 +165,7 @@ public class KarmaStakingDistributor implements IKarmaAccessControlled {
     @External(readonly = true)
     public BigInteger nextRewardFor (Address recipient) {
         BigInteger reward = ZERO;
-        
+
         BigInteger length = info.size();
         for (BigInteger i = ZERO; i.compareTo(length) < 0; i = i.add(ONE)) {
             var info = this.info.get(i);
@@ -236,7 +236,7 @@ public class KarmaStakingDistributor implements IKarmaAccessControlled {
         // Access control
         this.accessControlled.onlyGovernorOrGuardian();
         var info = this.info.getOrDefault(index, Info.empty());
-        
+
         Context.require(!info.recipient.equals(ZERO_ADDRESS), 
             "removeRecipient: Recipient does not exist");
 

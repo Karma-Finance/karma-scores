@@ -1,0 +1,19 @@
+@startuml Karma Factory createBondAndTreasury
+
+Caller -> KarmaFactory : **createBondAndTreasury** (\n\
+  payoutToken,  \n\
+  principalToken,  \n\
+  initialOwner,  \n\
+  tierCeilings, \n\
+  fees \n\
+)
+
+KarmaFactory -> KarmaCustomBond : **deploy**
+return bond address
+
+KarmaFactory -> KarmaCustomTreasury : **deploy**
+return treasury address
+
+KarmaFactory -> KarmaFactoryStorage : **pushBond** (details)
+
+@enduml

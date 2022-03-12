@@ -32,7 +32,7 @@ public class Info {
     this.rate = rate;
     this.recipient = recipient;
   }
-  
+
   public static Info readObject (ObjectReader r) {
     return new Info (
         r.readBigInteger(),

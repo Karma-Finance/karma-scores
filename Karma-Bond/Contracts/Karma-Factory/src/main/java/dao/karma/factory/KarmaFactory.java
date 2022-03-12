@@ -22,6 +22,7 @@ import java.math.BigInteger;
 
 import dao.karma.interfaces.bond.IKarmaFactoryStorage;
 import dao.karma.structs.bond.TreasuryBond;
+import dao.karma.structs.factorystorage.BondDetails;
 import dao.karma.types.Ownable;
 import score.Address;
 import score.Context;
@@ -77,6 +78,8 @@ public class KarmaFactory extends Ownable {
         Address karmaSubsidyRouter,
         Address karmaDAO
     ) {
+        super(Context.getCaller());
+
         this.name = "Karma Factory";
 
         Context.require(!karmaTreasury.equals(ZERO_ADDRESS),
@@ -103,10 +106,12 @@ public class KarmaFactory extends Ownable {
      * 
      * Access: SCORE Owner
      * 
-     * @param contractBytes The contract bytes
+     * @param contractBytes The treasury contract bytes
      */
     @External
-    public void setCustomTreasuryContractBytes (byte[] contractBytes) {
+    public void setCustomTreasuryContractBytes (
+        byte[] contractBytes
+    ) {
         final Address caller = Context.getCaller();
 
         // Access control
@@ -120,15 +125,17 @@ public class KarmaFactory extends Ownable {
     }
 
     /**
-     * Set the Custom Bond Contract bytes. 
+     * Write the Custom Bond Contract bytes. 
      * Can only be called once after deploying.
      * 
      * Access: SCORE Owner
      * 
-     * @param contractBytes The contract bytes
+     * @param contractBytes The bond contract bytes
      */
     @External
-    public void setCustomBondContractBytes (byte[] contractBytes) {
+    public void setCustomBondContractBytes (
+        byte[] contractBytes
+    ) {
         final Address caller = Context.getCaller();
 
         // Access control
@@ -147,16 +154,18 @@ public class KarmaFactory extends Ownable {
      * 
      * Access: Policy
      * 
-     * @param payoutToken Address
-     * @param principleToken Address
-     * @param initialOwner Address
-     * @return treasury Address
-     * @return bond Address
+     * @param payoutToken The payout token address associated with the bond, token paid for principal
+     * @param principalToken The principal inflow token address associated with the bond
+     * @param initialOwner The initial owner of the bond
+     * @param tierCeilings Array of ceilings of principal bonded till next tier
+     * @param fees Array of fees tiers, in ten-thousandths (i.e. 33300 = 3.33%)
+     * 
+     * @return Addresses of newly deployed bond and treasury contracts
      */
     @External
     public TreasuryBond createBondAndTreasury (
         Address payoutToken, 
-        Address principleToken, 
+        Address principalToken, 
         Address initialOwner, 
         BigInteger[] tierCeilings, 
         BigInteger[] fees
@@ -176,30 +185,32 @@ public class KarmaFactory extends Ownable {
         );
 
         Address bond = Context.deploy (
-            customBondContractBytes.get(), 
-            treasury, 
-            payoutToken, 
-            principleToken, 
-            this.karmaTreasury, 
-            this.karmaSubsidyRouter, 
-            initialOwner, 
-            this.karmaDAO, 
-            tierCeilings, 
+            customBondContractBytes.get(),
+            treasury,
+            payoutToken,
+            principalToken,
+            this.karmaTreasury,
+            this.karmaSubsidyRouter,
+            initialOwner,
+            this.karmaDAO,
+            tierCeilings,
             fees
         );
 
-        return IKarmaFactoryStorage.pushBond (
-            this.karmaFactoryStorage,
+        BondDetails details = new BondDetails (
             payoutToken, 
-            principleToken, 
+            principalToken, 
             treasury, 
             bond,
             initialOwner,
             tierCeilings,
             fees
         );
-    }
-    
+
+        return IKarmaFactoryStorage.pushBond (this.karmaFactoryStorage, details);
+ 
+ }
+
     /**
      * Deploys custom bond contract and returns address
      * 
@@ -207,14 +218,16 @@ public class KarmaFactory extends Ownable {
      * 
      * @param payoutToken The payout token
      * @param principleToken The principle token
-     * @param initialOwner address
-     * @return treasury address
-     * @return bond address
+     * @param customTreasury The Custom Treasury address associated with the bond
+     * @param initialOwner The initial owner of the bond
+     * @param tierCeilings 
+     * @param fees 
+     * @return The bond address 
      */
     @External
     public TreasuryBond createBond (
         Address payoutToken, 
-        Address principleToken, 
+        Address principalToken, 
         Address customTreasury, 
         Address initialOwner, 
         BigInteger[] tierCeilings, 
@@ -226,7 +239,7 @@ public class KarmaFactory extends Ownable {
             customBondContractBytes.get(), 
             customTreasury, 
             payoutToken, 
-            principleToken, 
+            principalToken, 
             this.karmaTreasury, 
             this.karmaSubsidyRouter, 
             initialOwner, 
@@ -235,16 +248,17 @@ public class KarmaFactory extends Ownable {
             fees
         );
 
-        return IKarmaFactoryStorage.pushBond (
-            this.karmaFactoryStorage,
+        BondDetails details = new BondDetails (
             payoutToken, 
-            principleToken, 
+            principalToken, 
             customTreasury, 
             bond,
             initialOwner,
             tierCeilings,
             fees
         );
+
+        return IKarmaFactoryStorage.pushBond (this.karmaFactoryStorage, details);
     }
 
     // ================================================
@@ -302,17 +316,17 @@ public class KarmaFactory extends Ownable {
     public Address karmaTreasury() {
         return this.karmaTreasury;
     }
-    
+
     @External(readonly = true)
     public Address karmaFactoryStorage() {
         return this.karmaFactoryStorage;
     }
-    
+
     @External(readonly = true)
     public Address karmaSubsidyRouter() {
         return this.karmaSubsidyRouter;
     }
-    
+
     @External(readonly = true)
     public Address karmaDAO() {
         return this.karmaDAO;

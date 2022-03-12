@@ -25,7 +25,7 @@ import java.math.BigInteger;
 import score.Context;
 
 public class FixedPoint {
-  
+
   final static byte RESOLUTION = 112;
   final static private BigInteger Q112 = new BigInteger("10000000000000000000000000000", 16);
 

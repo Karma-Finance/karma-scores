@@ -19,7 +19,8 @@ package dao.karma.customtreasury;
 import java.math.BigInteger;
 
 import com.eclipsesource.json.JsonObject;
-import dao.karma.interfaces.irc2.IIRC2;
+
+import dao.karma.interfaces.bond.IToken;
 
 import dao.karma.utils.AddressUtils;
 import dao.karma.utils.JSONUtils;
@@ -44,7 +45,7 @@ public class KarmaCustomTreasury extends Ownable {
     // Contract name
     private final String name;
 
-    // The payout token contract address
+    // The payout token contract address, token paid for principal
     private final Address payoutToken;
 
     // Bond contracts
@@ -80,39 +81,40 @@ public class KarmaCustomTreasury extends Ownable {
         Address payoutToken, 
         Address initialOwner
     ) {
+        super(initialOwner);
+
         Context.require(!payoutToken.equals(AddressUtils.ZERO_ADDRESS));
         Context.require(!initialOwner.equals(AddressUtils.ZERO_ADDRESS));
 
         this.name = "Karma Custom Treasury";
 
         this.payoutToken = payoutToken;
-        this.owner.set(initialOwner);
     }
 
     // --- Bond Contract Functions ---
-    
+
     /**
-     * Deposit principle token and recieve back payout token
+     * Deposit principal token and receive back payout token
      * 
      * Access: Everybody
      * 
-     * @param principleTokenAddress
-     * @param amountPrincipleToken
+     * @param principalTokenAddress
+     * @param amountPrincipalToken
      * @param amountPayoutToken
      */
     // @External - this method is external through tokenFallback
     private void deposit (
         Address caller,
-        Address principleTokenAddress, 
-        BigInteger amountPrincipleToken,
+        Address principalTokenAddress, 
+        BigInteger amountPrincipalToken,
         BigInteger amountPayoutToken
     ) {
         Context.require(bondContract.getOrDefault(caller, false), 
             "deposit: caller is not a bond contract");
 
-        IIRC2.transfer(payoutToken, caller, amountPayoutToken, JSONUtils.method("deposit"));
+        IToken.transfer(this.payoutToken, caller, amountPayoutToken, "pay");
     }
-    
+
     @External
     public void tokenFallback (Address _from, BigInteger _value, @Optional byte[] _data) {
         JsonObject root = JSONUtils.parseData(_data);
@@ -125,6 +127,11 @@ public class KarmaCustomTreasury extends Ownable {
                 JsonObject params = root.get("params").asObject();
                 BigInteger amountPayoutToken = StringUtils.toBigInt(params.get("amountPayoutToken").asString());
                 deposit(_from, token, _value, amountPayoutToken);
+                break;
+            }
+
+            case "funding": {
+                // accept funds from any address
                 break;
             }
 
@@ -153,7 +160,7 @@ public class KarmaCustomTreasury extends Ownable {
         // Access control
         onlyPolicy();
 
-        IIRC2.transfer(token, destination, amount, JSONUtils.method("withdraw"));
+        IToken.transfer(token, destination, amount);
         this.Withdraw(token, destination, amount);
     }
 
@@ -171,7 +178,9 @@ public class KarmaCustomTreasury extends Ownable {
         // Access control
         onlyPolicy();
 
+        // OK
         boolean state = this.bondContract.getOrDefault(bondContract, false);
+
         // toggle
         this.bondContract.set(bondContract, !state);
     }
@@ -191,30 +200,41 @@ public class KarmaCustomTreasury extends Ownable {
         return this.name;
     }
 
+    /**
+     * Return the payout token address
+     */
     @External(readonly = true)
     public Address payoutToken() {
         return this.payoutToken;
     }
-    
+
+    /**
+     * Return the status of a given address in the bond contract whitelist
+     * @param address Any address
+     */
+    @External(readonly = true)
+    public boolean bondContract (Address address) {
+        return this.bondContract.getOrDefault(address, false);
+    }
+
     // ================================================
     // View Functions
     // ================================================
     /**
-     * Returns payout token valuation of principle
+     * Returns payout token valuation of principal token
      * 
-     * @param principleTokenAddress
-     * @param amount
-     * @return value
+     * @param principalTokenAddress The principal token address
+     * @param amount An amount of principal token
      */
     @External(readonly = true)
     public BigInteger valueOfToken (
-        Address principleTokenAddress,
+        Address principalTokenAddress,
         BigInteger amount
     ) {
-        int payoutTokenDecimals = IIRC2.decimals(payoutToken);
-        int principleTokenAddressDecimals = IIRC2.decimals(principleTokenAddress);
+        // convert amount to match payout token decimals
+        int payoutDecimals = IToken.decimals(payoutToken);
+        int principalDecimals = IToken.decimals(principalTokenAddress);
 
-        return amount.multiply(MathUtils.pow10(payoutTokenDecimals)).divide(MathUtils.pow10(principleTokenAddressDecimals));
+        return amount.multiply(MathUtils.pow10(payoutDecimals)).divide(MathUtils.pow10(principalDecimals));
     }
-
 }

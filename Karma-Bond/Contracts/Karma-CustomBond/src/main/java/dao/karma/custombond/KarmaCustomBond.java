@@ -22,10 +22,14 @@ import static java.math.BigInteger.ZERO;
 import java.math.BigInteger;
 
 import com.eclipsesource.json.JsonObject;
-import dao.karma.interfaces.irc2.IIRC2;
 
+import dao.karma.interfaces.bond.ICustomTreasury;
+import dao.karma.interfaces.bond.IToken;
 import dao.karma.interfaces.dao.ITreasury;
+import dao.karma.structs.bond.Adjust;
+import dao.karma.structs.bond.Terms;
 import dao.karma.types.Ownable;
+import dao.karma.utils.ICX;
 import dao.karma.utils.JSONUtils;
 import dao.karma.utils.MathUtils;
 import dao.karma.utils.StringUtils;
@@ -38,6 +42,7 @@ import score.VarDB;
 import score.annotation.EventLog;
 import score.annotation.External;
 import score.annotation.Optional;
+import score.annotation.Payable;
 
 public class KarmaCustomBond extends Ownable {
 
@@ -55,6 +60,23 @@ public class KarmaCustomBond extends Ownable {
     private final Address customTreasury; // pays for and receives principal
     private final Address karmaDAO; // The KarmaDAO contract address
     private final Address subsidyRouter; // pays subsidy in Karma to custom treasury
+
+    // --- Bond constants ---
+    // When calling setBondTerms(VESTING), 
+    // vesting must be longer than `BOND_TERMS_VESTING_MIN_SECONDS` hours
+    public final static int BOND_TERMS_VESTING_MIN_SECONDS = 36 * 3600; // 36 hours
+    // When calling setBondTerms(VESTING), 
+    // maxPayout must be <= 1000 (= 1%)
+    private final BigInteger BOND_TERMS_PAYOUT_MAX_PERCENT = BigInteger.valueOf(1000);
+
+    // Arbitrary decimals precision
+    private final int DECIMALS_PRECISION = 5;
+    private final int TRUE_BOND_PRICE_PRECISION = 6;
+    // Arbitrary payout precision
+    private final int PAYOUT_PRECISION = 6;
+    // Arbitrary vesting precision
+    // 10000 = 100%
+    private final BigInteger FULLY_VESTED = BigInteger.valueOf(10000);
 
     // ================================================
     // DB Variables
@@ -90,7 +112,13 @@ public class KarmaCustomBond extends Ownable {
     public void BondCreated (
         BigInteger deposit,
         BigInteger payout,
-        Long expires
+        long expires
+    ) {}
+
+    @EventLog
+    public void PayoutUpdate (
+        BigInteger oldPayout,
+        BigInteger newPayout
     ) {}
 
     @EventLog
@@ -119,6 +147,16 @@ public class KarmaCustomBond extends Ownable {
     // ================================================
     /**
      * Contract constructor
+     * 
+     * @param customTreasury The custom treasury associated with the bond
+     * @param payoutToken The payout token address associated with the bond, token paid for principal
+     * @param principalToken The inflow token
+     * @param karmaTreasury The Karma treasury
+     * @param subsidyRouter pays subsidy in Karma to custom treasury
+     * @param initialOwner The initial policy role address
+     * @param karmaDAO The KarmaDAO contract address
+     * @param tierCeilings Array of ceilings of principal bonded till next tier
+     * @param fees Array of fees tiers, in ten-thousandths (i.e. 33300 = 3.33%)
      */
     public KarmaCustomBond (
         Address customTreasury,
@@ -131,6 +169,9 @@ public class KarmaCustomBond extends Ownable {
         BigInteger[] tierCeilings,
         BigInteger[] fees
     ) {
+        super(initialOwner);
+
+        // Check inputs
         Context.require(!customTreasury.equals(ZERO_ADDRESS));
         Context.require(!payoutToken.equals(ZERO_ADDRESS));
         Context.require(!principalToken.equals(ZERO_ADDRESS));
@@ -139,6 +180,10 @@ public class KarmaCustomBond extends Ownable {
         Context.require(!initialOwner.equals(ZERO_ADDRESS));
         Context.require(!karmaDAO.equals(ZERO_ADDRESS));
 
+        Context.require(tierCeilings.length == fees.length,
+            "KarmaCustomBond: tier length and fee length not the same");
+
+        // OK
         this.name = "Karma Custom Bond";
         this.customTreasury = customTreasury;
         this.payoutToken = payoutToken;
@@ -146,19 +191,41 @@ public class KarmaCustomBond extends Ownable {
         this.subsidyRouter = subsidyRouter;
         this.karmaDAO = karmaDAO;
 
+        for (int i = 0; i  < tierCeilings.length; i++) {
+            this.feeTiers.add(new FeeTiers(tierCeilings[i], fees[i]));
+        }
+
         if (this.karmaTreasury.get() == null) {
             this.karmaTreasury.set(karmaTreasury);
         }
 
-        if (this.owner.get() == null) {
-            this.owner.set(initialOwner);
+        // Default initialization
+        if (this.lastDecay.get() == null) {
+            this.lastDecay.set(0L);
         }
 
-        Context.require(tierCeilings.length == fees.length,
-            "KarmaCustomBond: tier length and fee length not the same");
+        if (this.totalDebt.get() == null) {
+            this.totalDebt.set(ZERO);
+        }
 
-        for (int i = 0; i  < tierCeilings.length; i++) {
-            feeTiers.add(new FeeTiers(tierCeilings[i], fees[i]));
+        if (this.payoutSinceLastSubsidy.get() == null) {
+            this.payoutSinceLastSubsidy.set(ZERO);
+        }
+
+        if (this.totalPrincipalBonded.get() == null) {
+            this.totalPrincipalBonded.set(ZERO);
+        }
+
+        if (this.totalPayoutGiven.get() == null) {
+            this.totalPayoutGiven.set(ZERO);
+        }
+
+        if (this.terms.get() == null) {
+            this.terms.set(Terms.empty());
+        }
+
+        if (this.adjustment.get() == null) {
+            this.adjustment.set(Adjust.empty());
         }
     }
 
@@ -175,9 +242,10 @@ public class KarmaCustomBond extends Ownable {
      * @param maxDebt
      * @param initialDebt
      */
+    @External
     public void initializeBond (
         BigInteger controlVariable,
-        Long vestingTerm, // in blocks
+        long vestingTerm, // in blocks
         BigInteger minimumPrice,
         BigInteger maxPayout,
         BigInteger maxDebt,
@@ -186,9 +254,11 @@ public class KarmaCustomBond extends Ownable {
         // Access control
         onlyPolicy();
 
+        // Initialization control
         Context.require(currentDebt().equals(ZERO), 
             "Debt must be 0 for initialization");
 
+        // OK
         this.terms.set (
             new Terms (
                 controlVariable,
@@ -205,17 +275,17 @@ public class KarmaCustomBond extends Ownable {
 
     // --- Policy Functions ---
     // PARAMETER
-    private final int VESTING = 0;
-    private final int PAYOUT = 1;
-    private final int DEBT = 2;
+    public static final int VESTING = 0;
+    public static final int PAYOUT = 1;
+    public static final int DEBT = 2;
 
     /**
-     * Set parameters for new bonds
+     * Change the parameters of a bond
      * 
      * Access: Policy
      * 
-     * @param parameter
-     * @param input
+     * @param parameter The input type, its value is either 0 (VESTING), 1 (PAYOUT) or 2 (DEBT)
+     * @param input The input value
      */
     @External
     public void setBondTerms (
@@ -225,20 +295,20 @@ public class KarmaCustomBond extends Ownable {
         // Access control
         onlyPolicy();
 
+        // OK
         var terms = this.terms.get();
 
         switch (parameter) {
             case VESTING: {
-                int minHours = 36;
-                int averageBlockTime = 2;
-                int minVesting = minHours * 3600 / averageBlockTime;
+                int averageBlockTimeInSeconds = 2;
+                int minVesting = BOND_TERMS_VESTING_MIN_SECONDS / averageBlockTimeInSeconds;
                 Context.require(input.compareTo(BigInteger.valueOf(minVesting)) >= 0, 
-                    "setBondTerms: Vesting must be longer than 36 hours");
+                    "setBondTerms: Vesting must be longer than " + BOND_TERMS_VESTING_MIN_SECONDS + " seconds");
                 terms.vestingTerm = input.longValueExact();
             } break;
 
             case PAYOUT: {
-                Context.require(input.compareTo(BigInteger.valueOf(1000)) <= 0, 
+                Context.require(input.compareTo(BOND_TERMS_PAYOUT_MAX_PERCENT) <= 0, 
                     "setBondTerms: Payout cannot be above 1 percent");
                 terms.maxPayout = input;
             } break;
@@ -250,33 +320,38 @@ public class KarmaCustomBond extends Ownable {
             default:
                 Context.revert("setBondTerms: invalid parameter");
         }
-        
+
         this.terms.set(terms);
     }
-    
+
     /**
      * Set control variable adjustment
      * 
      * Access: Policy
      * 
-     * @param addition
-     * @param increment
-     * @param target
-     * @param buffer
+     * Requirements:
+     *  - The `increment` value must be inferior or equal to BCV*3/100
+     * 
+     * @param addition Addition (true) or subtraction (false) of BCV
+     * @param increment The increment value of the `controlVariable` value
+     * @param target BCV when adjustment finished
+     * @param buffer Minimum length (in blocks) between adjustments
      */
     @External
-    public void setBondTerms (
+    public void setAdjustment (
         boolean addition,
         BigInteger increment,
         BigInteger target,
-        Long buffer
+        long buffer
     ) {
         // Access control
         onlyPolicy();
 
-        Context.require(increment.compareTo(terms.get().controlVariable.multiply(BigInteger.valueOf(30)).divide(BigInteger.valueOf(1000))) <= 0, 
-            "setBondTerms: Increment too large");
+        // require(increment <= BCV*3/100)
+        Context.require(increment.compareTo(terms.get().controlVariable.multiply(BigInteger.valueOf(3)).divide(BigInteger.valueOf(100))) <= 0, 
+            "setAdjustment: Increment too large");
 
+        // OK
         this.adjustment.set (
             new Adjust (
                 addition,
@@ -287,7 +362,7 @@ public class KarmaCustomBond extends Ownable {
             )
         );
     }
-    
+
     // --- Custom Bond settings ---
     /**
      * Change address of Karma Treasury
@@ -297,7 +372,9 @@ public class KarmaCustomBond extends Ownable {
      * @param karmaTreasury
      */
     @External
-    public void changeKarmaTreasury (Address karmaTreasury) {
+    public void changeKarmaTreasury (
+        Address karmaTreasury
+    ) {
         final Address caller = Context.getCaller();
 
         // Access control
@@ -309,17 +386,19 @@ public class KarmaCustomBond extends Ownable {
     /**
      * Subsidy controller checks payouts since last subsidy and resets counter
      * 
-     * Access: Subsidy Controller
+     * Access: Subsidy Router
      */
     @External
     public BigInteger paySubsidy() {
         final Address caller = Context.getCaller();
 
         // Access control
-        checkSubsidy(caller);
+        checkSubsidyRouter(caller);
 
+        // OK
         BigInteger result = payoutSinceLastSubsidy.get();
-        payoutSinceLastSubsidy.set(ZERO);
+        this.payoutSinceLastSubsidy.set(ZERO);
+        this.PayoutUpdate(result, ZERO);
 
         return result;
     }
@@ -327,15 +406,16 @@ public class KarmaCustomBond extends Ownable {
     // --- User functions ---
     /**
      * Deposit bond
+     * 
      * @param amount
      * @param maxPrice
      * @param depositor
      */
     // @External - this method is external through tokenFallback
     private void deposit (
-        Address caller,
-        Address token, // only principalToken is accepted
-        BigInteger amount, // amount of principal token received
+        Address caller, // the method caller. This field is handled by tokenFallback
+        Address token, // only principalToken is accepted. This field is handled by tokenFallback
+        BigInteger amount, // amount of principal inflow token received. This field is handled by tokenFallback
         BigInteger maxPrice,
         Address depositor
     ) {
@@ -350,61 +430,68 @@ public class KarmaCustomBond extends Ownable {
         BigInteger totalDebt = this.totalDebt.get();
         var terms = this.terms.get();
 
-        Context.require(totalDebt.compareTo(terms.maxDebt) <= 0,
-            "deposit: Max capacity reached");
-        
         BigInteger nativePrice = trueBondPrice();
 
         // slippage protection
         Context.require(maxPrice.compareTo(nativePrice) >= 0,
             "deposit: Slippage limit: more than max price"); 
-        
-        BigInteger value = ITreasury.valueOfToken(this.customTreasury, principalToken, amount);
+
+        BigInteger value = ICustomTreasury.valueOfToken(this.customTreasury, this.principalToken, amount);
         // payout to bonder is computed
         BigInteger payout = _payoutFor(value);
-        
-        // must be > 0.01 payout token ( underflow protection )
-        Context.require(payout.compareTo(MathUtils.pow10(IIRC2.decimals(payoutToken)).divide(BigInteger.valueOf(100))) >= 0,
+
+        // Check if the deposit doesn't exceed the max debt
+        Context.require(totalDebt.add(value).compareTo(terms.maxDebt) <= 0,
+            "deposit: Max capacity reached");
+
+        // must be > 0.01 payout token (underflow protection)
+        // payout >= (10**payoutDecimals)/100
+        Context.require(payout.compareTo(MathUtils.pow10(IToken.decimals(this.payoutToken)).divide(BigInteger.valueOf(100))) >= 0,
             "deposit: Bond too small");
 
         // size protection because there is no slippage
         Context.require(payout.compareTo(maxPayout()) <= 0, 
             "deposit: Bond too large");
-            
+
         // profits are calculated
-        BigInteger fee = payout.multiply(currentKarmaFee()).divide(MathUtils.pow10(6));
-        
+        BigInteger fee = payout.multiply(currentKarmaFee()).divide(MathUtils.pow10(PAYOUT_PRECISION));
+
         // principal is transferred in, and 
         // deposited into the treasury, returning (amount - profit) payout token
-        ITreasury.deposit(this.customTreasury, this.principalToken, amount, payout);
+        ICustomTreasury.deposit(this.customTreasury, this.principalToken, amount, payout);
 
-        // fee is transferred to dao
+        // Fee is transferred to DAO treasury
         if (!fee.equals(ZERO)) {
-            IIRC2.transfer(payoutToken, karmaTreasury.get(), fee, JSONUtils.method("deposit"));
+            ITreasury.deposit(this.karmaTreasury.get(), this.payoutToken, fee);
         }
-        
+
         // total debt is increased
         this.totalDebt.set(totalDebt.add(value));
-        
+
         // depositor info is stored
+        var depositorBondInfo = this.bondInfo.getOrDefault(depositor, Bond.empty());
+
         this.bondInfo.set(depositor, new Bond(
-            this.bondInfo.get(depositor).payout.add(payout.subtract(fee)),
+            depositorBondInfo.payout.add(payout.subtract(fee)),
             terms.vestingTerm,
             Context.getBlockHeight(),
             trueBondPrice()
         ));
-        
+
         // indexed events are emitted
         this.BondCreated(amount, payout, Context.getBlockHeight() + terms.vestingTerm);
         this.BondPriceChanged(_bondPrice(), debtRatio());
 
         // total bonded increased
-        this.totalPrincipalBonded.set(totalPrincipalBonded.get().add(amount));
+        this.totalPrincipalBonded.set(this.totalPrincipalBonded.get().add(amount));
         // total payout increased
-        this.totalPayoutGiven.set(totalPayoutGiven.get().add(payout));
+        this.totalPayoutGiven.set(this.totalPayoutGiven.get().add(payout));
         // subsidy counter increased
-        this.payoutSinceLastSubsidy.set(payoutSinceLastSubsidy.get().add( payout ));
-        
+        BigInteger oldPayout = this.payoutSinceLastSubsidy.get();
+        BigInteger newPayout = oldPayout.add(payout);
+        this.payoutSinceLastSubsidy.set(newPayout);
+        this.PayoutUpdate(oldPayout, newPayout);
+
         // control variable is adjusted
         adjust();
     }
@@ -425,42 +512,59 @@ public class KarmaCustomBond extends Ownable {
                 break;
             }
 
+            case "pay": {
+                pay(token, _value);
+                break;
+            }
+
             default:
                 Context.revert("tokenFallback: Unimplemented tokenFallback action");
         }
     }
 
+    private void pay (Address token, BigInteger value) {
+        Context.require(value.compareTo(BigInteger.ZERO) > 0,
+            "pay: Nothing paid");
+        // Only accept payoutToken as payment from the deposit
+        Context.require(token.equals(this.payoutToken), 
+            "pay: Only payout token is accepted as payment");
+    }
+
     /**
      * Redeem bond for user
+     * 
+     * Access: Everyone
+     * 
      * @param depositor destination address
      * @return Payout amount
      */
     @External
-    public BigInteger redeem (Address depositor) {
+    public BigInteger redeem (
+        Address depositor
+    ) {
         var info = this.bondInfo.get(depositor);
-        Context.require(info != null, 
+        Context.require(info != null,
             "redeem: no bond registered for depositor");
-        
+
         // (blocks since last interaction / vesting term remaining)
         BigInteger percentVested = percentVestedFor(depositor);
-        BigInteger denominator = BigInteger.valueOf(10000);
 
         // if fully vested
-        if (percentVested.compareTo(denominator) >= 0) {
+        if (percentVested.compareTo(FULLY_VESTED) >= 0) {
             // delete user info
             this.bondInfo.set(depositor, null);
             // emit bond data
             this.BondRedeemed(depositor, info.payout, ZERO);
-            IIRC2.transfer(payoutToken, depositor, info.payout, JSONUtils.method("redeem"));
+            IToken.transfer(this.payoutToken, depositor, info.payout);
             return info.payout;
         } else {
             // if unfinished
             // calculate payout vested
-            BigInteger payout = info.payout.multiply(percentVested).divide(denominator);
-            Long blockHeight = Context.getBlockHeight();
+            BigInteger fractionPayout = info.payout.multiply(percentVested).divide(FULLY_VESTED);
+            long blockHeight = Context.getBlockHeight();
 
             // store updated deposit info
-            BigInteger newPayout = info.payout.subtract(payout);
+            BigInteger newPayout = info.payout.subtract(fractionPayout);
             bondInfo.set(depositor, new Bond(
                 newPayout,
                 info.vesting - (blockHeight - info.lastBlock),
@@ -468,27 +572,47 @@ public class KarmaCustomBond extends Ownable {
                 info.truePricePaid
             ));
 
-            this.BondRedeemed(depositor, payout, newPayout);
-            IIRC2.transfer(payoutToken, depositor, payout, JSONUtils.method("redeem"));
-            return payout;
+            this.BondRedeemed(depositor, fractionPayout, newPayout);
+            IToken.transfer(this.payoutToken, depositor, fractionPayout);
+            return fractionPayout;
         }
     }
 
-    // --- Internal help functions ---
+    // --- ICX token implementation ---
+    @Payable
+    public void fallback () {
+        Context.revert("fallback: Cannot transfer ICX to custom bond directly");
+    }
 
+    @External
+    @Payable
+    public void depositIcx (BigInteger maxPrice, Address depositor) {
+        final BigInteger value = Context.getValue();
+        final Address token = ICX.TOKEN_ADDRESS;
+        final Address caller = Context.getCaller();
+        deposit(caller, token, value, maxPrice, depositor);
+    }
+
+    @External
+    @Payable
+    public void payIcx () {
+        pay(ICX.TOKEN_ADDRESS, Context.getValue());
+    }
+
+    // --- Internal help functions ---
     /**
      * Makes incremental adjustment to control variable
      */
     private void adjust() {
         var adjustment = this.adjustment.get();
         var terms = this.terms.get();
-        Long blockHeight = Context.getBlockHeight();
+        long blockHeight = Context.getBlockHeight();
 
-        Long blockCanAdjust = adjustment.lastBlock + adjustment.buffer;
+        long blockCanAdjust = adjustment.lastBlock + adjustment.buffer;
 
         if (!adjustment.rate.equals(ZERO) && blockHeight >= blockCanAdjust ) {
             BigInteger initial = terms.controlVariable;
-            
+
             if (adjustment.add) {
                 terms.controlVariable = terms.controlVariable.add(adjustment.rate);
                 if (terms.controlVariable.compareTo(adjustment.target) >= 0) {
@@ -506,7 +630,7 @@ public class KarmaCustomBond extends Ownable {
             this.terms.set(terms);
             this.adjustment.set(adjustment);
 
-            this.ControlVariableAdjustment(initial, terms.controlVariable, adjustment.rate, adjustment.add );
+            this.ControlVariableAdjustment(initial, terms.controlVariable, adjustment.rate, adjustment.add);
         }
     }
 
@@ -514,7 +638,7 @@ public class KarmaCustomBond extends Ownable {
      * Reduce total debt
      */
     private void decayDebt() {
-        Long blockHeight = Context.getBlockHeight();
+        long blockHeight = Context.getBlockHeight();
         this.totalDebt.set(this.totalDebt.get().subtract(debtDecay()));
         this.lastDecay.set(blockHeight);
     }
@@ -526,7 +650,7 @@ public class KarmaCustomBond extends Ownable {
     private BigInteger _bondPrice() {
         var terms = this.terms.get();
 
-        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IIRC2.decimals(payoutToken) - 5));
+        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - DECIMALS_PRECISION));
 
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
@@ -538,7 +662,6 @@ public class KarmaCustomBond extends Ownable {
         return price;
     }
 
-
     // ================================================
     // Checks
     // ================================================
@@ -547,9 +670,9 @@ public class KarmaCustomBond extends Ownable {
             "checkKarmaDao: only KarmaDAO can call this method");
     }
 
-    private void checkSubsidy(Address caller) {
+    private void checkSubsidyRouter(Address caller) {
         Context.require(caller.equals(this.subsidyRouter),
-            "checkKarmaDao: only Subsidy Router can call this method");
+            "checkSubsidy: only Subsidy Router can call this method");
     }
 
     // ================================================
@@ -563,8 +686,9 @@ public class KarmaCustomBond extends Ownable {
     public BigInteger bondPrice() {
         var terms = this.terms.get();
 
-        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IIRC2.decimals(payoutToken) - 5));
-        
+        // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-DECIMALS_PRECISION))
+        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - DECIMALS_PRECISION));
+
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
         }
@@ -574,11 +698,13 @@ public class KarmaCustomBond extends Ownable {
 
     /**
      * Calculate true bond price a user pays
+     * 
      * @return price
      */
     @External(readonly = true)
     public BigInteger trueBondPrice() {
-        return bondPrice().add(bondPrice().multiply(currentKarmaFee()).divide(MathUtils.pow10(6)));
+        // truePrice = `bondPrice()` + (`bondPrice()` * `currentKarmaFee()` / 10**TRUE_BOND_PRICE_PRECISION)
+        return bondPrice().add(bondPrice().multiply(currentKarmaFee()).divide(MathUtils.pow10(TRUE_BOND_PRICE_PRECISION)));
     }
 
     /**
@@ -586,7 +712,8 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger maxPayout() {
-        return IIRC2.totalSupply(this.payoutToken).multiply(this.terms.get().maxPayout).divide(BigInteger.valueOf(100000));
+        // IRC2(payoutToken).totalSupply() * terms().maxPayout / 10**DECIMALS_PRECISION
+        return IToken.totalSupply(this.payoutToken).multiply(this.terms.get().maxPayout).divide(MathUtils.pow10(DECIMALS_PRECISION));
     }
 
     /**
@@ -603,8 +730,10 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger payoutFor (BigInteger value) {
+        // total = value / bondPrice() / 10**11
         BigInteger total = FixedPoint.fraction(value, bondPrice()).decode112with18().divide(MathUtils.pow10(11));
-        return total.subtract(total.multiply(currentKarmaFee()).divide(MathUtils.pow10(6)));
+        // payoutFor = total - (total * currentKarmaFee() / 10**PAYOUT_PRECISION)
+        return total.subtract(total.multiply(currentKarmaFee()).divide(MathUtils.pow10(PAYOUT_PRECISION)));
     }
 
     /**
@@ -613,9 +742,10 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger debtRatio() {
+        // debtRatio = currentDebt() * IRC2(payoutToken).decimals() / IRC2(payoutToken).totalSupply() / 10**18
         return FixedPoint.fraction (
-            currentDebt().multiply(MathUtils.pow10(IIRC2.decimals(payoutToken))),
-            IIRC2.totalSupply(payoutToken)
+            currentDebt().multiply(MathUtils.pow10(IToken.decimals(this.payoutToken))),
+            IToken.totalSupply(this.payoutToken)
         ).decode112with18().divide(MathUtils.pow10(18));
     }
 
@@ -624,6 +754,7 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger currentDebt() {
+        // currentDebt = totalDebt() - debtDecay()
         return this.totalDebt.get().subtract(debtDecay());
     }
 
@@ -632,10 +763,15 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger debtDecay()  {
+        var terms = this.terms.get();
+        Context.require(terms.vestingTerm != 0,
+            "debtDecay: The vesting term must be initialized first");
+
         var totalDebt = this.totalDebt.get();
-        Long blockHeight = Context.getBlockHeight();
+        long blockHeight = Context.getBlockHeight();
         BigInteger blocksSinceLast = BigInteger.valueOf(blockHeight - lastDecay.get());
-        BigInteger vestingTerm = BigInteger.valueOf(this.terms.get().vestingTerm);
+        BigInteger vestingTerm = BigInteger.valueOf(terms.vestingTerm);
+        // decay = totalDebt() * (blockHeight - lastDecay()) / (terms.vestingTerm)
         BigInteger decay = totalDebt.multiply(blocksSinceLast).divide(vestingTerm);
 
         if (decay.compareTo(totalDebt) > 0) {
@@ -647,38 +783,40 @@ public class KarmaCustomBond extends Ownable {
 
     /**
      * Calculate how far into vesting a depositor is
-     * @param _depositor address
+     * @param depositor The depositor address to calculate the vesting for
      */
     @External(readonly = true)
-    public BigInteger percentVestedFor (Address depositor) {
+    public BigInteger percentVestedFor (
+        Address depositor
+    ) {
         Bond bond = bondInfo.get(depositor);
-        Long blockHeight = Context.getBlockHeight();
-        Long blocksSinceLast = blockHeight - bond.lastBlock;
-        Long vesting = bond.vesting;
+        long blockHeight = Context.getBlockHeight();
+        long blocksSinceLast = blockHeight - bond.lastBlock;
+        long vesting = bond.vesting;
 
         return vesting > 0 
-            ? BigInteger.valueOf(blocksSinceLast).multiply(BigInteger.valueOf(10000)).divide(BigInteger.valueOf(vesting))
+            ? BigInteger.valueOf(blocksSinceLast).multiply(FULLY_VESTED).divide(BigInteger.valueOf(vesting))
             : ZERO;
     }
 
     /**
      * Calculate amount of payout token available for claim by depositor
-     * @param depositor address
+     * @param depositor The depositor address to calculate the payout token available for
      */
     @External(readonly = true)
-    public BigInteger pendingPayoutFor (Address depositor) {
+    public BigInteger pendingPayoutFor (
+        Address depositor
+    ) {
         BigInteger percentVested = percentVestedFor (depositor);
         BigInteger payout = bondInfo.get(depositor).payout;
-        BigInteger vested = BigInteger.valueOf(10000);
 
-        return (percentVested.compareTo(vested) >= 0)
+        return (percentVested.compareTo(FULLY_VESTED) >= 0)
             ? payout
-            : payout.multiply(percentVested).divide(vested);
+            : payout.multiply(percentVested).divide(FULLY_VESTED);
     }
 
     /**
-     *  Current fee Karma takes of each bond
-     *  @return currentFee_ uint
+     * Get the current fee Karma takes of each bond
      */
     @External(readonly = true)
     public BigInteger currentKarmaFee() {
@@ -707,5 +845,55 @@ public class KarmaCustomBond extends Ownable {
     @External(readonly = true)
     public String name() {
         return this.name;
+    }
+
+    @External(readonly = true)
+    public Address karmaTreasury() {
+        return this.karmaTreasury.get();
+    }
+
+    @External(readonly = true)
+    public BigInteger totalPrincipalBonded() {
+        return this.totalPrincipalBonded.get();
+    }
+
+    @External(readonly = true)
+    public BigInteger totalPayoutGiven() {
+        return this.totalPayoutGiven.get();
+    }
+
+    @External(readonly = true)
+    public BigInteger totalDebt() {
+        return this.totalDebt.get();
+    }
+
+    @External(readonly = true)
+    public BigInteger payoutSinceLastSubsidy() {
+        return this.payoutSinceLastSubsidy.get();
+    }
+
+    @External(readonly = true)
+    public long lastDecay() {
+        return this.lastDecay.get();
+    }
+
+    @External(readonly = true)
+    public Terms terms() {
+        return this.terms.get();
+    }
+
+    @External(readonly = true)
+    public Adjust adjustment() {
+        return this.adjustment.get();
+    }
+
+    @External(readonly = true)
+    public FeeTiers feeTiers(int index) {
+        return this.feeTiers.get(index);
+    }
+
+    @External(readonly = true)
+    public Bond bondInfo(Address depositor) {
+        return this.bondInfo.get(depositor);
     }
 }

@@ -16,6 +16,8 @@
 
 package dao.karma.custombond;
 
+import static java.math.BigInteger.ZERO;
+
 import java.math.BigInteger;
 
 import score.ObjectReader;
@@ -26,16 +28,16 @@ public class Bond {
     // payout token remaining to be paid
     public BigInteger payout;
     // Blocks left to vest
-    public Long vesting;
+    public long vesting;
     // Last interaction
-    public Long lastBlock;
+    public long lastBlock;
     // Price paid (principal tokens per payout token) in ten-millionths - 4000000 = 0.4
     public BigInteger truePricePaid;
-    
+
     public Bond (
         BigInteger payout,
-        Long vesting,
-        Long lastBlock,
+        long vesting,
+        long lastBlock,
         BigInteger truePricePaid
     ) {
         this.payout = payout;
@@ -58,5 +60,9 @@ public class Bond {
         w.write(obj.vesting);
         w.write(obj.lastBlock);
         w.write(obj.truePricePaid);
+    }
+
+    public static Bond empty() {
+      return new Bond(ZERO, 0L, 0L, ZERO);
     }
 }

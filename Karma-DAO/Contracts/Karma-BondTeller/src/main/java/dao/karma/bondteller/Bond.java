@@ -24,12 +24,12 @@ import score.Address;
 public class Bond {
     // token used to pay for bond
     public Address principal;
-    // amount of principal token paid for bond
+    // amount of principal inflow token paid for bond
     public BigInteger principalPaid;
     // sOHM remaining to be paid. agnostic balance
     public BigInteger payout;
     // Block when bond is vested
-    public Long vested;
+    public long vested;
     // time bond was created
     public BigInteger created;
     // time bond was redeemed
@@ -39,7 +39,7 @@ public class Bond {
         Address principal,
         BigInteger principalPaid,
         BigInteger payout,
-        Long vested,
+        long vested,
         BigInteger created,
         BigInteger redeemed
     ) {

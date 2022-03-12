@@ -22,7 +22,7 @@ import dao.karma.test.ScoreSpy;
 public class KarmaStakingTest extends KarmaTest {
 
   ScoreSpy<KarmaStaking> staking;
-  
+
   void setup_staking () throws Exception {
     staking = deploy(KarmaStaking.class);
   }

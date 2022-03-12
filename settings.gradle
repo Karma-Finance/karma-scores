@@ -7,11 +7,13 @@ include (
 
   // Contracts
   ':Karma-Bond:Contracts:Karma-CustomBond',
+  ':Karma-Bond:Contracts:Karma-CustomBondBalanced',
   ':Karma-Bond:Contracts:Karma-CustomTreasury',
+  ':Karma-Bond:Contracts:Karma-CustomTreasuryBalanced',
   ':Karma-Bond:Contracts:Karma-Factory',
   ':Karma-Bond:Contracts:Karma-FactoryStorage',
   ':Karma-Bond:Contracts:Karma-SubsidyRouter',
-  
+
   // Tests
   ':Karma-Bond:Tests:Karma-CustomBond-Test',
   ':Karma-Bond:Tests:Karma-CustomTreasury-Test',
@@ -55,6 +57,7 @@ include (
   ':Karma-Commons:Karma-Structs',
   ':Karma-Commons:Karma-Types',
   ':Karma-Commons:Karma-Interfaces',
+  ':Karma-Commons:Karma-Clients',
 
   // ICON related code
   ':Karma-Commons:ICON:irc2',

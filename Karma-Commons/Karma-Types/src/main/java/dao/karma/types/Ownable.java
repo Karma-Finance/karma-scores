@@ -25,7 +25,7 @@ import score.annotation.EventLog;
 import score.annotation.External;
 
 public class Ownable {
-  
+
   // ================================================
   // Consts
   // ================================================
@@ -37,22 +37,20 @@ public class Ownable {
   // ================================================
   @EventLog(indexed = 2)
   public void OwnershipPushed(Address previousOwner, Address newOwner) {}
-  
+
   @EventLog(indexed = 2)
   public void OwnershipPulled(Address previousOwner, Address newOwner) {}
 
   // ================================================
   // DB Variables
   // ================================================
-  protected VarDB<Address> owner = Context.newVarDB(NAME + "_owner", Address.class);
+  private VarDB<Address> owner = Context.newVarDB(NAME + "_owner", Address.class);
   protected VarDB<Address> newOwner = Context.newVarDB(NAME + "_newOwner", Address.class);
 
-  public Ownable () {
-    final Address caller = Context.getCaller();
-
+  public Ownable (Address initialOwner) {
     if (this.owner.get() == null) {
-      owner.set(caller);
-      this.OwnershipPushed(ZERO_ADDRESS, caller);
+      owner.set(initialOwner);
+      this.OwnershipPushed(ZERO_ADDRESS, initialOwner);
     }
   }
 
@@ -70,7 +68,7 @@ public class Ownable {
     this.OwnershipPushed (this.owner.get(), ZERO_ADDRESS);
     this.owner.set(ZERO_ADDRESS);
   }
-  
+
   @External
   public void pushManagement (Address newOwner) {
     onlyPolicy();

@@ -16,33 +16,17 @@
 
 package dao.karma.interfaces.bond;
 
-import java.math.BigInteger;
-
 import dao.karma.structs.bond.TreasuryBond;
+import dao.karma.structs.factorystorage.BondDetails;
 import score.Address;
 import score.Context;
 
 public class IKarmaFactoryStorage {
-  
+
   public static TreasuryBond pushBond (
     Address karmaFactoryStorage,
-    Address payoutToken, 
-    Address principleToken, 
-    Address treasury,
-    Address bond,
-    Address initialOwner, 
-    BigInteger[] tierCeilings, 
-    BigInteger[] fees
+    BondDetails details
   ) {
-    return TreasuryBond.fromMap (
-      Context.call (karmaFactoryStorage, "pushBond",
-      payoutToken, 
-      principleToken, 
-      treasury, 
-      bond,
-      initialOwner,
-      tierCeilings,
-      fees
-    ));
+    return TreasuryBond.fromMap (Context.call (karmaFactoryStorage, "pushBond", details));
   }
 }

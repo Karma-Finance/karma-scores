@@ -21,9 +21,9 @@ import static java.math.BigInteger.ZERO;
 
 import java.math.BigInteger;
 
+import dao.karma.interfaces.bond.ICustomTreasury;
 import dao.karma.interfaces.dao.ICalculator;
 import dao.karma.interfaces.dao.ITeller;
-import dao.karma.interfaces.dao.ITreasury;
 import dao.karma.interfaces.irc2.IIRC2;
 import dao.karma.types.IKarmaAccessControlled;
 import dao.karma.types.KarmaAccessControlled;
@@ -70,7 +70,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
     @EventLog
     public void BeforeBond(BigInteger index, BigInteger price, BigInteger internalPrice, BigInteger debtRatio) {}
     @EventLog
-    public void CreateBond(BigInteger index, BigInteger amount, BigInteger payout, Long expires) {}
+    public void CreateBond(BigInteger index, BigInteger amount, BigInteger payout, long expires) {}
     @EventLog
     public void AfterBond(BigInteger index, BigInteger price, BigInteger internalPrice, BigInteger debtRatio) {}
 
@@ -160,9 +160,9 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
         BigInteger id,
         BigInteger controlVariable,
         boolean fixedTerm,
-        Long vestingTerm,
-        Long expiration,
-        Long conclusion,
+        long vestingTerm,
+        long expiration,
+        long conclusion,
         BigInteger minimumPrice,
         BigInteger maxPayout,
         BigInteger maxDebt,
@@ -255,23 +255,23 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
 
         Context.require(info.termsSet, 
             "deposit: Bond not initialized");
-        
+
         long blockHeight = Context.getBlockHeight();
         Context.require(blockHeight < info.terms.conclusion,
             "deposit: Bond concluded");
-        
+
         this.BeforeBond(bondId, bondPriceInUsd(bondId), bondPrice(bondId), debtRatio(bondId));
-        
+
         decayDebt(bondId);
 
         Context.require(info.totalDebt.compareTo(info.terms.maxDebt) <= 0,
             "deposit: Max debt exceeded");
-        
+
         // slippage protection            
         Context.require(maxPrice.compareTo(_bondPrice(bondId)) >= 0,
             "deposit: Slippage limit: more than max price");
 
-        BigInteger value = ITreasury.tokenValue(treasury, info.principal, amount);
+        BigInteger value = ICustomTreasury.valueOfToken(treasury, info.principal, amount);
         // payout to bonder is computed
         BigInteger payout = payoutFor(value, bondId);
 
@@ -295,7 +295,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
 
         Context.require(payout.compareTo(minimalPayout) >= 0,
             "deposit: Bond too small");
-        
+
         // size protection because there is no slippage
         Context.require(payout.compareTo(maxPayout(bondId)) <= 0,
             "deposit: Bond too large");
@@ -308,7 +308,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
         bondStorage.totalDebt = info.totalDebt.add(value);
         this.bonds.set(bondId, bondStorage);
 
-        Long expiration = info.terms.vestingTerm + blockHeight;
+        long expiration = info.terms.vestingTerm + blockHeight;
         if (!info.terms.fixedTerm) {
             expiration = info.terms.expiration;
         }
@@ -394,7 +394,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
     @External(readonly = true)
     public BigInteger payoutForAmount (BigInteger amount, BigInteger bondId) {
         Address principal = this.bonds.get(bondId).principal;
-        return payoutFor (ITreasury.tokenValue(this.treasury, principal, amount), bondId);
+        return payoutFor (ICustomTreasury.valueOfToken(this.treasury, principal, amount), bondId);
     }
 
     // --- Bond Price ---
@@ -490,7 +490,7 @@ public class KarmaBondDepository implements IKarmaAccessControlled {
      */
     public BigInteger debtDecay (BigInteger bondId) {
         var bond = this.bonds.get(bondId);
-        Long blocksSinceLast = Context.getBlockHeight() - bond.lastDecay;
+        long blocksSinceLast = Context.getBlockHeight() - bond.lastDecay;
 
         BigInteger decay = bond.totalDebt.multiply(BigInteger.valueOf(blocksSinceLast)).divide(BigInteger.valueOf(bond.terms.vestingTerm));
 

@@ -26,7 +26,7 @@ import com.iconloop.score.test.TestBase;
 
 public class SleepUtils extends TestBase {
   protected static final ServiceManager sm = getServiceManager();
-  
+
   public static void sleep (long seconds) {
     // 1 secs block generation
     sm.getBlock().increase(seconds);

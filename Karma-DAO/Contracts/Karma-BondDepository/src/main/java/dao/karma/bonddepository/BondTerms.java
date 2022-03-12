@@ -21,7 +21,7 @@ import java.math.BigInteger;
 // Bond Terms
 public class BondTerms  {
   public BigInteger controlVariable;
-  public Long vestingTerm;
+  public long vestingTerm;
   public BigInteger minimumPrice;
   public BigInteger maxPayout;
   public BigInteger maxDebt;
@@ -29,7 +29,7 @@ public class BondTerms  {
   public BondTerms () {}
   public BondTerms (
     BigInteger controlVariable,
-    Long vestingTerm,
+    long vestingTerm,
     BigInteger minimumPrice,
     BigInteger maxPayout,
     BigInteger maxDebt

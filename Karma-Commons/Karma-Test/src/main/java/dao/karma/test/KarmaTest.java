@@ -30,7 +30,7 @@ public class KarmaTest extends TestBase {
     protected final static ServiceManager sm = getServiceManager();
 
     // Roles
-    protected final static Account owner = sm.createAccount();
+    protected final static Account owner = sm.createAccount(1_000_000_000);
     protected final Account minter = sm.createAccount();
     protected final Account burner = sm.createAccount();
     protected final Account admin = sm.createAccount();

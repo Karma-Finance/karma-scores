@@ -16,9 +16,8 @@
 
 package dao.karma.factorystorage;
 
-import java.math.BigInteger;
-
 import dao.karma.structs.bond.TreasuryBond;
+import dao.karma.structs.factorystorage.BondDetails;
 import dao.karma.types.Ownable;
 import score.Address;
 import score.ArrayDB;
@@ -63,8 +62,8 @@ public class KarmaFactoryStorage extends Ownable {
      *  Contract constructor
      * 
      */
-    public KarmaFactoryStorage (
-    ) {
+    public KarmaFactoryStorage () {
+        super(Context.getCaller());
         this.name = "Karma Factory Storage";
     }
 
@@ -73,25 +72,13 @@ public class KarmaFactoryStorage extends Ownable {
      * 
      * Access: Karma Factory
      * 
-     * @param payoutToken Address
-     * @param principleToken Address
-     * @param customTreasury Address
-     * @param customBond Address
-     * @param initialOwner Address
-     * @param tierCeilings BigInteger[]
-     * @param fees BigInteger[]
-     * @return treasury Address
-     * @return bond Address
+     * @param bond The bond details
+     * @return The Treasury and the Bond addresses
+     * @return bond
      */
     @External
     public TreasuryBond pushBond (
-        Address payoutToken, 
-        Address principleToken, 
-        Address customTreasury, 
-        Address customBond, 
-        Address initialOwner, 
-        BigInteger[] tierCeilings, 
-        BigInteger[] fees
+        BondDetails bond
     ) {
         final Address caller = Context.getCaller();
 
@@ -99,33 +86,24 @@ public class KarmaFactoryStorage extends Ownable {
         checkIsKarmaFactory(caller);
 
         // OK
-        indexOfBond.set(customBond, bondDetails.size());
-        
-        bondDetails.add (
-            new BondDetails (
-                payoutToken,
-                principleToken,
-                customTreasury,
-                customBond,
-                initialOwner,
-                tierCeilings,
-                fees
-            )
-        );
+        indexOfBond.set(bond.bondAddress, bondDetails.size());
+        bondDetails.add(bond);
 
-        this.BondCreation(customTreasury, customBond, initialOwner);
-        return new TreasuryBond(customTreasury, customBond);
+        this.BondCreation(bond.treasuryAddress, bond.bondAddress, bond.initialOwner);
+        return new TreasuryBond(bond.treasuryAddress, bond.bondAddress);
     }
 
     /**
-     * Changes Karma Factory address
+     * Changes the Karma Factory address
      * 
      * Access: Policy
      * 
-     * @param factory address
+     * @param factory The new factory address
      */
     @External
-    public void setFactoryAddress (Address factory) {
+    public void setFactoryAddress (
+        Address factory
+    ) {
         // Access control
         onlyPolicy();
 

@@ -28,7 +28,7 @@ public abstract class ITeller {
     Address principal, 
     BigInteger amount,
     BigInteger payout, 
-    Long expiration, 
+    long expiration, 
     Address frontEndOperator
   ) {
     return (BigInteger) Context.call(teller, "newBond", depositor, principal, amount, payout, expiration, frontEndOperator);

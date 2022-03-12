@@ -1,0 +1,14 @@
+@startuml Karma Subsidy Router getSubsidyInfo
+
+KarmaSubsidyController -> KarmaSubsidyRouter ++ : **getSubsidyInfo()**
+
+KarmaSubsidyRouter -> KarmaCustomBond : **paySubsidy()**
+
+note over KarmaCustomBond : Resets payout \n\
+and emits **PayoutUpdate**
+
+KarmaCustomBond --> KarmaSubsidyRouter : returns payout value before reset
+
+return payout value before reset
+
+@enduml

@@ -18,18 +18,12 @@ package dao.karma.utils;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-
-import score.Context;
-import scorex.io.IOException;
-import scorex.io.Reader;
-import scorex.io.StringReader;
 
 public class JSONUtils {
   public static byte[] method (String method) {
     return ("{\"method\": \"" + method + "\"}").getBytes();
   }
-  
+
   public static byte[] method (String method, JsonObject params) {
     JsonObject data = Json.object()
         .add("method", method)
@@ -41,16 +35,6 @@ public class JSONUtils {
   }
 
   public static JsonObject parseData(byte[] _data) {
-
-    Reader reader = new StringReader(new String(_data));
-    JsonValue input = null;
-
-    try {
-        input = Json.parse(reader);
-    } catch (IOException e) {
-        Context.revert("JSONUtils::parseData: Invalid JSON");
-    }
-
-    return input.asObject();
+    return Json.parse(new String(_data)).asObject();
   }
 }

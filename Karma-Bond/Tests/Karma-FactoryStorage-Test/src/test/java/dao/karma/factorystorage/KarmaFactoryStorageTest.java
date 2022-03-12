@@ -21,9 +21,9 @@ import dao.karma.test.ScoreSpy;
 
 public class KarmaFactoryStorageTest extends KarmaTest {
 
-  ScoreSpy<KarmaFactoryStorage> treasury;
-  
-  void setup_treasury () throws Exception {
-    treasury = deploy(KarmaFactoryStorage.class);
+  ScoreSpy<KarmaFactoryStorage> factoryStorage;
+
+  void setup_factory_storage () throws Exception {
+    factoryStorage = deploy(KarmaFactoryStorage.class);
   }
 }

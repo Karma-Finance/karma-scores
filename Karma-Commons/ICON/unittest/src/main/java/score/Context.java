@@ -89,7 +89,7 @@ public final class Context extends TestBase {
                             Address targetAddress, String method, Object... params) {
         return null;
     }
-    
+
     public static Class<?> walkScore(Stream<StackFrame> stackFrameStream) {
         // skip(1) because it's always "Context.call"
         for (var stackFrame : stackFrameStream.skip(1).collect(Collectors.toList())) {
@@ -123,11 +123,15 @@ public final class Context extends TestBase {
     }
 
     public static Address deploy(byte[] content, Object... params) {
-        return null;
+        return deploy(null, content, params);
     }
 
     public static Address deploy(Address targetAddress, byte[] content, Object... params) {
-        return null;
+        int seed = 0;
+        for (int i = 0; i < content.length; i++) {
+            seed += (int) content[i];
+        }
+        return Account.newScoreAccount(seed).getAddress();
     }
 
     public static void revert(int code, String message) {

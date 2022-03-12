@@ -18,22 +18,20 @@ package dao.karma.interfaces.dao;
 
 import java.math.BigInteger;
 
-import dao.karma.interfaces.irc2.IIRC2;
-import dao.karma.utils.JSONUtils;
 import score.Address;
 import score.Context;
+import dao.karma.interfaces.irc2.IIRC2;
+import dao.karma.utils.ICX;
+import dao.karma.utils.JSONUtils;
 
 public abstract class ITreasury {
-  public static BigInteger valueOfToken(Address treasury, Address principalToken, BigInteger amount) {
-    return (BigInteger) Context.call(treasury, "valueOfToken", principalToken, amount);
-  }
 
-  public static void deposit(Address treasury, Address principalToken, BigInteger amount, BigInteger payout) {
-    IIRC2.transfer(principalToken, treasury, amount, JSONUtils.method("deposit"));
-  }
-
-  public static BigInteger tokenValue(Address treasury, Address principal, BigInteger amount) {
-    return (BigInteger) Context.call(treasury, "tokenValue", principal, amount);
+  public static void deposit (Address treasury, Address token, BigInteger amount) {
+    if (ICX.isICX(token)) {
+      Context.call(amount, treasury, "depositIcx");
+    } else {
+      IIRC2.transfer(token, treasury, amount, JSONUtils.method("deposit"));
+    }
   }
 
   public static void mint(Address treasury, Address to, BigInteger amount) {

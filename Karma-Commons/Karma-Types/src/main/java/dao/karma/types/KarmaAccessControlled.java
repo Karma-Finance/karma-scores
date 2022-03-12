@@ -23,7 +23,7 @@ import score.VarDB;
 import score.annotation.EventLog;
 
 public class KarmaAccessControlled {
-  
+
     // ================================================
     // Consts
     // ================================================
