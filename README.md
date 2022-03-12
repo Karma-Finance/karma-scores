@@ -43,7 +43,7 @@ $ sudo apt install jq
 ```
 
 
-## How to Run
+## How to Build and Deploy the project
 
 ### 1. Build the project (mostly for making sure that everything works correctly for your setup)
 
