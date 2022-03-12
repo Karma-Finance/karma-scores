@@ -111,7 +111,7 @@ public void setBondTerms (
 - `parameter`: The input type, its value is either 0 (VESTING, set the `vestingTerm` blocks value), 1 (PAYOUT, set the `maxPayout` value) or 2 (DEBT, set the `maxDebt` value)
 - `input`: The input value
 - Requirements:
-  - For `VESTING`, the vesting time must be longer than 36 hours
+  - For `VESTING`, the vesting time must be longer than 36 hours. The contract assume a 2 seconds block time.
   - For `PAYOUT`, the max payout cannot be above 1 percent
 
 ### 🧪 Example call

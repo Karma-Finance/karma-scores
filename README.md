@@ -26,10 +26,30 @@ In Linux (Ubuntu 18.04):
 $ sudo apt install openjdk-11-jdk
 ```
 
+In Windows (Windows 10 or later)
+
+You can install the JDK11 natively, but you will need `bash` in order to run the Karma deploy scripts.
+Please [install WSL](https://docs.microsoft.com/en-us/windows/wsl/install-manual) first, so you can follow the same instructions than Linux.
+
 ## How to Run
 
 ### 1. Build the project
 
-```
 $ ./gradlew build
+
+This should run all the unittest, and run successfully with a similar output than below:
+
+```java
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Task :Karma-Bond:Tests:Karma-CustomBond-Test:test
+> Task :Karma-Bond:Tests:Karma-CustomTreasury-Test:test
+> Task :Karma-Bond:Tests:Karma-Factory-Test:test
+> Task :Karma-Bond:Tests:Karma-FactoryStorage-Test:test
+> Task :Karma-Bond:Tests:Karma-SubsidyRouter-Test:test
+
+BUILD SUCCESSFUL in 3m 53s
+104 actionable tasks: 104 executed
 ```
+
+### 2. Deploy
