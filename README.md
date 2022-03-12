@@ -52,4 +52,17 @@ BUILD SUCCESSFUL in 3m 53s
 104 actionable tasks: 104 executed
 ```
 
-### 2. Deploy
+### 2. Setup the Karma build system
+
+You'll need python3 and pip installed on your machine beforehand.
+
+Now we can install the virtualenv (run this in the root folder of the project):
+
+```bash
+$ python -m venv ./venv
+$ source ./venv/bin/activate
+$ pip install -r ./requirements.txt
+```
+
+Everytime you want to use the Karma build & deploy system, please do `source ./venv/bin/activate` beforehand.
+
