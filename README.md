@@ -101,11 +101,11 @@ In order to deploy a bond, we need to deploy its associated custom treasury cont
 
 For doing so, we will need to create a new configuration file, that will both contain information about the treasury and the bond.
 
-These configuration files are located in `./scripts/scenario/setup/`.
+These configuration files are located in [`./scripts/scenario/setup/`](./scripts/scenario/setup/).
 
-They will be named like that : `${bondId}.py`. A `bondId` is an arbitrary number that will represents the bond being deployed. This number must be unique for all bonds accross all networks.
+They will be named like that : `${bondId}.py`. A `bondId` is an arbitrary number that will represents the bond being deployed. This number must be unique for all bonds accross all networks. You can find an example of a config file [here](scripts/scenario/configs/1.py). 
 
-That file contain a `config` dict variable that you can modify depending of your needs.
+That file contain a [`config`](https://github.com/Protokol7/karma-scores/blob/5ba717ea89e2061f5b7c60e48a311541287f5bfc/scripts/scenario/configs/1.py#L6) dict variable that you can modify depending of your needs.
 
 There are two important variables in that dict: 
   - "network", that will be the network where the bond is deployed. It can be "custom" too.
@@ -113,7 +113,7 @@ There are two important variables in that dict:
     - If it is "Base", it will use the generic Bond implementation that uses standard IRC2 tokens for the principal and the payout tokens.
     - If it is "Balanced", it will use the Balanced Bond implementation that uses LP tokens and Balanced poolIDs
 
-For the Custom Treasury, please also look at the `"treasury"` key of the `config` dictionary.
+For the Custom Treasury, please also look at the [`"treasury"`](https://github.com/Protokol7/karma-scores/blob/5ba717ea89e2061f5b7c60e48a311541287f5bfc/scripts/scenario/configs/1.py#L63) key of the `config` dictionary.
 You can change the `initialOwner` and the `initialPayoutFunding` values.
 
 Once you've changed these values, you can deploy the customTreasury by doing so:
@@ -132,7 +132,7 @@ $ ./scripts/scenario/2.deploy_customtreasury.sh 1
 
 The process for deploying a custom bond contract is similar to the custom treasury one. If you haven't deployed a custom treasury contract already, please make sure to deploy it correctly first, and come back to these instructions.
 
-We'll need to modify the remaining variables in the `config` dict in the config file, located in the `"bond"` key.
+We'll need to modify the remaining variables in the [`config`](https://github.com/Protokol7/karma-scores/blob/5ba717ea89e2061f5b7c60e48a311541287f5bfc/scripts/scenario/configs/1.py#L19) dict in the config file, located in the `"bond"` key.
 
 These variables will be needed:
 
@@ -142,7 +142,7 @@ These variables will be needed:
 - vestingTermSeconds: Vesting term value (in seconds)
 - fees: Array of fees tiers, in ten-thousandths (i.e. 33300 = 3.33%)
 - tierCeilings: Array of ceilings of principal bonded till next tier
-- initialize: please see [`initializeBond`](Karma-Bond/Contracts/Karma-CustomBond/docs/README.md#karmacustombondinitializebond) documenation about these values
+- initialize: please see [`initializeBond`](Karma-Bond/Contracts/Karma-CustomBond/docs/README.md#karmacustombondinitializebond) documentation about these values
 
 Once you've finished setting up these parameters, you can deploy the custom bond using the following command:
 
