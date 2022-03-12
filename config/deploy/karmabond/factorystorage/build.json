@@ -1,0 +1,4 @@
+{
+  "javaPkg": ":Karma-Bond:Contracts:Karma-FactoryStorage",
+  "build": "optimized"
+}

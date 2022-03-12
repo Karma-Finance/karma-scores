@@ -1,0 +1,11 @@
+{
+  "method": "initializeBond",
+  "params": {
+    "controlVariable": "0x61a80",
+    "vestingTerm": "0x49d40",
+    "minimumPrice": "0x151b",
+    "maxPayout": "0x1f4",
+    "maxDebt": "0x12",
+    "initialDebt": "0x5cfbb600"
+  }
+}
