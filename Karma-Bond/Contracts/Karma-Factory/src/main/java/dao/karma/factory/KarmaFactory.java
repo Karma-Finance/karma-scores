@@ -62,6 +62,7 @@ public class KarmaFactory extends Ownable {
     // ================================================
     /**
      * Contract constructor
+     * By default, the Policy Role is set to the caller address.
      * 
      * Access: Everybody
      * 
@@ -97,7 +98,7 @@ public class KarmaFactory extends Ownable {
     // Contract Initialization
     // ================================================
     /**
-     * Write the Custom Treasury Contract bytes. 
+     * Set the Custom Treasury Contract bytes. 
      * Can only be called once after deploying.
      * 
      * Access: SCORE Owner
@@ -113,13 +114,13 @@ public class KarmaFactory extends Ownable {
 
         // The Custom Treasury Contract bytes cannot be set more than once
         checkCustomTreasuryContractBytesNotInitialized();
-        
+
         // OK
         this.customTreasuryContractBytes.set(contractBytes);
     }
 
     /**
-     * Write the Custom Treasury Contract bytes. 
+     * Set the Custom Bond Contract bytes. 
      * Can only be called once after deploying.
      * 
      * Access: SCORE Owner
@@ -140,7 +141,7 @@ public class KarmaFactory extends Ownable {
         this.customBondContractBytes.set(contractBytes);
     }
 
-    // --- Policy Functions --- 
+    // --- Policy Role Functions --- 
     /**
      * Deploys custom treasury and custom bond contracts and returns address of both
      * 
@@ -204,8 +205,8 @@ public class KarmaFactory extends Ownable {
      * 
      * Access: Policy
      * 
-     * @param payoutToken address
-     * @param principleToken address
+     * @param payoutToken The payout token
+     * @param principleToken The principle token
      * @param initialOwner address
      * @return treasury address
      * @return bond address
