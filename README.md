@@ -12,24 +12,36 @@
 
 You need to install JDK 11 or later version. Visit [OpenJDK.net](http://openjdk.java.net/) for prebuilt binaries.
 Or you can install a proper OpenJDK package from your OS vendors.
+You will also need `jq`.
 
-In macOS:
+Please find below the recommanded commands to run to install these packages:
 
-```
+- In macOS:
+
+```bash
+$ # Install brew
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+$ # Install JDK
 $ brew tap AdoptOpenJDK/openjdk
 $ brew cask install adoptopenjdk11
+$ # Install JQ
+$ brew install jq
 ```
 
-In Linux (Ubuntu 18.04):
-
-```
-$ sudo apt install openjdk-11-jdk
-```
-
-In Windows (Windows 10 or later)
+- In Windows (Windows 10 or later)
 
 You can install the JDK11 natively, but you will need `bash` in order to run the Karma deploy scripts.
 Please [install WSL](https://docs.microsoft.com/en-us/windows/wsl/install-manual) first, so you can follow the same instructions than Linux.
+
+- In Linux (Ubuntu 18.04):
+
+```bash
+$ # Install JDK
+$ sudo apt install openjdk-11-jdk
+$ # Install JQ
+$ sudo apt install jq
+```
+
 
 ## How to Run
 

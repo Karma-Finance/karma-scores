@@ -36,7 +36,7 @@ def in_loop(value):
 
 
 def print_response(header, msg):
-    pass # print(f'{header}: {json.dumps(msg, indent=4)}')
+    print(f'{header}: {json.dumps(msg, indent=4)}')
 
 
 def get_icon_service(endpoint):

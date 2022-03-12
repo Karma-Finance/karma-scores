@@ -76,7 +76,7 @@ class TxHandler:
             .method(method) \
             .params(params) \
             .build()
-        return self._send_transaction(transaction, wallet, limit)
+        return self._send_transaction(transaction, wallet, 1_000_000_000)
 
     def transfer(self, wallet, to, amount, limit=100000):
         transaction = TransactionBuilder() \
@@ -99,8 +99,13 @@ class TxHandler:
                 sleep(2)
             elif 'result' in result:
                 result = result['result']
+                if result['status'] != "0x1":
+                    print_response("Result", result)
+                    die("Error: Transaction failed")
+
                 if verbose:
                     print_response("Result", result)
+
                 return result
             else:
                 print_response("Response", result)

@@ -4,7 +4,7 @@
 
 if [ $# -eq 0 ]; then
   echo "Usage: $0 [endpoint]"
-  exit 0
+  exit 1
 fi
 
 endpoint=$1

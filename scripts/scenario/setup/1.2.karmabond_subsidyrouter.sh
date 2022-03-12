@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -e
+
+source ./venv/bin/activate
+
+source ./scripts/util/get_address.sh
+source ./scripts/util/dir.sh
+source ./scripts/util/console.sh
+
+source ./scripts/karma/pkg.sh
+
+# Network must be given as a parameter of this script
+if [ "$#" -ne "1" ] ; then
+  error "Usage: $0 <network>"
+  exit 1
+fi
+
+network=$1
+
+# Start
+info "Deploying Subsidy Router..."
+
+# Package information
+pkg=$(getSubsidyRouterPkg)
+javaPkg=":Karma-Bond:Contracts:Karma-SubsidyRouter"
+build="optimized"
+
+# Setup packages
+setupJavaDir ${javaPkg} ${build}
+setupDeployDir ${pkg} ${network}
+setupCallsDir ${pkg} ${network}
+deployDir=$(getDeployDir ${pkg} ${network})
+
+# Deploy on ICON network
+jq -n '{}' > ${deployDir}/params.json
+./run.py -e ${network} deploy ${pkg}

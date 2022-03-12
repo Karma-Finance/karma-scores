@@ -16,7 +16,7 @@ import json
 
 def get_meta(package, endpoint):
     deploy_path = f"./config/deploy/{package}/"
-    meta = json.loads(open(f"{deploy_path}/{endpoint}/meta.json", "r").read())
+    meta = json.loads(open(f"{deploy_path}/build.json", "r").read())
     javaPkg=meta['javaPkg']
     version=meta['version'] if 'version' in meta else ''
     build=meta['build']

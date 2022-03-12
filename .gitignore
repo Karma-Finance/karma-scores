@@ -17,8 +17,6 @@ testsvc/
 .project
 .classpath
 
-config/deploy
-
 *.pyc
 venv/
 

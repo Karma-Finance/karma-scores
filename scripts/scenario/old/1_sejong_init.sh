@@ -9,7 +9,7 @@ echo "Cleaning..."
 
 # ---- Constants - You may edit these variables ----
 # The target network - "sejong" for the Sejong Network, or "custom" for the Custom Karma network
-endpoint=custom
+endpoint=sejong
 bnusd="cx38b5f44ad2f4486172dfea12e6cde67a23eadaf1"
 sicx="cxcc57144332b23ca8f36d09d862bc202caa76dc30"
 
@@ -19,7 +19,7 @@ payoutToken=$sicx
 
 # Amount of payout tokens sent to the treasury after deployment
 # Please note that these tokens must be present on the operator address beforehand
-payoutSentTreasury=10000000000000000000000 # 10000 * 10**18
+payoutSentTreasury=$(python -c "print(10 * 10**18)") # 10 sICX
 
 # Vesting term value (in seconds)
 vestingTermSeconds=604800 # 7 * 24h * 3600s = 1 week
@@ -28,7 +28,7 @@ vestingTermSeconds=604800 # 7 * 24h * 3600s = 1 week
 controlVariable=400000
 minimumPrice=5403
 maxPayout=500
-maxDebt=5000000000000000000000 # 5000 * 10**18
+maxDebt=$(python -c "print(5000 * 10**18)") # 5000 * 10**18
 initialDebt=1560000000
 
 # ---[ !! Do not touch below this line !! ] ---------------------------------------------------------------------
@@ -107,7 +107,7 @@ echo '{}' | jq \
 
 # Call setBondTerms for setting the vesting term
 parameter="0x0" # VESTING
-vestingTerm=$(python -c "print(hex(${vestingTermSeconds}/2))") # 1 week
+vestingTerm=$(python -c "print(hex(${vestingTermSeconds}//2))")
 echo '{}' | jq \
   --arg parameter $parameter \
   --arg input $vestingTerm \

@@ -1,33 +1,56 @@
 #!/bin/bash
 
 source ./venv/bin/activate
-endpoint=sejong
 
 . ./scripts/util/get_address.sh
 
 echo "Cleaning..."
 ./gradlew clean
 
-# ------------------------------------------------------------------------
+# ---- Constants - You may edit these variables ----
+# The target network - "sejong" for the Sejong Network, or "custom" for the Custom Karma network
+endpoint=sejong
+lp="cx648a6d9c5f231f6b86c0caa9cc9eff8bd6040999"
+baln="cx303470dbc10e5b4ab8831a61dbe00f75db10c38b"
+
+# Define which one is the principal, and the payout tokens
+principalToken=$lp
+payoutToken=$baln
+
+# Balanced Pool ID - refer to Balanced documentation for this value
+principalPoolId="0x3" # BALN/bnUSD
+
+# Amount of payout tokens sent to the treasury after deployment
+# Please note that these tokens must be present on the operator address beforehand
+payoutSentTreasury=$(python -c "print(10 * 10**18)") # 10 BALN
+
+# Vesting term value (in seconds)
+vestingTermSeconds=604800 # 7 * 24h * 3600s = 1 week
+
+# Bond initial values
+controlVariable=400000
+minimumPrice=5403
+maxPayout=500
+maxDebt=$(python -c "print(5000 * 10**18)") # 5000 * 10**18
+initialDebt=1560000000
+
+# ---[ !! Do not touch below this line !! ] ---------------------------------------------------------------------
 operator=$(cat ./config/keystores/${endpoint}/operator.icx | jq .address -r)
 karmaDAO=$(cat ./config/keystores/${endpoint}/dao.icx | jq .address -r)
 karmaTreasury=$(cat ./config/keystores/${endpoint}/dao_treasury.icx | jq .address -r)
 
-# Deploy tokens
 # principal
-lp="cx648a6d9c5f231f6b86c0caa9cc9eff8bd6040999"
 echo '{}' | jq \
-  --arg scoreAddress $lp \
+  --arg scoreAddress $principalToken \
   '{scoreAddress: $scoreAddress}' > ./config/deploy/bond-2-balanced-principaltoken/${endpoint}/deploy.json
+
 # payout
-baln="cx303470dbc10e5b4ab8831a61dbe00f75db10c38b"
 echo '{}' | jq \
-  --arg scoreAddress $baln \
+  --arg scoreAddress $payoutToken \
   '{scoreAddress: $scoreAddress}' > ./config/deploy/bond-2-balanced-payouttoken/${endpoint}/deploy.json
 
 payoutToken=$(getAddress "bond-2-balanced-payouttoken" ${endpoint})
 principalToken=$(getAddress "bond-2-balanced-principaltoken" ${endpoint})
-principalPoolId="0x3" # BALN/bnUSD
 
 # Deploy custom treasury
 echo '{}' | jq \
@@ -54,16 +77,18 @@ echo '{}' | jq \
 
 ./run.py -e ${endpoint} deploy bond-2-balanced-custombond
 
-# send 50 payoutToken to the custom treasury
+# send payoutToken to the custom treasury
+_value=$(python -c "print(hex(${payoutSentTreasury}))")
+
 echo '{}' | jq \
   --arg _to $customTreasury \
-  '{method: "transfer", params: {_to: $_to, _value: "0x2b5e3af16b1880000", _data: "0x7b226d6574686f64223a2266756e64696e67227d"}}' > ./config/calls/bond-2-balanced-payouttoken/${endpoint}/customtreasury_initial_deposit.json
+  '{method: "transfer", params: {_to: $_to, _value: $_value, _data: "0x7b226d6574686f64223a2266756e64696e67227d"}}' > ./config/calls/bond-2-balanced-payouttoken/${endpoint}/customtreasury_initial_deposit.json
 
 ./run.py -e ${endpoint} invoke bond-2-balanced-payouttoken customtreasury_initial_deposit
 
 # Call setBondTerms for 1 week vesting term
 parameter="0x0" # VESTING
-vestingTerm="0x49d40" # 1 week
+vestingTerm=$(python -c "print(hex(${vestingTermSeconds}//2))")
 echo '{}' | jq \
   --arg parameter $parameter \
   --arg input $vestingTerm \
