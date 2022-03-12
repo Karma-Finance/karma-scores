@@ -21,32 +21,6 @@ include (
   ':Karma-Bond:Tests:Karma-FactoryStorage-Test',
   ':Karma-Bond:Tests:Karma-SubsidyRouter-Test',
 
-  // -----------------
-  // --- Karma-DAO ---
-  // -----------------
-
-  // Contracts
-  ':Karma-DAO:Contracts:Karma-Authority',
-  ':Karma-DAO:Contracts:Karma-BondDepository',
-  ':Karma-DAO:Contracts:Karma-BondTeller',
-  ':Karma-DAO:Contracts:Karma-Staking',
-  ':Karma-DAO:Contracts:Karma-StakingDistributor',
-  ':Karma-DAO:Contracts:Karma-StandardBondingCalculator',
-  ':Karma-DAO:Contracts:Karma-Token',
-  ':Karma-DAO:Contracts:Karma-Token-Staked',
-  ':Karma-DAO:Contracts:Karma-Treasury',
-
-  // Tests
-  ':Karma-DAO:Tests:Karma-Authority-Test',
-  ':Karma-DAO:Tests:Karma-BondDepository-Test',
-  ':Karma-DAO:Tests:Karma-BondTeller-Test',
-  ':Karma-DAO:Tests:Karma-Staking-Test',
-  ':Karma-DAO:Tests:Karma-StakingDistributor-Test',
-  ':Karma-DAO:Tests:Karma-StandardBondingCalculator-Test',
-  ':Karma-DAO:Tests:Karma-Token-Test',
-  ':Karma-DAO:Tests:Karma-Token-Staked-Test',
-  ':Karma-DAO:Tests:Karma-Treasury-Test',
-
   // ---------------------
   // --- Karma-Commons ---
   // ---------------------
