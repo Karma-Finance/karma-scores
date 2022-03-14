@@ -116,8 +116,18 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
         IToken.transfer(this.payoutToken, caller, amountPayoutToken, "pay");
     }
 
+    /**
+     * A method for handling a single token type transfer, which is called from the multi token contract.
+     * It works by analogy with the fallback method of the normal transactions and returns nothing.
+     * Throws if it rejects the transfer.
+     * @param _operator: The address which initiated the transfer
+     * @param _from: the address which previously owned the token
+     * @param _id: the ID of the token being transferred
+     * @param _value: the amount of tokens being transferred
+     * @param _data: additional data with no specified format
+     */
     @External
-    public void onIRC31Received (Address _from, BigInteger _value, BigInteger _id, @Optional byte[] _data) {
+    public void onIRC31Received (Address _operator, Address _from, BigInteger _value, BigInteger _id, @Optional byte[] _data) {
         JsonObject root = JSONUtils.parseData(_data);
         String method = root.get("method").asString();
         Address token = Context.getCaller();
@@ -127,7 +137,7 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
             case "deposit": {
                 JsonObject params = root.get("params").asObject();
                 BigInteger amountPayoutToken = StringUtils.toBigInt(params.get("amountPayoutToken").asString());
-                deposit(_from, token, _value, _id, amountPayoutToken);
+                deposit(_operator, token, _value, _id, amountPayoutToken);
                 break;
             }
 
