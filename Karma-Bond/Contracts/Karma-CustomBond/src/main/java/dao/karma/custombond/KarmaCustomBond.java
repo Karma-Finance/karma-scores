@@ -790,6 +790,9 @@ public class KarmaCustomBond extends Ownable {
         Address depositor
     ) {
         Bond bond = bondInfo.get(depositor);
+        Context.require(bond != null,
+            "percentVestedFor: no bond registered for depositor");
+
         long blockHeight = Context.getBlockHeight();
         long blocksSinceLast = blockHeight - bond.lastBlock;
         long vesting = bond.vesting;
