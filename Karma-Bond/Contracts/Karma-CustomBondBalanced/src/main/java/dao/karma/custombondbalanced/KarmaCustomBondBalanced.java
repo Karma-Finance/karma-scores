@@ -494,7 +494,7 @@ public class KarmaCustomBondBalanced extends Ownable {
      * @param _data: additional data with no specified format
      */
     @External
-    public void onIRC31Received (Address _operator, Address _from, BigInteger _value, BigInteger _id, @Optional byte[] _data) {
+    public void onIRC31Received (Address _operator, Address _from, BigInteger _id, BigInteger _value, @Optional byte[] _data) {
         JsonObject root = JSONUtils.parseData(_data);
         String method = root.get("method").asString();
         Address token = Context.getCaller();
