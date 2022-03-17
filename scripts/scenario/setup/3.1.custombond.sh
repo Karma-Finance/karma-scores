@@ -120,7 +120,7 @@ EOF
     ;;
   
   *)
-    error "Invalid Bond implementation type"
+    error "Invalid implementation type"
     exit -1
 esac
 

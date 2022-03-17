@@ -43,18 +43,44 @@ setupCallsDir ${pkg} ${network}
 deployDir=$(getDeployDir ${pkg} ${network})
 
 # Deploy on ICON network
-filter=$(cat <<EOF
-{
-  payoutToken: \$payoutToken, 
-  initialOwner: \$initialOwner, 
-}
+case $implementationType in
+  "Balanced")
+    principalPoolId=$(echo ${bondConfig} | jq -r .bond.implementation.principalPoolId)
+    filter=$(cat <<EOF
+    {
+      payoutToken: \$payoutToken,
+      initialOwner: \$initialOwner,
+      poolIdPrincipalToken: \$poolIdPrincipalToken
+    }
 EOF
-)
+    )
 
-jq -n \
-  --arg payoutToken $payoutToken \
-  --arg initialOwner $initialOwner \
-  "${filter}" > ${deployDir}/params.json
+    jq -n \
+      --arg payoutToken $payoutToken \
+      --arg initialOwner $initialOwner \
+      --arg poolIdPrincipalToken $poolIdPrincipalToken \
+      "${filter}" > ${deployDir}/params.json
+    ;;
+
+  "Base")
+    filter=$(cat <<EOF
+    {
+      payoutToken: \$payoutToken, 
+      initialOwner: \$initialOwner, 
+    }
+EOF
+    )
+
+    jq -n \
+      --arg payoutToken $payoutToken \
+      --arg initialOwner $initialOwner \
+      "${filter}" > ${deployDir}/params.json
+    ;;
+
+  *)
+    error "Invalid implementation type"
+    exit -1
+esac
 
 ./run.py -e ${network} deploy ${pkg}
 
