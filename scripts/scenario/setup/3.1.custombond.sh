@@ -47,7 +47,12 @@ karmaDAO=$(getAddress ${karmaDAOPkg} ${network})
 
 # Package information
 pkg=$(getCustomBondPkg ${bondId})
-javaPkg=":Karma-Bond:Contracts:Karma-CustomBond${implementationType}"
+if [ "$implementationType" = "Base" ]; then
+  javaPkgName="Karma-CustomBond"
+else
+  javaPkgName="Karma-CustomBond${implementationType}"
+fi
+javaPkg=":Karma-Bond:Contracts:${javaPkgName}"
 build="optimized"
 
 # Setup packages

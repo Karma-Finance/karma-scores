@@ -33,7 +33,12 @@ implementationType=$(echo ${bondConfig} | jq -r .implementation)
 
 # Package information
 pkg=$(getCustomTreasuryPkg ${bondId})
-javaPkg=":Karma-Bond:Contracts:Karma-CustomTreasury${implementationType}"
+if [ "$implementationType" = "Base" ]; then
+  javaPkgName="Karma-CustomTreasury"
+else
+  javaPkgName="Karma-CustomTreasury${implementationType}"
+fi
+javaPkg=":Karma-Bond:Contracts:${javaPkgName}"
 build="optimized"
 
 # Setup packages
@@ -45,7 +50,7 @@ deployDir=$(getDeployDir ${pkg} ${network})
 # Deploy on ICON network
 case $implementationType in
   "Balanced")
-    principalPoolId=$(echo ${bondConfig} | jq -r .bond.implementation.principalPoolId)
+    poolIdPrincipalToken=$(echo ${bondConfig} | jq -r .bond.implementation.principalPoolId)
     filter=$(cat <<EOF
     {
       payoutToken: \$payoutToken,
