@@ -240,8 +240,8 @@ public BigInteger paySubsidy()
 private void deposit (
   Address caller, 
   Address token, 
-  BigInteger amount, 
   BigInteger poolId, 
+  BigInteger amount, 
   BigInteger maxPrice,
   Address depositor
 )
@@ -249,8 +249,8 @@ private void deposit (
 
 - `caller`: The method caller. This field is handled by tokenFallback
 - `token`: Only principalToken is accepted. This field is handled by tokenFallback
-- `amount`: Amount of principal inflow token received. This field is handled by tokenFallback
 - `poolId`: The LP token Pool ID. This field is handled by tokenFallback
+- `amount`: Amount of principal inflow token received. This field is handled by tokenFallback
 - `maxPrice`: Max price for slippage protection. `maxPrice` value needs to be superior or equal to the bond price, otherwise the transaction will fail.
 - `depositor`: Registered depositor of the bond
 

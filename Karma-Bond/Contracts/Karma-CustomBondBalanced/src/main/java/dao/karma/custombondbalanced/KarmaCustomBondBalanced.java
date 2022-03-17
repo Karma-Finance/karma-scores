@@ -398,8 +398,8 @@ public class KarmaCustomBondBalanced extends Ownable {
     private void deposit (
         Address caller, // the method caller. This field is handled by tokenFallback
         Address token, // only principalToken is accepted. This field is handled by tokenFallback
-        BigInteger amount, // amount of principal inflow token received. This field is handled by tokenFallback
         BigInteger poolId, // The LP token Pool ID. This field is handled by tokenFallback
+        BigInteger amount, // amount of principal inflow token received. This field is handled by tokenFallback
         BigInteger maxPrice,
         Address depositor
     ) {
@@ -505,7 +505,7 @@ public class KarmaCustomBondBalanced extends Ownable {
                 JsonObject params = root.get("params").asObject();
                 BigInteger maxPrice = StringUtils.toBigInt(params.get("maxPrice").asString());
                 Address depositor = Address.fromString(params.get("depositor").asString());
-                deposit(_operator, token, _value, _id, maxPrice, depositor);
+                deposit(_operator, token, _id, _value, maxPrice, depositor);
                 break;
             }
 
