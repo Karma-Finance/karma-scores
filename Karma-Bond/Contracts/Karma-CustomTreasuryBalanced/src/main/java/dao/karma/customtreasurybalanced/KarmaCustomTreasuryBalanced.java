@@ -20,6 +20,7 @@ import java.math.BigInteger;
 
 import com.eclipsesource.json.JsonObject;
 
+import dao.karma.interfaces.bond.IBalancedDEX;
 import dao.karma.interfaces.bond.IToken;
 
 import dao.karma.utils.AddressUtils;
@@ -51,6 +52,9 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
     // Bond contracts
     private final DictDB<Address, Boolean> bondContract = Context.newDictDB(NAME + "_bondContract", Boolean.class);
 
+    // Principal token Pool ID
+    private final BigInteger poolIdPrincipalToken;
+
     // ================================================
     // DB Variables
     // ================================================
@@ -79,7 +83,8 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
      */
     public KarmaCustomTreasuryBalanced (
         Address payoutToken, 
-        Address initialOwner
+        Address initialOwner,
+        BigInteger poolIdPrincipalToken
     ) {
         super(initialOwner);
 
@@ -89,6 +94,7 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
         this.name = "Karma Custom Treasury";
 
         this.payoutToken = payoutToken;
+        this.poolIdPrincipalToken = poolIdPrincipalToken;
     }
 
     // --- Bond Contract Functions ---
@@ -106,12 +112,15 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
     private void deposit (
         Address caller,
         Address principalTokenAddress, 
-        BigInteger amountPrincipalToken,
         BigInteger poolIdPrincipalToken,
+        BigInteger amountPrincipalToken,
         BigInteger amountPayoutToken
     ) {
         Context.require(bondContract.getOrDefault(caller, false), 
             "deposit: caller is not a bond contract");
+
+        Context.require(poolIdPrincipalToken.equals(this.poolIdPrincipalToken),
+            "deposit: Wrong principal token pool ID");
 
         IToken.transfer(this.payoutToken, caller, amountPayoutToken, "pay");
     }
@@ -137,7 +146,7 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
             case "deposit": {
                 JsonObject params = root.get("params").asObject();
                 BigInteger amountPayoutToken = StringUtils.toBigInt(params.get("amountPayoutToken").asString());
-                deposit(_operator, token, _value, _id, amountPayoutToken);
+                deposit(_operator, token, _id, _value, amountPayoutToken);
                 break;
             }
 
@@ -243,6 +252,15 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
     // ================================================
     // View Functions
     // ================================================
+    private int getPrincipalDecimals (Address principalTokenAddress) {
+        // The DEX address is the same than the token address
+        var stats = IBalancedDEX.poolStats(principalTokenAddress, this.poolIdPrincipalToken);
+        BigInteger base_decimals = (BigInteger) stats.get("base_decimals");
+        BigInteger quote_decimals = (BigInteger) stats.get("quote_decimals");
+        // The result is rounded down on purpose
+        return base_decimals.add(quote_decimals).divide(BigInteger.TWO).intValue();
+    }
+
     /**
      * Returns payout token valuation of principal token
      * 
@@ -254,10 +272,11 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
         Address principalTokenAddress,
         BigInteger amount
     ) {
-        // convert amount to match payout token decimals
+        // Convert amount to match payout token decimals
         int payoutDecimals = IToken.decimals(payoutToken);
-        // Principal token is a Balanced LP token, assume it is 18 decimals
-        int principalDecimals = 18; // IToken.decimals(principalTokenAddress);
+
+        // Get the principal token decimals
+        int principalDecimals = getPrincipalDecimals(principalTokenAddress);
 
         return amount.multiply(MathUtils.pow10(payoutDecimals)).divide(MathUtils.pow10(principalDecimals));
     }

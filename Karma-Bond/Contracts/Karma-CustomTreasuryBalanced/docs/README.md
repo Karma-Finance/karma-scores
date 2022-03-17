@@ -15,19 +15,22 @@ Only Karma Bond contracts are allowed to deposit funds and receive the payout to
 ```java
 public KarmaCustomTreasuryBalanced (
     Address payoutToken, 
-    Address initialOwner
+    Address initialOwner,
+    BigInteger poolIdPrincipalToken
 )
 ```
 
 - `payoutToken`: The payout token address, token paid for principal
 - `initialOwner`: The initial owner of the Custom Treasury
+- `poolIdPrincipalToken`: The principal token Balanced Pool ID
 
 ### 🧪 Example call
 
 ```java
 {
   "payoutToken": "cx000000000000000000000000000000000000000a",
-  "initialOwner": "hx0000000000000000000000000000000000000001"
+  "initialOwner": "hx0000000000000000000000000000000000000001",
+  "poolIdPrincipalToken": "0x3"
 }
 ```
 
@@ -44,6 +47,7 @@ public KarmaCustomTreasuryBalanced (
 private void deposit (
   Address caller,
   Address principalTokenAddress, 
+  BigInteger poolIdPrincipalToken,
   BigInteger amountPrincipalToken,
   BigInteger amountPayoutToken
 )
@@ -51,6 +55,7 @@ private void deposit (
 
 - `caller`: The method caller. This field is handled by tokenFallback
 - `principalTokenAddress`: The principal inflow token address. This field is handled by tokenFallback
+- `poolIdPrincipalToken`: The principal token Balanced Pool ID. This field is handled by tokenFallback
 - `amountPrincipalToken`: The principal token amount sent. This field is handled by tokenFallback
 - `amountPayoutToken`: The amount of payout token to be sent back to the bond contract
 
