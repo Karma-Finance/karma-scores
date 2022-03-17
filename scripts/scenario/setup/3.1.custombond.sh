@@ -182,3 +182,24 @@ jq -n \
   "${filter}" > ${bondCallsDir}/${actionName}.json
 
 ./run.py -e ${network} invoke ${pkg} ${actionName}
+
+# Call toggleBondContract on the custom treasury for the current bond address
+bondContract=$(getAddress ${pkg} ${network})
+treasuryCallsDir=$(getCallsDir ${customTreasuryPkg} ${network})
+actionName="toggleBondContract"
+
+filter=$(cat <<EOF
+{
+  method: "toggleBondContract",
+  params: {
+    bondContract: \$bondContract
+  }
+}
+EOF
+)
+
+jq -n \
+  --arg bondContract $bondContract \
+  "${filter}" > ${treasuryCallsDir}/${actionName}.json
+
+./run.py -e ${network} invoke ${customTreasuryPkg} ${actionName}
