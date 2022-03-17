@@ -1,4 +1,4 @@
 {
-  "javaPkg": ":Karma-Bond:Contracts:Karma-CustomTreasuryBalanced",
+  "javaPkg": ":Karma-Bond:Contracts:Karma-CustomTreasury",
   "build": "optimized"
 }
