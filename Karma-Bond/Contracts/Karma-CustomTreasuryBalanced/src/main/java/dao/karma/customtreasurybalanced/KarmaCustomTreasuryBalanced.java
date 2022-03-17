@@ -254,7 +254,7 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
     // ================================================
     private int getPrincipalDecimals (Address principalTokenAddress) {
         // The DEX address is the same than the token address
-        var stats = IBalancedDEX.poolStats(principalTokenAddress, this.poolIdPrincipalToken);
+        var stats = IBalancedDEX.getPoolStats(principalTokenAddress, this.poolIdPrincipalToken);
         BigInteger base_decimals = (BigInteger) stats.get("base_decimals");
         BigInteger quote_decimals = (BigInteger) stats.get("quote_decimals");
         // The result is rounded down on purpose
