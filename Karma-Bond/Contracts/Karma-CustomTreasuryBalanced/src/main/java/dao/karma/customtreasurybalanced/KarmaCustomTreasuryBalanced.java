@@ -280,4 +280,12 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
 
         return amount.multiply(MathUtils.pow10(payoutDecimals)).divide(MathUtils.pow10(principalDecimals));
     }
+
+    /**
+     * Returns the registered pool ID for the principal token
+     */
+    @External(readonly = true)
+    public BigInteger poolIdPrincipalToken () {
+        return this.poolIdPrincipalToken;
+    }
 }
