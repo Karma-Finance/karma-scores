@@ -1,7 +1,8 @@
 import json
 
-BNUSD = "cx38b5f44ad2f4486172dfea12e6cde67a23eadaf1"
-SICX = "cxcc57144332b23ca8f36d09d862bc202caa76dc30"
+OMM_IUSDC_LP = "cx648a6d9c5f231f6b86c0caa9cc9eff8bd6040999"
+OMM_IUSDC_LP_POOL_ID = 35
+OMM = "cxb94c0da9a8e650cc09b2f6b1bbfaa957ab47ec4c"
 
 config = {
   # Type: String
@@ -14,14 +15,14 @@ config = {
   # "type" value must be:
   #   - "Balanced" for Balance LP tokens,
   #   - "Base" for IRC2 base implementation
-  "implementation": "Base",
+  "implementation": "Balanced",
 
   "bond": {
     "default": {
       # Type: Address
       # Principal and Payout tokens addresses
-      "principalToken": BNUSD,
-      "payoutToken": SICX,
+      "principalToken": OMM_IUSDC_LP,
+      "payoutToken": OMM,
 
       # Type: Address
       # Initial owner of the custom bond
@@ -44,13 +45,20 @@ config = {
       ],
 
       "initialize": {
-        "controlVariable": hex(400000),
-        "minimumPrice": hex(5403),
+        "controlVariable": hex(60000),
+        "minimumPrice": hex(0),
         "maxPayout": hex(500),
-        "maxDebt": hex(18),
-        "initialDebt": hex(1560000000),
+        "maxDebt": hex(10**18),
+        "initialDebt": hex(6001 * 10**18),
       },
-    }
+    },
+
+    "implementation": {
+      # Type: String (hexstring)
+      # If the implementation is Balanced, set the Balanced Pool ID
+      # Refer to Balanced documentation for this value
+      "principalPoolId": hex(OMM_IUSDC_LP_POOL_ID),
+    },
   },
 
   "treasury": {
