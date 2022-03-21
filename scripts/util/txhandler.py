@@ -67,13 +67,15 @@ class TxHandler:
             .build()
         return self._icon_service.call(_call)
 
-    def invoke(self, wallet, to, method, params, limit=None):
-        print(f"Invoking {method}({params}) ...")
+    def invoke(self, wallet, to, method, params, limit=None, value=0):
+        icx_value = f", ICX={value/10**18}" if value != 0 else ""
+        print(f"Invoking {method}({params}{icx_value}) ...")
         transaction = CallTransactionBuilder() \
             .from_(wallet.get_address()) \
             .to(to) \
             .nid(self._nid) \
             .method(method) \
+            .value(value) \
             .params(params) \
             .build()
         return self._send_transaction(transaction, wallet, 1_000_000_000)

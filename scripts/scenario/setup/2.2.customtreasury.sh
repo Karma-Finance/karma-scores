@@ -46,6 +46,7 @@ setupJavaDir ${javaPkg} ${build}
 setupDeployDir ${pkg} ${network}
 setupCallsDir ${pkg} ${network}
 deployDir=$(getDeployDir ${pkg} ${network})
+callsDir=$(getCallsDir ${pkg} ${network})
 
 # Deploy on ICON network
 case $implementationType in
@@ -93,32 +94,60 @@ esac
 customTreasuryInitialPayoutFunding=$(echo ${bondConfig} | jq -r .treasury.default.initialPayoutFunding)
 
 if [ "$customTreasuryInitialPayoutFunding" != "0x0" ] ; then
-  payoutPkg=$(getPayoutPkg ${bondId})
-  payoutCallsDir=$(getCallsDir ${payoutPkg} ${network})
   customTreasury=$(getAddress ${pkg} ${network})
   actionName=customTreasuryInitialDeposit
 
-  _to=$customTreasury
-  _value=$customTreasuryInitialPayoutFunding
-  _data=$(python -c "print('0x'+b'{\"method\":\"funding\"}'.hex())")
+  case $payoutToken in
+    # Payout = ICX token
+    "cx0000000000000000000000000000000000000000")
 
-  filter=$(cat <<EOF
-  {
-    method: "transfer",
-    params: {
-      _to: \$_to, 
-      _value: \$_value, 
-      _data: \$_data
-    }
-  }
+      value=$customTreasuryInitialPayoutFunding
+
+      filter=$(cat <<EOF
+      {
+        method: "fundingIcx",
+        value: \$value, 
+      }
 EOF
-  )
+      )
 
-  jq -n \
-    --arg _to $_to \
-    --arg _value $_value \
-    --arg _data $_data \
-    "${filter}" > ${payoutCallsDir}/${actionName}.json
+      jq -n \
+        --arg value $value \
+        "${filter}" > ${callsDir}/${actionName}.json
 
-  ./run.py -e ${network} invoke ${payoutPkg} ${actionName}
+      ./run.py -e ${network} invoke ${pkg} ${actionName}
+    ;;
+
+    # Payout = IRC2 token
+    *)
+      payoutPkg=$(getPayoutPkg ${bondId})
+      payoutCallsDir=$(getCallsDir ${payoutPkg} ${network})
+
+      _to=$customTreasury
+      _value=$customTreasuryInitialPayoutFunding
+      _data=$(python -c "print('0x'+b'{\"method\":\"funding\"}'.hex())")
+
+      filter=$(cat <<EOF
+      {
+        method: "transfer",
+        params: {
+          _to: \$_to, 
+          _value: \$_value, 
+          _data: \$_data
+        }
+      }
+EOF
+      )
+
+      jq -n \
+        --arg _to $_to \
+        --arg _value $_value \
+        --arg _data $_data \
+        "${filter}" > ${payoutCallsDir}/${actionName}.json
+
+      ./run.py -e ${network} invoke ${payoutPkg} ${actionName}
+    ;;
+  esac
 fi
+
+

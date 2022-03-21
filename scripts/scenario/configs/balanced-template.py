@@ -14,7 +14,7 @@ config = {
   # Type: String
   # "type" value must be:
   #   - "Balanced" for Balance LP tokens,
-  #   - "Base" for IRC2 base implementation
+  #   - "Base" for IRC2 or ICX base implementation
   "implementation": "Balanced",
 
   "bond": {
@@ -68,7 +68,7 @@ config = {
       "initialOwner": "hxb6b5791be0b5ef67063b3c10b840fb81514db2fd",
 
       # Type: String (hexstring)
-      # Initial funding of the custom treasury payout token
+      # Initial funding of the custom treasury payout token, sent from the operator address
       # This value must be a hexstring
       # If "0x0", do not send anything
       "initialPayoutFunding": hex(20000 * 10**18), # 20k OMM
