@@ -73,6 +73,7 @@ public class KarmaCustomBond extends Ownable {
     private final int DECIMALS_PRECISION = 5;
     private final int TRUE_BOND_PRICE_PRECISION = 6;
     // Arbitrary payout precision
+    private final int TOTAL_PAYOUT_PRECISION = 11;
     private final int PAYOUT_PRECISION = 6;
     // Arbitrary vesting precision
     // 10000 = 100%
@@ -650,6 +651,7 @@ public class KarmaCustomBond extends Ownable {
     private BigInteger _bondPrice() {
         var terms = this.terms.get();
 
+        // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-DECIMALS_PRECISION))
         BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - DECIMALS_PRECISION));
 
         if (price.compareTo(terms.minimumPrice) < 0) {
@@ -721,7 +723,7 @@ public class KarmaCustomBond extends Ownable {
      * @param value
      */
     private BigInteger _payoutFor (BigInteger value) {
-        return FixedPoint.fraction(value, bondPrice()).decode112with18().divide(MathUtils.pow10(11));
+        return FixedPoint.fraction(value, bondPrice()).decode112with18().divide(MathUtils.pow10(TOTAL_PAYOUT_PRECISION));
     }
 
     /**
@@ -731,7 +733,7 @@ public class KarmaCustomBond extends Ownable {
     @External(readonly = true)
     public BigInteger payoutFor (BigInteger value) {
         // total = value / bondPrice() / 10**11
-        BigInteger total = FixedPoint.fraction(value, bondPrice()).decode112with18().divide(MathUtils.pow10(11));
+        BigInteger total = FixedPoint.fraction(value, bondPrice()).decode112with18().divide(MathUtils.pow10(TOTAL_PAYOUT_PRECISION));
         // payoutFor = total - (total * currentKarmaFee() / 10**PAYOUT_PRECISION)
         return total.subtract(total.multiply(currentKarmaFee()).divide(MathUtils.pow10(PAYOUT_PRECISION)));
     }
