@@ -21,25 +21,36 @@ import java.math.BigInteger;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
-import dao.karma.interfaces.irc31.IIRC31;
+import dao.karma.interfaces.lpbalanced.ILPBalanced;
 import dao.karma.utils.ICX;
 import dao.karma.utils.JSONUtils;
 import score.Address;
 import score.Context;
 
 public abstract class ICustomTreasuryBalanced {
-  public static BigInteger valueOfToken(Address treasury, Address principalToken, BigInteger amount) {
+
+  public static BigInteger valueOfToken(
+    Address treasury,
+    Address principalToken,
+    BigInteger amount
+  ) {
     return (BigInteger) Context.call(treasury, "valueOfToken", principalToken, amount);
   }
 
-  public static void deposit(Address treasury, Address principalToken, BigInteger amount, BigInteger id, BigInteger amountPayoutToken) {
+  public static void deposit (
+    Address treasury,
+    Address principalToken,
+    BigInteger poolId,
+    BigInteger amount,
+    BigInteger amountPayoutToken
+  ) {
     if (ICX.isICX(principalToken)) {
       Context.call(amount, treasury, "depositIcx", amountPayoutToken);
     } else {
       JsonObject params = Json.object()
         .add("amountPayoutToken", amountPayoutToken.toString());
 
-      IIRC31.transfer(principalToken, treasury, amount, id, JSONUtils.method("deposit", params));
+      ILPBalanced.transfer(principalToken, treasury, amount, poolId, JSONUtils.method("deposit", params));
     }
   }
 }
