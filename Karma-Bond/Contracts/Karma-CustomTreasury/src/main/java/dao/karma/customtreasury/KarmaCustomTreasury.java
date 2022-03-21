@@ -23,6 +23,7 @@ import com.eclipsesource.json.JsonObject;
 import dao.karma.interfaces.bond.IToken;
 
 import dao.karma.utils.AddressUtils;
+import dao.karma.utils.ICX;
 import dao.karma.utils.JSONUtils;
 import dao.karma.utils.MathUtils;
 import dao.karma.utils.StringUtils;
@@ -33,6 +34,7 @@ import score.DictDB;
 import score.annotation.EventLog;
 import score.annotation.External;
 import score.annotation.Optional;
+import score.annotation.Payable;
 
 public class KarmaCustomTreasury extends Ownable {
 
@@ -113,6 +115,24 @@ public class KarmaCustomTreasury extends Ownable {
             "deposit: caller is not a bond contract");
 
         IToken.transfer(this.payoutToken, caller, amountPayoutToken, "pay");
+    }
+
+    /**
+     * Deposit principal ICX token and receive back payout token
+     * 
+     * Access: Everybody
+     * 
+     * @param principalTokenAddress
+     * @param amountPrincipalToken
+     * @param amountPayoutToken
+     */
+    @External
+    @Payable
+    public void depositIcx (BigInteger amountPayoutToken) {
+        final BigInteger value = Context.getValue();
+        final Address token = ICX.TOKEN_ADDRESS;
+        final Address caller = Context.getCaller();
+        deposit(caller, token, value, amountPayoutToken);
     }
 
     @External
