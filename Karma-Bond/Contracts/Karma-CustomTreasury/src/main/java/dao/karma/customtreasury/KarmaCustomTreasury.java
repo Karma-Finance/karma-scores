@@ -102,7 +102,7 @@ public class KarmaCustomTreasury extends Ownable {
      * 
      * @param principalTokenAddress
      * @param amountPrincipalToken
-     * @param amountPayoutToken
+     * @param amountPayoutToken Amount of payout token expected
      */
     // @External - this method is external through tokenFallback
     private void deposit (
@@ -122,9 +122,7 @@ public class KarmaCustomTreasury extends Ownable {
      * 
      * Access: Everybody
      * 
-     * @param principalTokenAddress
-     * @param amountPrincipalToken
-     * @param amountPayoutToken
+     * @param amountPayoutToken Amount of payout token expected
      */
     @External
     @Payable
@@ -133,6 +131,33 @@ public class KarmaCustomTreasury extends Ownable {
         final Address token = ICX.TOKEN_ADDRESS;
         final Address caller = Context.getCaller();
         deposit(caller, token, value, amountPayoutToken);
+    }
+
+    /**
+     * Funding of principal tokens, do *not* receive anything back
+     * 
+     * Access: Everybody
+     */
+    private void funding (
+        Address caller,
+        Address principalTokenAddress,
+        BigInteger amountPrincipalToken
+    ) {
+        // accept funds from any address, nothing to do
+    }
+
+    /**
+     * Funding of principal ICX tokens, do *not* receive anything back
+     * 
+     * Access: Everybody
+     */
+    @External
+    @Payable
+    public void fundingIcx () {
+        final BigInteger value = Context.getValue();
+        final Address token = ICX.TOKEN_ADDRESS;
+        final Address caller = Context.getCaller();
+        funding(caller, token, value);
     }
 
     @External
@@ -151,7 +176,7 @@ public class KarmaCustomTreasury extends Ownable {
             }
 
             case "funding": {
-                // accept funds from any address
+                funding(_from, token, _value);
                 break;
             }
 
@@ -159,7 +184,6 @@ public class KarmaCustomTreasury extends Ownable {
                 Context.revert("tokenFallback: Unimplemented tokenFallback action");
         }
     }
-
 
     // --- Policy Functions ---
     /**
