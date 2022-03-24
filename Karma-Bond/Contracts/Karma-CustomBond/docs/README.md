@@ -358,7 +358,7 @@ public BigInteger redeem (
 ### 📜 Method Call
 
 - Calculate current bond premium
-- price = `BCV` * `debtRatio` / (10**(`IRC2(payoutToken).decimals()` - 5))
+- price = `BCV` * `debtRatio` / (10**(`IRC2(payoutToken).decimals()` - `DECIMALS_PRECISION`))
 - if price is < 0, price = `terms().minimumPrice`
 
 ```java
@@ -387,7 +387,7 @@ Result:
 ### 📜 Method Call
 
 - Calculate true bond price a user pays
-- truePrice = `bondPrice()` + (`bondPrice()` * `currentKarmaFee()` / 10**6)
+- truePrice = `bondPrice()` + (`bondPrice()` * `currentKarmaFee()` / 10**TRUE_BOND_PRICE_PRECISION)
 
 ```java
 @External(readonly = true)
@@ -415,7 +415,7 @@ Result:
 ### 📜 Method Call
 
 - Determine maximum bond size
-- maxBondSize = `IRC2(payoutToken).totalSupply()` * `terms().maxPayout` / 10**5
+- maxBondSize = IRC2(payoutToken).totalSupply() * terms().maxPayout / 10**DECIMALS_PRECISION
 
 ```java
 @External(readonly = true)
@@ -443,8 +443,8 @@ Result:
 ### 📜 Method Call
 
 - Calculate user's interest due for new bond, accounting for Karma Fee
-- `total` = `value` / `bondPrice()` / 10**11
-- `payoutFor` = `total` - (`total` * `currentKarmaFee()` / 10**6)
+- `total` = `value * 10**18 / bondPrice() / 10**TOTAL_PAYOUT_PRECISION`
+- `payoutFor` = `total - (total * currentKarmaFee() / 10**PAYOUT_PRECISION)`
 
 ```java
 @External(readonly = true)
@@ -563,7 +563,7 @@ Result:
 
 - Calculate how far into vesting a depositor is
 - `bond` = `bondInfo.get(depositor)`
-- `percentVestedFor` = (`blockHeight` - `bond.lastBlock`) * 10**5 / `bond.vesting`
+- `percentVestedFor` = (`blockHeight` - `bond.lastBlock`) * FULLY_VESTED / `bond.vesting`
 
 ```java
 @External(readonly = true)
@@ -600,7 +600,7 @@ Result:
 - Calculate amount of payout token available for claim by depositor
 - `payout` = `bondInfo.get(depositor).payout`
 - If not vested: `pendingPayoutFor` = `payout`
-- Else: `pendingPayoutFor` = `payout` * `percentVestedFor(depositor)` / 10**5
+- Else: `pendingPayoutFor` = `payout` * `percentVestedFor(depositor)` / FULLY_VESTED
 
 ```java
 @External(readonly = true)

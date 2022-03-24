@@ -19,9 +19,8 @@ package dao.karma.utils.librairies;
 import java.math.BigInteger;
 
 public class FullMath {
-
-  public static BigInteger mulDiv(BigInteger x, BigInteger y, BigInteger d) {
-    // Java SCORE supports 512 bits integers, so we don't need to worry about overflows
+  public static BigInteger mulDiv (BigInteger x, BigInteger y, BigInteger d) {
+    // Java SCORE supports 512 bits integers and handle overflows
     return x.multiply(y).divide(d);
   }
 }

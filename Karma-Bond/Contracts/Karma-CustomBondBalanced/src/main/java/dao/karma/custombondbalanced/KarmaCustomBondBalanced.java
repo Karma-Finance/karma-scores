@@ -676,7 +676,6 @@ public class KarmaCustomBondBalanced extends Ownable {
         return price;
     }
 
-
     // ================================================
     // Checks
     // ================================================
@@ -713,8 +712,6 @@ public class KarmaCustomBondBalanced extends Ownable {
 
     /**
      * Calculate true bond price a user pays
-     * 
-     * @return price
      */
     @External(readonly = true)
     public BigInteger trueBondPrice() {
@@ -735,37 +732,33 @@ public class KarmaCustomBondBalanced extends Ownable {
      * Calculate total interest due for new bond
      */
     private BigInteger _payoutFor (BigInteger value) {
+        // total = value * 10**18 / bondPrice() / 10**TOTAL_PAYOUT_PRECISION
         return FullMath.mulDiv(value, EXA, bondPrice()).divide(MathUtils.pow10(TOTAL_PAYOUT_PRECISION));
     }
 
     /**
      * Calculate user's interest due for new bond, accounting for Karma Fee
-     * @param _value uint
      */
     @External(readonly = true)
     public BigInteger payoutFor (BigInteger value) {
-        // total = value * 10**18 / bondPrice() / 10**11
-        BigInteger total = FullMath.mulDiv(value, EXA, bondPrice()).divide(MathUtils.pow10(TOTAL_PAYOUT_PRECISION));
+        BigInteger total = _payoutFor(value);
         // payoutFor = total - (total * currentKarmaFee() / 10**PAYOUT_PRECISION)
         return total.subtract(total.multiply(currentKarmaFee()).divide(MathUtils.pow10(PAYOUT_PRECISION)));
     }
 
     /**
      *  Calculate current ratio of debt to payout token supply
-     *  Protocols using Karma Pro should be careful when quickly adding large %s to total supply
+     *  Protocols using Karma Bond should be careful when quickly adding large %s to total supply
      */
     @External(readonly = true)
     public BigInteger debtRatio() {
-        // debtRatio = (currentDebt() * IRC2(payoutToken).decimals() * 10**18) / IRC2(payoutToken).totalSupply() / 10**18
-        return FullMath.mulDiv (
-            currentDebt().multiply(MathUtils.pow10(IToken.decimals(this.payoutToken))),
-            EXA,
-            IToken.totalSupply(this.payoutToken)
-        ).divide(EXA);
+        // debtRatio = currentDebt() * IRC2(payoutToken).decimals() / IRC2(payoutToken).totalSupply()
+        return currentDebt().multiply(MathUtils.pow10(IToken.decimals(this.payoutToken))).divide(IToken.totalSupply(this.payoutToken));
     }
 
     /**
      * Calculate debt factoring in decay
+     * Return value precision: amount of payout tokens / decimals(payout)
      */
     @External(readonly = true)
     public BigInteger currentDebt() {
@@ -775,6 +768,7 @@ public class KarmaCustomBondBalanced extends Ownable {
 
     /**
      * Amount to decay total debt by
+     * Return value precision: amount of payout tokens / decimals(payout)
      */
     @External(readonly = true)
     public BigInteger debtDecay()  {
