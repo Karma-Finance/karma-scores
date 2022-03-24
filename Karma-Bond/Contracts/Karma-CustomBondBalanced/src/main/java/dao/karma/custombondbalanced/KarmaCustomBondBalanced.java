@@ -32,7 +32,7 @@ import dao.karma.types.Ownable;
 import dao.karma.utils.JSONUtils;
 import dao.karma.utils.MathUtils;
 import dao.karma.utils.StringUtils;
-import dao.karma.utils.librairies.FixedPoint;
+import dao.karma.utils.librairies.FullMath;
 import score.Address;
 import score.ArrayDB;
 import score.Context;
@@ -77,6 +77,9 @@ public class KarmaCustomBondBalanced extends Ownable {
     // Arbitrary vesting precision
     // 10000 = 100%
     private final BigInteger FULLY_VESTED = BigInteger.valueOf(10000);
+
+    // 10**18
+    private static final BigInteger EXA = MathUtils.pow10(18);
 
     // ================================================
     // DB Variables
@@ -730,10 +733,9 @@ public class KarmaCustomBondBalanced extends Ownable {
 
     /**
      * Calculate total interest due for new bond
-     * @param value
      */
     private BigInteger _payoutFor (BigInteger value) {
-        return FixedPoint.fraction(value, bondPrice()).decode112with18().divide(MathUtils.pow10(TOTAL_PAYOUT_PRECISION));
+        return FullMath.mulDiv(value, EXA, bondPrice()).divide(MathUtils.pow10(TOTAL_PAYOUT_PRECISION));
     }
 
     /**
@@ -742,8 +744,8 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     @External(readonly = true)
     public BigInteger payoutFor (BigInteger value) {
-        // total = value / bondPrice() / 10**11
-        BigInteger total = FixedPoint.fraction(value, bondPrice()).decode112with18().divide(MathUtils.pow10(TOTAL_PAYOUT_PRECISION));
+        // total = value * 10**18 / bondPrice() / 10**11
+        BigInteger total = FullMath.mulDiv(value, EXA, bondPrice()).divide(MathUtils.pow10(TOTAL_PAYOUT_PRECISION));
         // payoutFor = total - (total * currentKarmaFee() / 10**PAYOUT_PRECISION)
         return total.subtract(total.multiply(currentKarmaFee()).divide(MathUtils.pow10(PAYOUT_PRECISION)));
     }
@@ -754,11 +756,12 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     @External(readonly = true)
     public BigInteger debtRatio() {
-        // debtRatio = currentDebt() * IRC2(payoutToken).decimals() / IRC2(payoutToken).totalSupply() / 10**18
-        return FixedPoint.fraction (
+        // debtRatio = (currentDebt() * IRC2(payoutToken).decimals() * 10**18) / IRC2(payoutToken).totalSupply() / 10**18
+        return FullMath.mulDiv (
             currentDebt().multiply(MathUtils.pow10(IToken.decimals(this.payoutToken))),
+            EXA,
             IToken.totalSupply(this.payoutToken)
-        ).decode112with18().divide(MathUtils.pow10(18));
+        ).divide(EXA);
     }
 
     /**

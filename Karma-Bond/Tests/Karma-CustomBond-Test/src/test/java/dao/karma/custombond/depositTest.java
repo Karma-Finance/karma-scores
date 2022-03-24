@@ -129,6 +129,6 @@ public class depositTest extends KarmaCustomBondTest {
 
     assertEquals(alicePrincipalBefore.subtract(amount), alicePrincipalAfter);
     assertEquals(new BigInteger("0"), bondPayoutBefore);
-    assertEquals(new BigInteger("178919119007958563209"), bondPayoutAfter);
+    assertEquals(new BigInteger("178919119007958541551"), bondPayoutAfter);
   }
 }
