@@ -21,3 +21,6 @@ testsvc/
 venv/
 
 R&D/*
+
+# Ignore test scenarios
+scripts/scenario/configs/**test.py
