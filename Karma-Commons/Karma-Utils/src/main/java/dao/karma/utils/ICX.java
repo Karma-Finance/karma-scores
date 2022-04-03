@@ -10,6 +10,10 @@ public class ICX {
   public static final int DECIMALS = 18;
   public static final String SYMBOL = "ICX";
   public static final BigInteger INITIAL_TOTAL_SUPPLY = BigInteger.valueOf(800_000_000);
+  // 10**18
+  private final static BigInteger EXA = new BigInteger("1000000000000000000");
+  // timestamp of block height 1, in seconds
+  private final static BigInteger BLOCK_HEIGHT_1_TIMESTAMP = new BigInteger("1516819217");
 
   public static void transfer (
     Address targetAddress, 
@@ -28,8 +32,7 @@ public class ICX {
   }
 
   public static BigInteger totalSupply() {
-    // timestamp of block height 1, in seconds
-    BigInteger start = new BigInteger("1516819217"); 
+    BigInteger start = BLOCK_HEIGHT_1_TIMESTAMP; 
     BigInteger now = TimeUtils.now();
     BigInteger elapsed = now.subtract(start);
     int years = elapsed.divide(TimeUtils.ONE_YEAR).intValue();
@@ -40,7 +43,7 @@ public class ICX {
       result = result.add(result.multiply(BigInteger.valueOf(5)).divide(BigInteger.valueOf(100)));
     }
 
-    return result;
+    return result.multiply(EXA);
   }
 
   public static boolean isICX (Address token) {
