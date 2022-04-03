@@ -1,14 +1,14 @@
 import json
 
 IUSDC = "cx599d58885e5b1736c934fca7e53e04c797ab05be"
-ICX   = "cx0000000000000000000000000000000000000000"
+ICX = "cx0000000000000000000000000000000000000000"
 
 config = {
   # Type: String
   # "network" value must be:
   #   - "sejong" for Sejong Network,
   #   - "custom" for the custom Karma Network
-  "network": "custom",
+  "network": "sejong",
 
   # Type: String
   # "type" value must be:
@@ -29,7 +29,7 @@ config = {
 
       # Type: Integer
       # Vesting term value (in seconds)
-      "vestingTermSeconds": 302400, # 1 week
+      "vestingTermSeconds": 604800, # 7 * 24h * 3600s = 1 week
 
       # Array of fees tiers, in ten-thousandths (i.e. 33300 = 3.33%)
       "fees": [
@@ -44,11 +44,11 @@ config = {
       ],
 
       "initialize": {
-        "controlVariable": hex(3500),
+        "controlVariable": hex(2000),
         "minimumPrice": hex(0),
         "maxPayout": hex(1),
-        "maxDebt": hex(35_000_000 * 10 ** 18),
-        "initialDebt": hex(28_000_000 * 10 ** 18),
+        "maxDebt": hex(50000000 * 10 **18),
+        "initialDebt": hex(49000000 * 10 **18),
       },
     }
   },
@@ -63,7 +63,7 @@ config = {
       # Initial funding of the custom treasury payout token, sent from the operator address
       # This value must be a hexstring
       # If "0x0", do not send anything
-      "initialPayoutFunding": hex(50000 * 10**18), # 1 ICX
+      "initialPayoutFunding": hex(1000 * 10**18), # 10000 ICX
     },
   },
 }
