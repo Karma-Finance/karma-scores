@@ -55,6 +55,12 @@ public class KarmaFactoryStorage extends Ownable {
         Address initialOwner
     ) {}
 
+    
+    @EventLog
+    public void FactoryChanged (
+        Address factory
+    ) {}
+
     // ================================================
     // Methods
     // ================================================
@@ -109,6 +115,7 @@ public class KarmaFactoryStorage extends Ownable {
 
         // OK
         this.karmaFactory.set(factory);
+        this.FactoryChanged(factory);
     }
 
     // ================================================
