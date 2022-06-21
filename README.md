@@ -86,10 +86,10 @@ We start by deploying the factories and the DAO contracts first.
 
 ```bash
 $ # Run this in the root folder of the project
-$ # We specify "sejong" as an argument here, which means the contracts
-$ # will be deployed on Sejong. You can set it to "custom" too for the
+$ # We specify "berlin" as an argument here, which means the contracts
+$ # will be deployed on Berlin. You can set it to "custom" too for the
 $ # custom Karma network
-$ ./scripts/scenario/1.deploy_karmabond_core.sh sejong
+$ ./scripts/scenario/1.deploy_karmabond_core.sh berlin
 [...]
 # This should end with the following message
 [🎉] All Karma Bond core contracts have been successfully deployed!

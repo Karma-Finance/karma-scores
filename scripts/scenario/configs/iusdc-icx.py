@@ -7,7 +7,8 @@ config = {
   # Type: String
   # "network" value must be:
   #   - "sejong" for Sejong Network,
-  #   - "custom" for the custom Karma Network
+  #   - "berlin" for Berlin Network,
+  #   - "mainnet" for Main Network
   "network": "sejong",
 
   # Type: String
