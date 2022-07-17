@@ -1,6 +1,7 @@
 package dao.karma.oracle;
 
 import java.math.BigInteger;
+import dao.karma.interfaces.bond.IBalancedDEX;
 import dao.karma.utils.MathUtils;
 import score.Address;
 
@@ -23,7 +24,7 @@ public class OmmToken {
 
     if (name.equals("sICX")) {
       BigInteger priceExa = MathUtils.convertToExa(amount, decimals);
-      BigInteger sicxIcxPrice = (BigInteger) IBalancedDex.getPriceByName(source, "sICX/ICX");
+      BigInteger sicxIcxPrice = (BigInteger) IBalancedDEX.getPriceByName(source, "sICX/ICX");
       return MathUtils.exaMul(priceExa, sicxIcxPrice);
     }
 

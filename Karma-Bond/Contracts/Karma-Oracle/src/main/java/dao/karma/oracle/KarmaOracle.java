@@ -20,6 +20,8 @@ import static dao.karma.utils.MathUtils.EXA;
 import static java.math.BigInteger.ZERO;
 import java.math.BigInteger;
 import java.util.Map;
+import dao.karma.interfaces.bond.IBalancedDEX;
+import dao.karma.interfaces.oracle.IBandOracle;
 import dao.karma.types.Ownable;
 import dao.karma.utils.ArrayUtils;
 import dao.karma.utils.MathUtils;
@@ -138,12 +140,12 @@ public class KarmaOracle extends Ownable {
         } catch (Exception e) {
             // Use Balanced DEX as a fallback Oracle
             final Address dex = this.balancedDex.get();
-            BigInteger poolId = IBalancedDex.lookupPid(dex, base + "/" + quote);
+            BigInteger poolId = IBalancedDEX.lookupPid(dex, base + "/" + quote);
 
             Context.require(poolId != null && !poolId.equals(ZERO), 
                 "getPrice: Invalid poolId");
 
-            Map<String, ?> poolStats = IBalancedDex.getPoolStats(dex, poolId);
+            Map<String, ?> poolStats = IBalancedDEX.getPoolStats(dex, poolId);
             return (BigInteger) poolStats.get("price");
         }
     }
@@ -155,12 +157,12 @@ public class KarmaOracle extends Ownable {
 
         for (var token : OMM_TOKENS) {
             // key in band oracle
-            BigInteger poolId = IBalancedDex.lookupPid(dex, "OMM/" + token.name);
+            BigInteger poolId = IBalancedDEX.lookupPid(dex, "OMM/" + token.name);
             if (poolId == null || poolId.equals(ZERO)) {
                 continue;
             }
 
-            Map<String, ?> poolStats = IBalancedDex.getPoolStats(dex, poolId);
+            Map<String, ?> poolStats = IBalancedDEX.getPoolStats(dex, poolId);
             // convert price to 10**18 precision and calculate price in quote
             BigInteger price = (BigInteger) poolStats.get("price");
             BigInteger quoteDecimals = (BigInteger) poolStats.get("quote_decimals");
@@ -189,7 +191,6 @@ public class KarmaOracle extends Ownable {
     public BigInteger get_reference_data (String base, String quote) {
         return this.getPrice(base, quote);
     }
-
 
     // @EventLog
     // public void Price (BigInteger price) {}

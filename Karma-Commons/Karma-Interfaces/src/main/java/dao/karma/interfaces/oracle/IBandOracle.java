@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dao.karma.oracle;
+package dao.karma.interfaces.oracle;
 
 import java.util.Map;
 import score.Address;
