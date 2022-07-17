@@ -16,6 +16,7 @@ echo "Factory Storage : "$(getAddress "karmabond/factorystorage" ${network})
 echo "Subsidy Router : "$(getAddress "karmabond/subsidyrouter" ${network})
 echo "DAO : "$(getAddress "karmabond/dao" ${network})
 echo "Treasury : "$(getAddress "karmabond/treasury" ${network})
+echo "Oracle : "$(getAddress "karmabond/oracle" ${network})
 
 echo "=========================================================="
 
@@ -25,4 +26,5 @@ echo "  \"$(getAddress "karmabond/factorystorage" ${network})\": \"Factory Stora
 echo "  \"$(getAddress "karmabond/subsidyrouter" ${network})\": \"Subsidy Router\","
 echo "  \"$(getAddress "karmabond/dao" ${network})\": \"DAO\","
 echo "  \"$(getAddress "karmabond/treasury" ${network})\": \"Treasury\","
+echo "  \"$(getAddress "karmabond/oracle" ${network})\": \"Oracle\","
 echo "}"

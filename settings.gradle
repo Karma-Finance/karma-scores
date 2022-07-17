@@ -13,6 +13,7 @@ include (
   ':Karma-Bond:Contracts:Karma-Factory',
   ':Karma-Bond:Contracts:Karma-FactoryStorage',
   ':Karma-Bond:Contracts:Karma-SubsidyRouter',
+  ':Karma-Bond:Contracts:Karma-Oracle',
 
   // Tests
   ':Karma-Bond:Tests:Karma-CustomBond-Test',
@@ -20,6 +21,7 @@ include (
   ':Karma-Bond:Tests:Karma-Factory-Test',
   ':Karma-Bond:Tests:Karma-FactoryStorage-Test',
   ':Karma-Bond:Tests:Karma-SubsidyRouter-Test',
+  ':Karma-Bond:Tests:Karma-Oracle-Test',
 
   // ---------------------
   // --- Karma-Commons ---

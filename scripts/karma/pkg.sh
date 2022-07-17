@@ -23,6 +23,10 @@ getKarmaDAOPkg () {
   echo karmabond/dao
 }
 
+getOraclePkg () {
+  echo karmabond/oracle
+}
+
 # Bond
 getPayoutPkg () {
   bondId=$1

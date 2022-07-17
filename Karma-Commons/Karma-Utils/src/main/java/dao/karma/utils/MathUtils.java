@@ -19,6 +19,7 @@ package dao.karma.utils;
 import java.math.BigInteger;
 
 public class MathUtils {
+    public static final BigInteger EXA = MathUtils.pow10(18);
 
     public static BigInteger pow (BigInteger base, int exponent) {
         BigInteger result = BigInteger.ONE;
@@ -45,5 +46,22 @@ public class MathUtils {
             result = result.add(cur);
         }
         return result;
+    }
+
+    public static BigInteger convertToExa (BigInteger amount, int decimals) {
+      if (decimals == 18) {
+        return amount;
+      }
+
+      if (decimals >= 0) {
+        return amount.multiply(EXA).divide(MathUtils.pow10(decimals));
+      }
+      
+      return null;
+    }
+
+    public static BigInteger exaMul(BigInteger a, BigInteger b) {
+        BigInteger halfEXA = EXA.divide(BigInteger.TWO);
+        return halfEXA.add(a.multiply(b)).divide(EXA);
     }
 }
