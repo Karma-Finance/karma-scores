@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import java.util.Map;
 import dao.karma.interfaces.bond.IBalancedDEX;
 import dao.karma.interfaces.oracle.IBandOracle;
+import dao.karma.interfaces.oracle.IStakedIcx;
 import dao.karma.types.Ownable;
 import dao.karma.utils.EnumerableSet;
 import dao.karma.utils.MathUtils;
@@ -171,11 +172,7 @@ public class KarmaOracle extends Ownable {
         this.onlyPolicy();
 
         // OK
-        try {
-            this.Price(this.getPrice(base));
-        } catch (Exception e) {
-            Context.revert("getUsdPrice: cannot retrieve price properly");
-        }
+        this.Price(this.getUsdPrice(base));
     }
 
     // ================================================
@@ -227,7 +224,6 @@ public class KarmaOracle extends Ownable {
     }
 
     private BigInteger getGenericPrice (String base) {
-        Context.println("[!] Computing " + base + " price...");
 
         int stablecoinsSize = this.stableTokens.length();
         final Address dex = this.balancedDex.get();
@@ -241,11 +237,6 @@ public class KarmaOracle extends Ownable {
             try {
                 poolId = IBalancedDEX.lookupPid(dex, base + "/" + stablecoinName);
             } catch (Exception e) {
-                Context.println("[!] " + base + "/" + stablecoinName + " doesnt exist");
-                continue;
-            }
-            
-            if (poolId == null || poolId.equals(ZERO)) {
                 // The base / stablecoin pool may not exist, keep iterating
                 continue;
             }

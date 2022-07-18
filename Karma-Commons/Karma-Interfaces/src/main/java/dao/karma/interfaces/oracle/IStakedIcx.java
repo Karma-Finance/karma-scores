@@ -1,4 +1,4 @@
-package dao.karma.oracle;
+package dao.karma.interfaces.oracle;
 
 import java.math.BigInteger;
 import score.Address;
