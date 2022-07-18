@@ -55,6 +55,8 @@ public class KarmaOracle extends Ownable {
     private final VarDB<Address> balancedDex = Context.newVarDB(NAME + "_balancedDex", Address.class);
     // The Band Oracle address
     private final VarDB<Address> bandOracle = Context.newVarDB(NAME + "_bandOracle", Address.class);
+    // The Staked ICX token address
+    private final VarDB<Address> sIcx = Context.newVarDB(NAME + "_sIcx", Address.class);
     // List of stablecoins - the price for these tokens will always be evaluated at 1$ whatever happens
     private final EnumerableSet<String> stableTokens = new EnumerableSet<>(NAME + "_stableTokens", String.class);
 
@@ -74,7 +76,8 @@ public class KarmaOracle extends Ownable {
     public KarmaOracle (
         Address initialOwner,
         Address balancedDex,
-        Address bandOracle
+        Address bandOracle,
+        Address sIcx
     ) {
         super(initialOwner);
 
@@ -88,6 +91,10 @@ public class KarmaOracle extends Ownable {
 
         if (this.bandOracle.get() == null) {
             this.bandOracle.set(bandOracle);
+        }
+
+        if (this.sIcx.get() == null) {
+            this.sIcx.set(sIcx);
         }
 
         if (this.stableTokens.length() == 0) {
@@ -124,6 +131,16 @@ public class KarmaOracle extends Ownable {
 
         // OK
         this.bandOracle.set(value);
+        this.AddressChanged(value);
+    }
+
+    @External
+    public void setSIcx (Address value) {
+        // Access control
+        this.onlyPolicy();
+
+        // OK
+        this.sIcx.set(value);
         this.AddressChanged(value);
     }
 
@@ -178,7 +195,7 @@ public class KarmaOracle extends Ownable {
             Map<String, ?> data = IBandOracle.get_reference_data(this.bandOracle.get(), base, "USD");
             BigInteger price = (BigInteger) data.get("rate");
             return price;
-        } 
+        }
 
         // BALN / USD
         else if (base.equals("BALN")) {
@@ -192,10 +209,21 @@ public class KarmaOracle extends Ownable {
             return this.getOmmPrice();
         }
 
+        // sICX / USD
+        else if (base.equals("sICX")) {
+            return this.getSicxPrice();
+        }
+
         // Other pairs
         else {
             return this.getGenericPrice(base);
         }
+    }
+
+    private BigInteger getSicxPrice () {
+        BigInteger icxPrice = this.getPrice("ICX");
+        BigInteger sIcxRate = IStakedIcx.priceInLoop(this.sIcx.get());
+        return sIcxRate.multiply(icxPrice).divide(EXA);
     }
 
     private BigInteger getGenericPrice (String base) {
