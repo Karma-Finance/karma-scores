@@ -23,7 +23,7 @@ import java.util.Map;
 import dao.karma.interfaces.bond.IBalancedDEX;
 import dao.karma.interfaces.oracle.IBandOracle;
 import dao.karma.types.Ownable;
-import dao.karma.utils.ArrayUtils;
+import dao.karma.utils.EnumerableSet;
 import dao.karma.utils.MathUtils;
 import score.Address;
 import score.Context;
@@ -42,15 +42,6 @@ public class KarmaOracle extends Ownable {
     // Contract name
     private final String name;
 
-    // List of stablecoins - the price for these tokens will always be evaluated at 1$ whatever happens
-    private static final String[] STABLE_TOKENS = {
-        "USDS", 
-        "USDB", 
-        "bnUSD", 
-        "IUSDC", 
-        "IUSDT"
-    };
-
     private static final OmmToken[] OMM_TOKENS = {
         new OmmToken("USDS", "USDS"),
         new OmmToken("sICX", "ICX"),
@@ -60,8 +51,12 @@ public class KarmaOracle extends Ownable {
     // ================================================
     // DB Variables
     // ================================================
+    // The Balanced DEX address
     private final VarDB<Address> balancedDex = Context.newVarDB(NAME + "_balancedDex", Address.class);
+    // The Band Oracle address
     private final VarDB<Address> bandOracle = Context.newVarDB(NAME + "_bandOracle", Address.class);
+    // List of stablecoins - the price for these tokens will always be evaluated at 1$ whatever happens
+    private final EnumerableSet<String> stableTokens = new EnumerableSet<>(NAME + "_stableTokens", String.class);
 
     // ================================================
     // Event Logs
@@ -94,6 +89,21 @@ public class KarmaOracle extends Ownable {
         if (this.bandOracle.get() == null) {
             this.bandOracle.set(bandOracle);
         }
+
+        if (this.stableTokens.length() == 0) {
+            // USDS
+            this.stableTokens.add("USDS");
+            // USDB
+            this.stableTokens.add("USDB");
+            // bnUSD
+            this.stableTokens.add("bnUSD");
+            // USDC
+            this.stableTokens.add("USDC");
+            this.stableTokens.add("IUSDC");
+            // USDT
+            this.stableTokens.add("IUSDT");
+            this.stableTokens.add("USDT");
+        }
     }
 
     // --- Only Policy methods ---
@@ -117,60 +127,134 @@ public class KarmaOracle extends Ownable {
         this.AddressChanged(value);
     }
 
+    @External
+    public void addStablecoin (String newStablecoin) {
+        // Access control
+        this.onlyPolicy();
+
+        // OK
+        this.stableTokens.add(newStablecoin);
+    }
+
+    @External
+    public void removeStablecoin (String newStablecoin) {
+        // Access control
+        this.onlyPolicy();
+
+        // OK
+        this.stableTokens.remove(newStablecoin);
+    }
+
     // ================================================
     // Private methods
     // ================================================
-    private BigInteger getPrice (String base, String quote) {
-        // Special case for whitelisted stablecoins
-        if (ArrayUtils.contains(STABLE_TOKENS, base) 
-         && ArrayUtils.contains(STABLE_TOKENS, quote)) {
+    private BigInteger getPrice (String base) {
+        
+        // Stablecoin / USD
+        if (this.stableTokens.contains(base)) {
             // return 1$ for stablecoins, whatever happens
             return EXA;
         }
 
-        // Special case for computing OMM price
-        if (base.equals("OMM")) {
-            return this.getOmmPrice(quote);
+        // ICX / USD
+        if (base.equals("ICX")) {
+            // Use Band Oracle
+            Map<String, ?> data = IBandOracle.get_reference_data(this.bandOracle.get(), base, "USD");
+            BigInteger price = (BigInteger) data.get("rate");
+            return price;
+        } 
+
+        // BALN / USD
+        else if (base.equals("BALN")) {
+            // Use Balanced BALN Oracle
+            BigInteger price = IBalancedDEX.getBalnPrice(this.balancedDex.get());
+            return price;
+        }
+    
+        // OMM / USD
+        else if (base.equals("OMM")) {
+            return this.getOmmPrice();
         }
 
-        try {
-            // Use Band Oracle as a default Oracle
-            Map<String, ?> data = IBandOracle.get_reference_data(this.bandOracle.get(), base, quote);
-            return (BigInteger) data.get("rate");
-        } catch (Exception e) {
-            // Use Balanced DEX as a fallback Oracle
-            final Address dex = this.balancedDex.get();
-            BigInteger poolId = IBalancedDEX.lookupPid(dex, base + "/" + quote);
-
-            Context.require(poolId != null && !poolId.equals(ZERO), 
-                "getPrice: Invalid poolId");
-
-            Map<String, ?> poolStats = IBalancedDEX.getPoolStats(dex, poolId);
-            return (BigInteger) poolStats.get("price");
+        // Other pairs
+        else {
+            return this.getGenericPrice(base);
         }
     }
 
-    private BigInteger getOmmPrice (String quote) {
+    private BigInteger getGenericPrice (String base) {
+        Context.println("[!] Computing " + base + " price...");
+
+        int stablecoinsSize = this.stableTokens.length();
+        final Address dex = this.balancedDex.get();
+        BigInteger totalPrice = ZERO;
+        BigInteger totalBaseSupply = ZERO;
+
+        for (int i = 0; i < stablecoinsSize; i++) {
+            String stablecoinName = this.stableTokens.at(i);
+            BigInteger poolId = ZERO;
+
+            try {
+                poolId = IBalancedDEX.lookupPid(dex, base + "/" + stablecoinName);
+            } catch (Exception e) {
+                Context.println("[!] " + base + "/" + stablecoinName + " doesnt exist");
+                continue;
+            }
+            
+            if (poolId == null || poolId.equals(ZERO)) {
+                // The base / stablecoin pool may not exist, keep iterating
+                continue;
+            }
+
+            Map<String, ?> poolStats = IBalancedDEX.getPoolStats(dex, poolId);
+            
+            // convert price to 10**18 precision and calculate price in quote
+            BigInteger price = (BigInteger) poolStats.get("price");
+            BigInteger quoteDecimals = (BigInteger) poolStats.get("quote_decimals");
+            BigInteger baseDecimals = (BigInteger) poolStats.get("base_decimals");
+            BigInteger averageDecimals = quoteDecimals.multiply(BigInteger.valueOf(18)).divide(baseDecimals);
+            BigInteger adjustedPrice = MathUtils.convertToExa(price, averageDecimals.intValue());
+
+            BigInteger oraclePrice = this.getPrice(stablecoinName);
+            BigInteger convertedPrice = MathUtils.exaMul(adjustedPrice, oraclePrice);
+            BigInteger totalSupply = (BigInteger) poolStats.get("base");
+
+            totalBaseSupply = totalBaseSupply.add(totalSupply);
+            totalPrice = totalPrice.add(totalSupply.multiply(convertedPrice));
+        }
+
+        if (totalBaseSupply.equals(ZERO)) {
+            Context.revert("getGenericPrice: this token doesn't exist or doesn't have any stablecoin associated with it");
+            return null;
+        }
+
+        return totalPrice.divide(totalBaseSupply);
+    }
+
+    private BigInteger getOmmPrice () {
         BigInteger totalPrice = ZERO;
         BigInteger totalOmmSupply = ZERO;
         final Address dex = this.balancedDex.get();
 
         for (var token : OMM_TOKENS) {
-            // key in band oracle
             BigInteger poolId = IBalancedDEX.lookupPid(dex, "OMM/" + token.name);
+
             if (poolId == null || poolId.equals(ZERO)) {
-                continue;
+                Context.revert("getOmmPrice: Unexpected error while retrieving the OMM price");
+                return null;
             }
 
             Map<String, ?> poolStats = IBalancedDEX.getPoolStats(dex, poolId);
+
             // convert price to 10**18 precision and calculate price in quote
             BigInteger price = (BigInteger) poolStats.get("price");
             BigInteger quoteDecimals = (BigInteger) poolStats.get("quote_decimals");
             BigInteger baseDecimals = (BigInteger) poolStats.get("base_decimals");
             BigInteger averageDecimals = quoteDecimals.multiply(BigInteger.valueOf(18)).divide(baseDecimals);
             BigInteger adjustedPrice = token.convert(dex, price, averageDecimals.intValue());
-            BigInteger convertedPrice = MathUtils.exaMul(adjustedPrice, this.getPrice(token.priceOracleKey, quote));
-            
+
+            BigInteger oraclePrice = this.getPrice(token.priceOracleKey);
+            BigInteger convertedPrice = MathUtils.exaMul(adjustedPrice, oraclePrice);
             BigInteger totalSupply = (BigInteger) poolStats.get("base");
 
             totalOmmSupply = totalOmmSupply.add(totalSupply);
@@ -188,17 +272,26 @@ public class KarmaOracle extends Ownable {
     // Public methods
     // ================================================
     @External(readonly = true)
-    public BigInteger get_reference_data (String base, String quote) {
-        return this.getPrice(base, quote);
+    public BigInteger getUsdPrice (String base) {
+        try {
+            return this.getPrice(base);
+        } catch (Exception e) {
+            Context.revert("getUsdPrice: cannot retrieve price properly");
+            return null;
+        }
     }
 
-    // @EventLog
-    // public void Price (BigInteger price) {}
+    @EventLog(indexed = 1)
+    public void Price (BigInteger price) {}
 
-    // @External
-    // public void get_reference_data_write (String base, String quote) {
-    //     this.Price(this.getPrice(base, quote));
-    // }
+    @External
+    public void getUsdPrice_debug (String base) {
+        try {
+            this.Price(this.getPrice(base));
+        } catch (Exception e) {
+            Context.revert("getUsdPrice: cannot retrieve price properly");
+        }
+    }
 
     // ================================================
     // Public variable getters
