@@ -59,7 +59,7 @@ public class KarmaOracle extends Ownable {
     // The Staked ICX token address
     private final VarDB<Address> sIcx = Context.newVarDB(NAME + "_sIcx", Address.class);
     // List of stablecoins - the price for these tokens will always be evaluated at 1$ whatever happens
-    private final EnumerableSet<String> stableTokens = new EnumerableSet<>(NAME + "_stableTokens", String.class);
+    private final EnumerableSet<String> stablecoins = new EnumerableSet<>(NAME + "_stablecoins", String.class);
 
     // ================================================
     // Event Logs
@@ -98,19 +98,19 @@ public class KarmaOracle extends Ownable {
             this.sIcx.set(sIcx);
         }
 
-        if (this.stableTokens.length() == 0) {
+        if (this.stablecoins.length() == 0) {
             // USDS
-            this.stableTokens.add("USDS");
+            this.stablecoins.add("USDS");
             // USDB
-            this.stableTokens.add("USDB");
+            this.stablecoins.add("USDB");
             // bnUSD
-            this.stableTokens.add("bnUSD");
+            this.stablecoins.add("bnUSD");
             // USDC
-            this.stableTokens.add("USDC");
-            this.stableTokens.add("IUSDC");
+            this.stablecoins.add("USDC");
+            this.stablecoins.add("IUSDC");
             // USDT
-            this.stableTokens.add("IUSDT");
-            this.stableTokens.add("USDT");
+            this.stablecoins.add("IUSDT");
+            this.stablecoins.add("USDT");
         }
     }
 
@@ -151,7 +151,7 @@ public class KarmaOracle extends Ownable {
         this.onlyPolicy();
 
         // OK
-        this.stableTokens.add(newStablecoin);
+        this.stablecoins.add(newStablecoin);
     }
 
     @External
@@ -160,7 +160,7 @@ public class KarmaOracle extends Ownable {
         this.onlyPolicy();
 
         // OK
-        this.stableTokens.remove(newStablecoin);
+        this.stablecoins.remove(newStablecoin);
     }
 
     @EventLog(indexed = 1)
@@ -181,7 +181,7 @@ public class KarmaOracle extends Ownable {
     private BigInteger getPrice (String base) {
         
         // Stablecoin / USD
-        if (this.stableTokens.contains(base)) {
+        if (this.stablecoins.contains(base)) {
             // return 1$ for stablecoins, whatever happens
             return EXA;
         }
@@ -225,13 +225,13 @@ public class KarmaOracle extends Ownable {
 
     private BigInteger getGenericPrice (String base) {
 
-        int stablecoinsSize = this.stableTokens.length();
+        int stablecoinsSize = this.stablecoins.length();
         final Address dex = this.balancedDex.get();
         BigInteger totalPrice = ZERO;
         BigInteger totalBaseSupply = ZERO;
 
         for (int i = 0; i < stablecoinsSize; i++) {
-            String stablecoinName = this.stableTokens.at(i);
+            String stablecoinName = this.stablecoins.at(i);
             BigInteger poolId = ZERO;
 
             try {
@@ -338,10 +338,10 @@ public class KarmaOracle extends Ownable {
     }
 
     @External(readonly = true)
-    public String[] stableTokens () {
-        String[] result = new String[this.stableTokens.length()];
+    public String[] stablecoins () {
+        String[] result = new String[this.stablecoins.length()];
         for (int i = 0; i < result.length; i++) {
-            result[i] = this.stableTokens.at(i);
+            result[i] = this.stablecoins.at(i);
         }
 
         return result;
