@@ -145,6 +145,22 @@ public class KarmaOracle extends Ownable {
         this.stableTokens.remove(newStablecoin);
     }
 
+    @EventLog(indexed = 1)
+    public void Price (BigInteger price) {}
+
+    @External
+    public void getUsdPrice_debug (String base) {
+        // Access control
+        this.onlyPolicy();
+
+        // OK
+        try {
+            this.Price(this.getPrice(base));
+        } catch (Exception e) {
+            Context.revert("getUsdPrice: cannot retrieve price properly");
+        }
+    }
+
     // ================================================
     // Private methods
     // ================================================
@@ -278,18 +294,6 @@ public class KarmaOracle extends Ownable {
         } catch (Exception e) {
             Context.revert("getUsdPrice: cannot retrieve price properly");
             return null;
-        }
-    }
-
-    @EventLog(indexed = 1)
-    public void Price (BigInteger price) {}
-
-    @External
-    public void getUsdPrice_debug (String base) {
-        try {
-            this.Price(this.getPrice(base));
-        } catch (Exception e) {
-            Context.revert("getUsdPrice: cannot retrieve price properly");
         }
     }
 
