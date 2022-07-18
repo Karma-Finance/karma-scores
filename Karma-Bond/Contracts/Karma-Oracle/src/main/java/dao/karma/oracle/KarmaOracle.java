@@ -336,4 +336,14 @@ public class KarmaOracle extends Ownable {
     public Address bandOracle () {
         return this.bandOracle.get();
     }
+
+    @External(readonly = true)
+    public String[] stableTokens () {
+        String[] result = new String[this.stableTokens.length()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = this.stableTokens.at(i);
+        }
+
+        return result;
+    }
 }
