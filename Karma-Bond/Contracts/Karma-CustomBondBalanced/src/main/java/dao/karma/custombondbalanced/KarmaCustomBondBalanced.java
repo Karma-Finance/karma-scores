@@ -20,9 +20,11 @@ import static dao.karma.utils.AddressUtils.ZERO_ADDRESS;
 import static java.math.BigInteger.ZERO;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 import com.eclipsesource.json.JsonObject;
 
+import dao.karma.interfaces.bond.IBalancedDEX;
 import dao.karma.interfaces.bond.ICustomTreasuryBalanced;
 import dao.karma.interfaces.bond.IToken;
 import dao.karma.interfaces.dao.ITreasury;
@@ -255,7 +257,8 @@ public class KarmaCustomBondBalanced extends Ownable {
         BigInteger minimumPrice,
         BigInteger maxPayout,
         BigInteger maxDebt,
-        BigInteger initialDebt
+        BigInteger initialDebt,
+        BigInteger maxDiscount
     ) {
         // Access control
         onlyPolicy();
@@ -271,7 +274,8 @@ public class KarmaCustomBondBalanced extends Ownable {
                 vestingTerm,
                 minimumPrice,
                 maxPayout,
-                maxDebt
+                maxDebt,
+                maxDiscount
             )
         );
 
@@ -676,6 +680,7 @@ public class KarmaCustomBondBalanced extends Ownable {
         return price;
     }
 
+
     // ================================================
     // Checks
     // ================================================
@@ -707,8 +712,94 @@ public class KarmaCustomBondBalanced extends Ownable {
             price = terms.minimumPrice;
         }
 
+        if (terms.maxDiscount.compareTo(ZERO) > 0) {
+            BigInteger bondDiscount = _bondDiscount();
+            if (new BigInteger("0").compareTo(terms.maxDiscount) > 0) {
+                 BigInteger discountDiff = bondDiscount.subtract(terms.maxDiscount.multiply(MathUtils.pow10(4)));
+                 price = price.add(price.multiply(discountDiff).divide(MathUtils.pow10(7)));
+            }
+        }
+
         return price;
     }
+
+
+    /**
+     *  Calculate bond discount using market USD prices of principal and payout token
+     *  @return BigInteger - Discount in percentages. Divide by 1e7 and multiply by 100% to convert in percentages
+     *                       on client side.
+     */
+    @External(readonly = true)
+    public BigInteger bondDiscount() {
+        BigInteger bondPriceUSD = this.bondPriceUSD();
+        BigInteger payoutTokenMarketPriceUSD = payoutTokenMarketPriceUSD();
+
+        // result is in 1e7 decimal precision
+        return (payoutTokenMarketPriceUSD.subtract(bondPriceUSD)).divide(payoutTokenMarketPriceUSD.divide(MathUtils.pow10(7)));
+    }
+
+    private BigInteger _bondDiscount() {
+        BigInteger bondPriceUSD = this.bondPriceUSD();
+        BigInteger payoutTokenMarketPriceUSD = payoutTokenMarketPriceUSD();
+
+        // result is in 1e7 decimal precision
+        return (payoutTokenMarketPriceUSD.subtract(bondPriceUSD)).divide(payoutTokenMarketPriceUSD.divide(MathUtils.pow10(7)));
+    }
+
+    /**
+     *  Payout token market USD price pulled from Karma Oracle
+     */
+    @External(readonly = true)
+    public BigInteger payoutTokenMarketPriceUSD() {
+        return new BigInteger("1510247031451525221"); // TODO use Karma Oracle!!!
+    }
+
+    /**
+     *  Calculate bond price in USD
+     */
+    @External(readonly = true)
+    public BigInteger bondPriceUSD() {
+        // result is in 1e18 decimals
+        return this.trueBondPrice().multiply(this.lpMarketUsdPrice()).divide(MathUtils.pow10(7));
+    }
+
+    /**
+     *  Calculate principal LP token market USD price
+     */
+    @External(readonly = true)
+    public BigInteger lpMarketUsdPrice() {
+        Map<String, ?> poolStats = IBalancedDEX.getPoolStats(this.principalToken, this.principalPoolId);
+
+        // extract base, quote and total supply from pool stats
+        BigInteger quoteDecimals = (BigInteger) poolStats.get("quote_decimals");
+        BigInteger baseDecimals = (BigInteger) poolStats.get("base_decimals");
+        int poolPrecision = baseDecimals.add(quoteDecimals).divide(BigInteger.TWO).intValue();
+        BigInteger baseTokenReserveAmount = ((BigInteger) poolStats.get("base")).divide(MathUtils.pow10(baseDecimals.intValue()));
+        BigInteger quoteTokenReserveAmount = ((BigInteger) poolStats.get("quote")).divide(MathUtils.pow10(quoteDecimals.intValue()));
+        BigInteger poolTotalSupply = ((BigInteger) poolStats.get("total_supply")).divide(MathUtils.pow10(poolPrecision));
+
+        BigInteger baseTokenMarketPrice = new BigInteger("1250247031451525221"); // TODO get from Karma Oracle
+        BigInteger quoteTokenMarketPrice = new BigInteger("1250247031451525221"); // TODO get from Karma Oracle
+
+        BigInteger poolBaseTokenPriceUSD = this.poolTokenReservePrice(baseTokenReserveAmount, poolTotalSupply,
+                baseTokenMarketPrice);
+        BigInteger poolQuoteTokenPriceUSD = this.poolTokenReservePrice(quoteTokenReserveAmount, poolTotalSupply,
+                quoteTokenMarketPrice);
+
+        // USD price per Balanced LP token
+        return poolBaseTokenPriceUSD.add(poolQuoteTokenPriceUSD);
+    }
+
+
+    /**
+     * Calculate price of the token in pool
+     */
+    private BigInteger poolTokenReservePrice(BigInteger poolTokenReserveAmount, BigInteger poolTotalSupply,
+                                             BigInteger tokenMarketPriceUSD) {
+
+        return (poolTokenReserveAmount.divide(poolTotalSupply)).multiply(tokenMarketPriceUSD);
+    }
+
 
     /**
      * Calculate true bond price a user pays

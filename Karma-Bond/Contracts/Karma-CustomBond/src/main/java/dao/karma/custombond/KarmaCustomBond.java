@@ -253,7 +253,8 @@ public class KarmaCustomBond extends Ownable {
         BigInteger minimumPrice,
         BigInteger maxPayout,
         BigInteger maxDebt,
-        BigInteger initialDebt
+        BigInteger initialDebt,
+        BigInteger maxDiscount
     ) {
         // Access control
         onlyPolicy();
@@ -269,7 +270,8 @@ public class KarmaCustomBond extends Ownable {
                 vestingTerm,
                 minimumPrice,
                 maxPayout,
-                maxDebt
+                maxDebt,
+                maxDiscount
             )
         );
 

@@ -160,6 +160,7 @@ minimumPrice=$(echo ${bondConfig} | jq -r .bond.default.initialize.minimumPrice)
 maxPayout=$(echo ${bondConfig} | jq -r .bond.default.initialize.maxPayout)
 maxDebt=$(echo ${bondConfig} | jq -r .bond.default.initialize.maxDebt)
 initialDebt=$(echo ${bondConfig} | jq -r .bond.default.initialize.initialDebt)
+maxDiscount=$(echo ${bondConfig} | jq -r .bond.default.initialize.maxDiscount)
 actionName="initializeBond"
 
 filter=$(cat <<EOF
@@ -171,7 +172,8 @@ filter=$(cat <<EOF
     minimumPrice: \$minimumPrice, 
     maxPayout: \$maxPayout, 
     maxDebt: \$maxDebt, 
-    initialDebt: \$initialDebt
+    initialDebt: \$initialDebt,
+    maxDiscount: \$maxDiscount,
   }
 }
 EOF
@@ -184,6 +186,7 @@ jq -n \
   --arg maxPayout $maxPayout \
   --arg maxDebt $maxDebt \
   --arg initialDebt $initialDebt \
+  --arg maxDiscount $maxDiscount \
   "${filter}" > ${bondCallsDir}/${actionName}.json
 
 ./run.py -e ${network} invoke ${pkg} ${actionName}
