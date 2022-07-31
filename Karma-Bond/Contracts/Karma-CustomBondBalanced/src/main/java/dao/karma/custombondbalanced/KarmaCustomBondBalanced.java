@@ -711,18 +711,28 @@ public class KarmaCustomBondBalanced extends Ownable {
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
         }
+        // check if max discount is greater than 0 and increase price to fit the capped discount
+        // NOTE: if minimumPrice is set in the terms capped discount is not applied!
+        else if (terms.maxDiscount.compareTo(ZERO) > 0) {
+            BigInteger bondDiscount = _currentBondDiscount(price);
+            BigInteger maxDiscount = terms.maxDiscount;
 
-        if (terms.maxDiscount.compareTo(ZERO) > 0) {
-            BigInteger bondDiscount = _bondDiscount();
-            if (new BigInteger("0").compareTo(terms.maxDiscount) > 0) {
-                 BigInteger discountDiff = bondDiscount.subtract(terms.maxDiscount.multiply(MathUtils.pow10(4)));
-                 price = price.add(price.multiply(discountDiff).divide(MathUtils.pow10(7)));
+            // if bond discount is greater than max discount, increase bond price to fit the max discount
+            if (bondDiscount.compareTo(maxDiscount) > 0) {
+                BigInteger newTrueBondPrice = this.payoutTokenMarketPriceUSD().subtract(maxDiscount.multiply(payoutTokenMarketPriceUSD())
+                        .divide(MathUtils.pow10(3))).multiply(MathUtils.pow10(7)).divide(this.lpMarketUsdPrice());
+                BigInteger newBondPrice = newTrueBondPrice.subtract(newTrueBondPrice.multiply(currentKarmaFee()).divide(MathUtils.pow10(6)));
+
+                // only apply new bond price if it is higher than the old one, this should mitigate oracle risk
+                // by defaulting to the un-capped bond price
+                if (newBondPrice.compareTo(price) > 0) {
+                    price = newBondPrice;
+                }
             }
         }
 
         return price;
     }
-
 
     /**
      *  Calculate bond discount using market USD prices of principal and payout token
@@ -730,19 +740,27 @@ public class KarmaCustomBondBalanced extends Ownable {
      *                       on client side.
      */
     @External(readonly = true)
-    public BigInteger bondDiscount() {
+    public BigInteger currentBondDiscount() {
         BigInteger bondPriceUSD = this.bondPriceUSD();
         BigInteger payoutTokenMarketPriceUSD = payoutTokenMarketPriceUSD();
 
-        // result is in 1e7 decimal precision
+        // discount = (payout token market price USD - bond price USD) / payout token market price USD
+        // NOTE: result is in 1e7 decimal precision
         return (payoutTokenMarketPriceUSD.subtract(bondPriceUSD)).divide(payoutTokenMarketPriceUSD.divide(MathUtils.pow10(7)));
     }
 
-    private BigInteger _bondDiscount() {
-        BigInteger bondPriceUSD = this.bondPriceUSD();
-        BigInteger payoutTokenMarketPriceUSD = payoutTokenMarketPriceUSD();
+    /**
+     *  Calculate current bond discount
+     *  @param bondPrice - Current bond price
+     *  @return BigInteger - Discount in percentages. Divide by 1e7 and multiply by 100% to convert in percentages
+     *                       on client side.
+     */
+    private BigInteger _currentBondDiscount(BigInteger bondPrice) {
+        BigInteger bondPriceUSD = this._bondPriceUSD(bondPrice);
+        BigInteger payoutTokenMarketPriceUSD = this.payoutTokenMarketPriceUSD();
 
-        // result is in 1e7 decimal precision
+        // discount = (payout token market price USD - bond price USD) / payout token market price USD
+        // NOTE: result is in 1e7 decimal precision
         return (payoutTokenMarketPriceUSD.subtract(bondPriceUSD)).divide(payoutTokenMarketPriceUSD.divide(MathUtils.pow10(7)));
     }
 
@@ -751,7 +769,7 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     @External(readonly = true)
     public BigInteger payoutTokenMarketPriceUSD() {
-        return new BigInteger("1510247031451525221"); // TODO use Karma Oracle!!!
+        return new BigInteger("1608210000000000000"); // TODO use Karma Oracle!!!
     }
 
     /**
@@ -759,12 +777,22 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     @External(readonly = true)
     public BigInteger bondPriceUSD() {
-        // result is in 1e18 decimals
+        // NOTE: result is in 1e18 decimal precision
         return this.trueBondPrice().multiply(this.lpMarketUsdPrice()).divide(MathUtils.pow10(7));
     }
 
     /**
-     *  Calculate principal LP token market USD price
+     *  Calculate bond price in USD for given bondPrice (used in bond discount to avoid recursion)
+     * @return BigInteger - bond price denominated in USD and in 1e18 decimal precision
+     */
+    private BigInteger _bondPriceUSD(BigInteger bondPrice) {
+        BigInteger trueBondPrice = bondPrice.add(bondPrice.multiply(currentKarmaFee()).divide(MathUtils.pow10(
+                TRUE_BOND_PRICE_PRECISION)));
+        return trueBondPrice.multiply(this.lpMarketUsdPrice()).divide(MathUtils.pow10(7));
+    }
+
+    /**
+     *  Calculate principal LP token market USD price, i.e. USD price of LP token
      */
     @External(readonly = true)
     public BigInteger lpMarketUsdPrice() {
@@ -778,8 +806,8 @@ public class KarmaCustomBondBalanced extends Ownable {
         BigInteger quoteTokenReserveAmount = ((BigInteger) poolStats.get("quote")).divide(MathUtils.pow10(quoteDecimals.intValue()));
         BigInteger poolTotalSupply = ((BigInteger) poolStats.get("total_supply")).divide(MathUtils.pow10(poolPrecision));
 
-        BigInteger baseTokenMarketPrice = new BigInteger("1250247031451525221"); // TODO get from Karma Oracle
-        BigInteger quoteTokenMarketPrice = new BigInteger("1250247031451525221"); // TODO get from Karma Oracle
+        BigInteger baseTokenMarketPrice = new BigInteger("1300047031451525221"); // TODO get from Karma Oracle
+        BigInteger quoteTokenMarketPrice = new BigInteger("1300047031451525221"); // TODO get from Karma Oracle
 
         BigInteger poolBaseTokenPriceUSD = this.poolTokenReservePrice(baseTokenReserveAmount, poolTotalSupply,
                 baseTokenMarketPrice);
