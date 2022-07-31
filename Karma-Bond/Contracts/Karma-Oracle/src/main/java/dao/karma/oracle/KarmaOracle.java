@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import java.util.Map;
 import dao.karma.interfaces.bond.IBalancedDEX;
 import dao.karma.interfaces.oracle.IBandOracle;
+import dao.karma.interfaces.oracle.IStakedIcx;
 import dao.karma.types.Ownable;
 import dao.karma.utils.EnumerableSet;
 import dao.karma.utils.MathUtils;
@@ -55,8 +56,10 @@ public class KarmaOracle extends Ownable {
     private final VarDB<Address> balancedDex = Context.newVarDB(NAME + "_balancedDex", Address.class);
     // The Band Oracle address
     private final VarDB<Address> bandOracle = Context.newVarDB(NAME + "_bandOracle", Address.class);
+    // The Staked ICX token address
+    private final VarDB<Address> sIcx = Context.newVarDB(NAME + "_sIcx", Address.class);
     // List of stablecoins - the price for these tokens will always be evaluated at 1$ whatever happens
-    private final EnumerableSet<String> stableTokens = new EnumerableSet<>(NAME + "_stableTokens", String.class);
+    private final EnumerableSet<String> stablecoins = new EnumerableSet<>(NAME + "_stablecoins", String.class);
 
     // ================================================
     // Event Logs
@@ -74,7 +77,8 @@ public class KarmaOracle extends Ownable {
     public KarmaOracle (
         Address initialOwner,
         Address balancedDex,
-        Address bandOracle
+        Address bandOracle,
+        Address sIcx
     ) {
         super(initialOwner);
 
@@ -90,19 +94,23 @@ public class KarmaOracle extends Ownable {
             this.bandOracle.set(bandOracle);
         }
 
-        if (this.stableTokens.length() == 0) {
+        if (this.sIcx.get() == null) {
+            this.sIcx.set(sIcx);
+        }
+
+        if (this.stablecoins.length() == 0) {
             // USDS
-            this.stableTokens.add("USDS");
+            this.stablecoins.add("USDS");
             // USDB
-            this.stableTokens.add("USDB");
+            this.stablecoins.add("USDB");
             // bnUSD
-            this.stableTokens.add("bnUSD");
+            this.stablecoins.add("bnUSD");
             // USDC
-            this.stableTokens.add("USDC");
-            this.stableTokens.add("IUSDC");
+            this.stablecoins.add("USDC");
+            this.stablecoins.add("IUSDC");
             // USDT
-            this.stableTokens.add("IUSDT");
-            this.stableTokens.add("USDT");
+            this.stablecoins.add("IUSDT");
+            this.stablecoins.add("USDT");
         }
     }
 
@@ -128,12 +136,22 @@ public class KarmaOracle extends Ownable {
     }
 
     @External
+    public void setSIcx (Address value) {
+        // Access control
+        this.onlyPolicy();
+
+        // OK
+        this.sIcx.set(value);
+        this.AddressChanged(value);
+    }
+
+    @External
     public void addStablecoin (String newStablecoin) {
         // Access control
         this.onlyPolicy();
 
         // OK
-        this.stableTokens.add(newStablecoin);
+        this.stablecoins.add(newStablecoin);
     }
 
     @External
@@ -142,7 +160,7 @@ public class KarmaOracle extends Ownable {
         this.onlyPolicy();
 
         // OK
-        this.stableTokens.remove(newStablecoin);
+        this.stablecoins.remove(newStablecoin);
     }
 
     @EventLog(indexed = 1)
@@ -154,11 +172,7 @@ public class KarmaOracle extends Ownable {
         this.onlyPolicy();
 
         // OK
-        try {
-            this.Price(this.getPrice(base));
-        } catch (Exception e) {
-            Context.revert("getUsdPrice: cannot retrieve price properly");
-        }
+        this.Price(this.getUsdPrice(base));
     }
 
     // ================================================
@@ -167,7 +181,7 @@ public class KarmaOracle extends Ownable {
     private BigInteger getPrice (String base) {
         
         // Stablecoin / USD
-        if (this.stableTokens.contains(base)) {
+        if (this.stablecoins.contains(base)) {
             // return 1$ for stablecoins, whatever happens
             return EXA;
         }
@@ -178,7 +192,7 @@ public class KarmaOracle extends Ownable {
             Map<String, ?> data = IBandOracle.get_reference_data(this.bandOracle.get(), base, "USD");
             BigInteger price = (BigInteger) data.get("rate");
             return price;
-        } 
+        }
 
         // BALN / USD
         else if (base.equals("BALN")) {
@@ -192,32 +206,37 @@ public class KarmaOracle extends Ownable {
             return this.getOmmPrice();
         }
 
+        // sICX / USD
+        else if (base.equals("sICX")) {
+            return this.getSicxPrice();
+        }
+
         // Other pairs
         else {
             return this.getGenericPrice(base);
         }
     }
 
-    private BigInteger getGenericPrice (String base) {
-        Context.println("[!] Computing " + base + " price...");
+    private BigInteger getSicxPrice () {
+        BigInteger icxPrice = this.getPrice("ICX");
+        BigInteger sIcxRate = IStakedIcx.priceInLoop(this.sIcx.get());
+        return sIcxRate.multiply(icxPrice).divide(EXA);
+    }
 
-        int stablecoinsSize = this.stableTokens.length();
+    private BigInteger getGenericPrice (String base) {
+
+        int stablecoinsSize = this.stablecoins.length();
         final Address dex = this.balancedDex.get();
         BigInteger totalPrice = ZERO;
         BigInteger totalBaseSupply = ZERO;
 
         for (int i = 0; i < stablecoinsSize; i++) {
-            String stablecoinName = this.stableTokens.at(i);
+            String stablecoinName = this.stablecoins.at(i);
             BigInteger poolId = ZERO;
 
             try {
                 poolId = IBalancedDEX.lookupPid(dex, base + "/" + stablecoinName);
             } catch (Exception e) {
-                Context.println("[!] " + base + "/" + stablecoinName + " doesnt exist");
-                continue;
-            }
-            
-            if (poolId == null || poolId.equals(ZERO)) {
                 // The base / stablecoin pool may not exist, keep iterating
                 continue;
             }
@@ -316,5 +335,15 @@ public class KarmaOracle extends Ownable {
     @External(readonly = true)
     public Address bandOracle () {
         return this.bandOracle.get();
+    }
+
+    @External(readonly = true)
+    public String[] stablecoins () {
+        String[] result = new String[this.stablecoins.length()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = this.stablecoins.at(i);
+        }
+
+        return result;
     }
 }

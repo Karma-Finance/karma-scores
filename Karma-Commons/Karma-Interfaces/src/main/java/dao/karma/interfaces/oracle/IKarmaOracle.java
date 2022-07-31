@@ -22,8 +22,8 @@ import score.Context;
 
 public class IKarmaOracle {
   
-  public static BigInteger get_reference_data (Address oracle, String base, String quote) {
-    return (BigInteger) Context.call (oracle, "get_reference_data", base, quote);
+  public static BigInteger getUsdPrice (Address oracle, String base) {
+    return (BigInteger) Context.call (oracle, "getUsdPrice", base);
   }
 
 
