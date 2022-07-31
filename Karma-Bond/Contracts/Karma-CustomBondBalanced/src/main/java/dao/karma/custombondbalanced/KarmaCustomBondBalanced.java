@@ -28,6 +28,7 @@ import dao.karma.interfaces.bond.IBalancedDEX;
 import dao.karma.interfaces.bond.ICustomTreasuryBalanced;
 import dao.karma.interfaces.bond.IToken;
 import dao.karma.interfaces.dao.ITreasury;
+import dao.karma.interfaces.oracle.IKarmaOracle;
 import dao.karma.structs.bond.Adjust;
 import dao.karma.structs.bond.Terms;
 import dao.karma.types.Ownable;
@@ -769,7 +770,9 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     @External(readonly = true)
     public BigInteger payoutTokenMarketPriceUSD() {
-        return new BigInteger("1608210000000000000"); // TODO use Karma Oracle!!!
+        // TODO init and use oracle address from constructor!
+        return IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
+                IToken.symbol(this.payoutToken));
     }
 
     /**
@@ -805,9 +808,15 @@ public class KarmaCustomBondBalanced extends Ownable {
         BigInteger baseTokenReserveAmount = ((BigInteger) poolStats.get("base")).divide(MathUtils.pow10(baseDecimals.intValue()));
         BigInteger quoteTokenReserveAmount = ((BigInteger) poolStats.get("quote")).divide(MathUtils.pow10(quoteDecimals.intValue()));
         BigInteger poolTotalSupply = ((BigInteger) poolStats.get("total_supply")).divide(MathUtils.pow10(poolPrecision));
+        Address baseToken = (Address) poolStats.get("base_token");
+        Address quoteToken = (Address) poolStats.get("quote_token");
 
-        BigInteger baseTokenMarketPrice = new BigInteger("1300047031451525221"); // TODO get from Karma Oracle
-        BigInteger quoteTokenMarketPrice = new BigInteger("1300047031451525221"); // TODO get from Karma Oracle
+        // TODO init and use oracle address from constructor!
+        BigInteger baseTokenMarketPrice = IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
+                IToken.symbol(baseToken));
+        // TODO init and use oracle address from constructor!
+        BigInteger quoteTokenMarketPrice = IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
+                IToken.symbol(quoteToken));
 
         BigInteger poolBaseTokenPriceUSD = this.poolTokenReservePrice(baseTokenReserveAmount, poolTotalSupply,
                 baseTokenMarketPrice);
@@ -824,7 +833,6 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     private BigInteger poolTokenReservePrice(BigInteger poolTokenReserveAmount, BigInteger poolTotalSupply,
                                              BigInteger tokenMarketPriceUSD) {
-
         return (poolTokenReserveAmount.divide(poolTotalSupply)).multiply(tokenMarketPriceUSD);
     }
 

@@ -20,14 +20,13 @@ import static dao.karma.utils.AddressUtils.ZERO_ADDRESS;
 import static java.math.BigInteger.ZERO;
 
 import java.math.BigInteger;
-import java.util.Map;
 
 import com.eclipsesource.json.JsonObject;
 
-import dao.karma.interfaces.bond.IBalancedDEX;
 import dao.karma.interfaces.bond.ICustomTreasury;
 import dao.karma.interfaces.bond.IToken;
 import dao.karma.interfaces.dao.ITreasury;
+import dao.karma.interfaces.oracle.IKarmaOracle;
 import dao.karma.structs.bond.Adjust;
 import dao.karma.structs.bond.Terms;
 import dao.karma.types.Ownable;
@@ -760,7 +759,9 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger payoutTokenMarketPriceUSD() {
-        return new BigInteger("1608210000000000000"); // TODO use Karma Oracle!!!
+        // TODO init and use oracle address from constructor!
+        return IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
+                IToken.symbol(this.payoutToken));
     }
 
     /**
@@ -768,7 +769,9 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger principalTokenMarketPriceUSD() {
-        return EXA;
+        // TODO init and use oracle address from constructor!
+        return IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
+                "USDS");
     }
 
     /**
