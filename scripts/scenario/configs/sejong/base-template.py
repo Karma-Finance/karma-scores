@@ -50,6 +50,7 @@ config = {
         "maxPayout": hex(500),
         "maxDebt": hex(18),
         "initialDebt": hex(1560000000),
+        "maxDiscount": hex(10**18),
       },
     }
   },
