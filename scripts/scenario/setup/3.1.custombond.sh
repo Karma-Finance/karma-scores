@@ -40,6 +40,8 @@ customTreasuryPkg=$(getCustomTreasuryPkg ${bondId})
 customTreasury=$(getAddress ${customTreasuryPkg} ${network})
 karmaTreasuryPkg=$(getKarmaTreasuryPkg)
 karmaTreasury=$(getAddress ${karmaTreasuryPkg} ${network})
+karmaOraclePkg=$(getKarmaOraclePkg)
+karmaOracle=$(getAddress ${karmaOraclePkg} ${network})
 subsidyRouterPkg=$(getSubsidyRouterPkg)
 subsidyRouter=$(getAddress ${subsidyRouterPkg} ${network})
 karmaDAOPkg=$(getKarmaDAOPkg)
@@ -75,6 +77,7 @@ case $implementationType in
       principalToken: \$principalToken, 
       principalPoolId: \$principalPoolId,
       karmaTreasury: \$karmaTreasury, 
+      karmaOracle: \$karmaOracle, 
       subsidyRouter: \$subsidyRouter, 
       initialOwner: \$initialOwner, 
       karmaDAO: \$karmaDAO
@@ -90,6 +93,7 @@ EOF
       --arg principalToken $principalToken \
       --arg principalPoolId $principalPoolId \
       --arg karmaTreasury $karmaTreasury \
+      --arg karmaOracle $karmaOracle \
       --arg subsidyRouter $subsidyRouter \
       --arg initialOwner $initialOwner \
       --arg karmaDAO $karmaDAO \
@@ -105,6 +109,7 @@ EOF
       payoutToken: \$payoutToken, 
       principalToken: \$principalToken, 
       karmaTreasury: \$karmaTreasury, 
+      karmaOracle: \$karmaOracle, 
       subsidyRouter: \$subsidyRouter, 
       initialOwner: \$initialOwner, 
       karmaDAO: \$karmaDAO
@@ -118,6 +123,7 @@ EOF
       --arg payoutToken $payoutToken \
       --arg principalToken $principalToken \
       --arg karmaTreasury $karmaTreasury \
+      --arg karmaOracle $karmaOracle \
       --arg subsidyRouter $subsidyRouter \
       --arg initialOwner $initialOwner \
       --arg karmaDAO $karmaDAO \

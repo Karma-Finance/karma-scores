@@ -60,7 +60,6 @@ public class KarmaCustomBondBalanced extends Ownable {
     private final Address principalToken; // inflow token - should always be a Balanced LP token. In the current Balanced Protocol implementation, this is the DEX contract.
     private final BigInteger principalPoolId; // The Balanced LP token Pool ID
     private final Address customTreasury; // pays for and receives principal
-    private final Address karmaDAO; // The KarmaDAO contract address
     private final Address subsidyRouter; // pays subsidy in Karma to custom treasury
 
     // --- Bond constants ---
@@ -89,6 +88,8 @@ public class KarmaCustomBondBalanced extends Ownable {
     // ================================================
     // receives fee
     private final VarDB<Address> karmaTreasury = Context.newVarDB(NAME + "_karmaTreasury", Address.class);
+    private final VarDB<Address> karmaOracle = Context.newVarDB(NAME + "_karmaOracle", Address.class);
+    private final VarDB<Address> karmaDAO = Context.newVarDB(NAME + "_karmaDAO", Address.class);
 
     private final VarDB<BigInteger> totalPrincipalBonded = Context.newVarDB(NAME + "_totalPrincipalBonded", BigInteger.class);
     private final VarDB<BigInteger> totalPayoutGiven = Context.newVarDB(NAME + "_totalPayoutGiven", BigInteger.class);
@@ -148,6 +149,12 @@ public class KarmaCustomBondBalanced extends Ownable {
         boolean addition
     ) {}
 
+    @EventLog
+    public void DaoAddressChanged (
+        Address oldAddress, 
+        Address newAddress
+    ) {}
+
     // ================================================
     // Methods
     // ================================================
@@ -171,6 +178,7 @@ public class KarmaCustomBondBalanced extends Ownable {
         Address principalToken,
         BigInteger principalPoolId,
         Address karmaTreasury,
+        Address karmaOracle,
         Address subsidyRouter,
         Address initialOwner,
         Address karmaDAO,
@@ -184,6 +192,7 @@ public class KarmaCustomBondBalanced extends Ownable {
         Context.require(!payoutToken.equals(ZERO_ADDRESS));
         Context.require(!principalToken.equals(ZERO_ADDRESS));
         Context.require(!karmaTreasury.equals(ZERO_ADDRESS));
+        Context.require(!karmaOracle.equals(ZERO_ADDRESS));
         Context.require(!subsidyRouter.equals(ZERO_ADDRESS));
         Context.require(!initialOwner.equals(ZERO_ADDRESS));
         Context.require(!karmaDAO.equals(ZERO_ADDRESS));
@@ -198,7 +207,6 @@ public class KarmaCustomBondBalanced extends Ownable {
         this.principalToken = principalToken;
         this.principalPoolId = principalPoolId;
         this.subsidyRouter = subsidyRouter;
-        this.karmaDAO = karmaDAO;
 
         for (int i = 0; i  < tierCeilings.length; i++) {
             this.feeTiers.add(new FeeTiers(tierCeilings[i], fees[i]));
@@ -206,6 +214,14 @@ public class KarmaCustomBondBalanced extends Ownable {
 
         if (this.karmaTreasury.get() == null) {
             this.karmaTreasury.set(karmaTreasury);
+        }
+
+        if (this.karmaOracle.get() == null) {
+            this.karmaOracle.set(karmaOracle);
+        }
+
+        if (this.karmaDAO.get() == null) {
+            this.karmaDAO.set(karmaDAO);
         }
 
         // Default initialization
@@ -391,7 +407,51 @@ public class KarmaCustomBondBalanced extends Ownable {
         // Access control
         checkKarmaDao(caller);
 
+        // OK
+        this.DaoAddressChanged(this.karmaTreasury.get(), karmaTreasury);
         this.karmaTreasury.set(karmaTreasury);
+    }
+
+    /**
+     * Change address of Karma DAO
+     * 
+     * Access: KarmaDAO
+     * 
+     * @param karmaDAO
+     */
+    @External
+    public void changeKarmaDAO (
+        Address karmaDAO
+    ) {
+        final Address caller = Context.getCaller();
+
+        // Access control
+        checkKarmaDao(caller);
+
+        // OK
+        this.DaoAddressChanged(this.karmaDAO.get(), karmaDAO);
+        this.karmaDAO.set(karmaDAO);
+    }
+
+    /**
+     * Change address of Karma Oracle
+     * 
+     * Access: KarmaDAO
+     * 
+     * @param karmaOracle
+     */
+    @External
+    public void changeKarmaOracle (
+        Address karmaOracle
+    ) {
+        final Address caller = Context.getCaller();
+
+        // Access control
+        checkKarmaDao(caller);
+
+        // OK
+        this.DaoAddressChanged(this.karmaOracle.get(), karmaOracle);
+        this.karmaOracle.set(karmaOracle);
     }
 
     /**
@@ -686,7 +746,7 @@ public class KarmaCustomBondBalanced extends Ownable {
     // Checks
     // ================================================
     private void checkKarmaDao(Address caller) {
-        Context.require(caller.equals(this.karmaDAO),
+        Context.require(caller.equals(this.karmaDAO.get()),
             "checkKarmaDao: only KarmaDAO can call this method");
     }
 
@@ -758,9 +818,7 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     @External(readonly = true)
     public BigInteger payoutTokenMarketPriceUSD() {
-        // TODO init and use oracle address from constructor!
-        return IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
-                IToken.symbol(this.payoutToken));
+        return IKarmaOracle.getUsdPrice(this.karmaOracle.get(), IToken.symbol(this.payoutToken));
     }
 
     /**
@@ -789,12 +847,9 @@ public class KarmaCustomBondBalanced extends Ownable {
         Address baseToken = (Address) poolStats.get("base_token");
         Address quoteToken = (Address) poolStats.get("quote_token");
 
-        // TODO init and use oracle address from constructor!
-        BigInteger baseTokenMarketPrice = IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
-                IToken.symbol(baseToken));
-        // TODO init and use oracle address from constructor!
-        BigInteger quoteTokenMarketPrice = IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
-                IToken.symbol(quoteToken));
+        Address karmaOracle = this.karmaOracle.get();
+        BigInteger baseTokenMarketPrice = IKarmaOracle.getUsdPrice(karmaOracle, IToken.symbol(baseToken));
+        BigInteger quoteTokenMarketPrice = IKarmaOracle.getUsdPrice(karmaOracle, IToken.symbol(quoteToken));
 
         BigInteger poolBaseTokenPriceUSD = this.poolTokenReservePrice(baseTokenReserveAmount, poolTotalSupply,
                 baseTokenMarketPrice);

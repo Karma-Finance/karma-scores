@@ -19,12 +19,12 @@ getKarmaTreasuryPkg () {
   echo karmabond/treasury
 }
 
-getKarmaDAOPkg () {
-  echo karmabond/dao
+getKarmaOraclePkg () {
+  echo karmabond/oracle
 }
 
-getOraclePkg () {
-  echo karmabond/oracle
+getKarmaDAOPkg () {
+  echo karmabond/dao
 }
 
 # Bond

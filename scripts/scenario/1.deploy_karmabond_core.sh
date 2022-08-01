@@ -36,4 +36,7 @@ ${setupScriptsDir}/1.4.karmabond_treasury.sh ${network}
 # --- Deploy DAO ---
 ${setupScriptsDir}/1.5.karmabond_dao.sh ${network}
 
+# --- Deploy Oracle ---
+${setupScriptsDir}/1.6.oracle.sh ${network}
+
 success "All Karma Bond core contracts have been successfully deployed!"

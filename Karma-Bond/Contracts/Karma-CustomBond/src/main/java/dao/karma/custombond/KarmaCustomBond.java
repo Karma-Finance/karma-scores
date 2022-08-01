@@ -59,7 +59,6 @@ public class KarmaCustomBond extends Ownable {
     private final Address payoutToken; // token paid for principal
     private final Address principalToken; // inflow token
     private final Address customTreasury; // pays for and receives principal
-    private final Address karmaDAO; // The KarmaDAO contract address
     private final Address subsidyRouter; // pays subsidy in Karma to custom treasury
 
     // --- Bond constants ---
@@ -88,6 +87,8 @@ public class KarmaCustomBond extends Ownable {
     // ================================================
     // receives fee
     private final VarDB<Address> karmaTreasury = Context.newVarDB(NAME + "_karmaTreasury", Address.class);
+    private final VarDB<Address> karmaOracle = Context.newVarDB(NAME + "_karmaOracle", Address.class);
+    private final VarDB<Address> karmaDAO = Context.newVarDB(NAME + "_karmaDAO", Address.class);
 
     private final VarDB<BigInteger> totalPrincipalBonded = Context.newVarDB(NAME + "_totalPrincipalBonded", BigInteger.class);
     private final VarDB<BigInteger> totalPayoutGiven = Context.newVarDB(NAME + "_totalPayoutGiven", BigInteger.class);
@@ -147,6 +148,12 @@ public class KarmaCustomBond extends Ownable {
         boolean addition
     ) {}
 
+    @EventLog
+    public void DaoAddressChanged (
+        Address oldAddress, 
+        Address newAddress
+    ) {}
+
     // ================================================
     // Methods
     // ================================================
@@ -168,6 +175,7 @@ public class KarmaCustomBond extends Ownable {
         Address payoutToken,
         Address principalToken,
         Address karmaTreasury,
+        Address karmaOracle,
         Address subsidyRouter,
         Address initialOwner,
         Address karmaDAO,
@@ -181,6 +189,7 @@ public class KarmaCustomBond extends Ownable {
         Context.require(!payoutToken.equals(ZERO_ADDRESS));
         Context.require(!principalToken.equals(ZERO_ADDRESS));
         Context.require(!karmaTreasury.equals(ZERO_ADDRESS));
+        Context.require(!karmaOracle.equals(ZERO_ADDRESS));
         Context.require(!subsidyRouter.equals(ZERO_ADDRESS));
         Context.require(!initialOwner.equals(ZERO_ADDRESS));
         Context.require(!karmaDAO.equals(ZERO_ADDRESS));
@@ -194,7 +203,6 @@ public class KarmaCustomBond extends Ownable {
         this.payoutToken = payoutToken;
         this.principalToken = principalToken;
         this.subsidyRouter = subsidyRouter;
-        this.karmaDAO = karmaDAO;
 
         for (int i = 0; i  < tierCeilings.length; i++) {
             this.feeTiers.add(new FeeTiers(tierCeilings[i], fees[i]));
@@ -202,6 +210,14 @@ public class KarmaCustomBond extends Ownable {
 
         if (this.karmaTreasury.get() == null) {
             this.karmaTreasury.set(karmaTreasury);
+        }
+
+        if (this.karmaOracle.get() == null) {
+            this.karmaOracle.set(karmaOracle);
+        }
+
+        if (this.karmaDAO.get() == null) {
+            this.karmaDAO.set(karmaDAO);
         }
 
         // Default initialization
@@ -387,7 +403,51 @@ public class KarmaCustomBond extends Ownable {
         // Access control
         checkKarmaDao(caller);
 
+        // OK
+        this.DaoAddressChanged(this.karmaTreasury.get(), karmaTreasury);
         this.karmaTreasury.set(karmaTreasury);
+    }
+
+    /**
+     * Change address of Karma Oracle
+     * 
+     * Access: KarmaDAO
+     * 
+     * @param karmaOracle
+     */
+    @External
+    public void changeKarmaOracle (
+        Address karmaOracle
+    ) {
+        final Address caller = Context.getCaller();
+
+        // Access control
+        checkKarmaDao(caller);
+
+        // OK
+        this.DaoAddressChanged(this.karmaOracle.get(), karmaOracle);
+        this.karmaOracle.set(karmaOracle);
+    }
+
+    /**
+     * Change address of Karma Oracle
+     * 
+     * Access: KarmaDAO
+     * 
+     * @param karmaDAO
+     */
+    @External
+    public void changeKarmaDAO (
+        Address karmaDAO
+    ) {
+        final Address caller = Context.getCaller();
+
+        // Access control
+        checkKarmaDao(caller);
+
+        // OK
+        this.DaoAddressChanged(this.karmaDAO.get(), karmaDAO);
+        this.karmaDAO.set(karmaDAO);
     }
 
     /**
@@ -674,7 +734,7 @@ public class KarmaCustomBond extends Ownable {
     // Checks
     // ================================================
     private void checkKarmaDao(Address caller) {
-        Context.require(caller.equals(this.karmaDAO),
+        Context.require(caller.equals(this.karmaDAO.get()),
             "checkKarmaDao: only KarmaDAO can call this method");
     }
 
@@ -746,9 +806,7 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger payoutTokenMarketPriceUSD() {
-        // TODO init and use oracle address from constructor!
-        return IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
-                IToken.symbol(this.payoutToken));
+        return IKarmaOracle.getUsdPrice(this.karmaOracle.get(), IToken.symbol(this.payoutToken));
     }
 
     /**
@@ -756,9 +814,7 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger principalTokenMarketPriceUSD() {
-        // TODO init and use oracle address from constructor!
-        return IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
-                IToken.symbol(this.principalToken));
+        return IKarmaOracle.getUsdPrice(this.karmaOracle.get(), IToken.symbol(this.principalToken));
     }
 
     /**

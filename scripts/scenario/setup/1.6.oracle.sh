@@ -23,7 +23,7 @@ network=$1
 info "Deploying Oracle on ${network}..."
 
 # Package information
-pkg=$(getOraclePkg)
+pkg=$(getKarmaOraclePkg)
 javaPkg=":Karma-Bond:Contracts:Karma-Oracle"
 build="optimized"
 
