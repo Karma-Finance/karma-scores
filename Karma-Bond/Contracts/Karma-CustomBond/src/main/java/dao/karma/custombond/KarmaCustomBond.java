@@ -437,7 +437,7 @@ public class KarmaCustomBond extends Ownable {
         BigInteger totalDebt = this.totalDebt.get();
         var terms = this.terms.get();
 
-        BigInteger nativePrice = trueBondPrice();
+        BigInteger nativePrice = trueBondPrice(null);
 
         // slippage protection
         Context.require(maxPrice.compareTo(nativePrice) >= 0,
@@ -482,7 +482,7 @@ public class KarmaCustomBond extends Ownable {
             depositorBondInfo.payout.add(payout.subtract(fee)),
             terms.vestingTerm,
             Context.getBlockHeight(),
-            trueBondPrice()
+            trueBondPrice(null)
         ));
 
         // indexed events are emitted
@@ -703,7 +703,7 @@ public class KarmaCustomBond extends Ownable {
         // check if max discount is greater than 0 and increase price to fit the capped discount
         // NOTE: if minimumPrice is set in the terms capped discount is not applied!
         else if (terms.maxDiscount.compareTo(ZERO) > 0) {
-            BigInteger bondDiscount = _currentBondDiscount(price);
+            BigInteger bondDiscount = currentBondDiscount(price);
             BigInteger maxDiscount = terms.maxDiscount;
 
             // if bond discount is greater than max discount, increase bond price to fit the max discount
@@ -730,25 +730,11 @@ public class KarmaCustomBond extends Ownable {
      *                       on client side.
      */
     @External(readonly = true)
-    public BigInteger currentBondDiscount() {
-        BigInteger bondPriceUSD = this.bondPriceUSD();
+    public BigInteger currentBondDiscount(
+            @Optional BigInteger bondPrice
+    ) {
+        BigInteger bondPriceUSD = this.bondPriceUSD(bondPrice);
         BigInteger payoutTokenMarketPriceUSD = payoutTokenMarketPriceUSD();
-
-        // discount = (payout token market price USD - bond price USD) / payout token market price USD
-        // NOTE: result is in 1e7 decimal precision
-        return (payoutTokenMarketPriceUSD.subtract(bondPriceUSD)).divide(payoutTokenMarketPriceUSD.divide(MathUtils.pow10(7)));
-    }
-
-    /**
-     *  Calculate current bond discount
-     *  @param bondPrice - Current bond price
-     *  @return BigInteger - Discount in percentages. Divide by 1e7 and multiply by 100% to convert in percentages
-     *                       on client side.
-     */
-    @External(readonly = true)
-    public BigInteger _currentBondDiscount(BigInteger bondPrice) {
-        BigInteger bondPriceUSD = this._bondPriceUSD(bondPrice);
-        BigInteger payoutTokenMarketPriceUSD = this.payoutTokenMarketPriceUSD();
 
         // discount = (payout token market price USD - bond price USD) / payout token market price USD
         // NOTE: result is in 1e7 decimal precision
@@ -772,36 +758,29 @@ public class KarmaCustomBond extends Ownable {
     public BigInteger principalTokenMarketPriceUSD() {
         // TODO init and use oracle address from constructor!
         return IKarmaOracle.getUsdPrice(Address.fromString("cxad24e1abf6da6c401eab533433b115f476e9adf4"),
-                "USDS");
+                IToken.symbol(this.principalToken));
     }
 
     /**
      *  Calculate bond price in USD
      */
     @External(readonly = true)
-    public BigInteger bondPriceUSD() {
+    public BigInteger bondPriceUSD(BigInteger bondPrice) {
         // NOTE: result is in 1e18 decimal precision
-        return this.trueBondPrice().multiply(this.principalTokenMarketPriceUSD()).divide(MathUtils.pow10(7));
-    }
-
-    /**
-     *  Calculate bond price in USD for given bondPrice (used in bond discount to avoid recursion)
-     * @return BigInteger - bond price denominated in USD and in 1e18 decimal precision
-     */
-    @External(readonly = true)
-    public BigInteger _bondPriceUSD(BigInteger bondPrice) {
-        BigInteger trueBondPrice = bondPrice.add(bondPrice.multiply(currentKarmaFee()).divide(MathUtils.pow10(
-                TRUE_BOND_PRICE_PRECISION)));
-        return trueBondPrice.multiply(this.principalTokenMarketPriceUSD()).divide(MathUtils.pow10(7));
+        return this.trueBondPrice(bondPrice).multiply(this.principalTokenMarketPriceUSD()).divide(MathUtils.pow10(7));
     }
 
     /**
      * Calculate true bond price a user pays
      */
     @External(readonly = true)
-    public BigInteger trueBondPrice() {
+    public BigInteger trueBondPrice(@Optional BigInteger bondPrice) {
+        if (bondPrice == null) {
+            // recursion only if no parameter given
+            bondPrice = this.bondPrice();
+        }
         // truePrice = `bondPrice()` + (`bondPrice()` * `currentKarmaFee()` / 10**TRUE_BOND_PRICE_PRECISION)
-        return bondPrice().add(bondPrice().multiply(currentKarmaFee()).divide(MathUtils.pow10(TRUE_BOND_PRICE_PRECISION)));
+        return bondPrice.add(bondPrice.multiply(currentKarmaFee()).divide(MathUtils.pow10(TRUE_BOND_PRICE_PRECISION)));
     }
 
     /**
