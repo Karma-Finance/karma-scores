@@ -720,7 +720,8 @@ public class KarmaCustomBondBalanced extends Ownable {
 
             // if bond discount is greater than max discount, increase bond price to fit the max discount
             if (bondDiscount.compareTo(maxDiscount) > 0) {
-                BigInteger newTrueBondPrice = this.payoutTokenMarketPriceUSD().subtract(maxDiscount.multiply(payoutTokenMarketPriceUSD())
+                BigInteger payoutTokenMarketPriceUSD = payoutTokenMarketPriceUSD();
+                BigInteger newTrueBondPrice = payoutTokenMarketPriceUSD.subtract(maxDiscount.multiply(payoutTokenMarketPriceUSD)
                         .divide(MathUtils.pow10(3))).multiply(MathUtils.pow10(7)).divide(this.lpMarketUsdPrice());
                 BigInteger newBondPrice = newTrueBondPrice.subtract(newTrueBondPrice.multiply(currentKarmaFee()).divide(MathUtils.pow10(6)));
 
