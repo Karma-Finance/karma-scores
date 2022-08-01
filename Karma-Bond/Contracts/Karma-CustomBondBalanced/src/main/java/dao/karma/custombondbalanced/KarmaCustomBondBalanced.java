@@ -56,29 +56,36 @@ public class KarmaCustomBondBalanced extends Ownable {
     // Contract name
     private final String name;
 
-    private final Address payoutToken; // token paid for principal
-    private final Address principalToken; // inflow token - should always be a Balanced LP token. In the current Balanced Protocol implementation, this is the DEX contract.
-    private final BigInteger principalPoolId; // The Balanced LP token Pool ID
-    private final Address customTreasury; // pays for and receives principal
-    private final Address subsidyRouter; // pays subsidy in Karma to custom treasury
+    // token paid for principal
+    private final Address payoutToken;
+    // inflow token - should always be a Balanced LP token. In the current Balanced Protocol implementation, this is the DEX contract.
+    private final Address principalToken;
+    // The Balanced LP token Pool ID
+    private final BigInteger principalPoolId;
+    // pays for and receives principal
+    private final Address customTreasury;
+    // pays subsidy in Karma to custom treasury
+    private final Address subsidyRouter;
 
     // --- Bond constants ---
     // When calling setBondTerms(VESTING), 
     // vesting must be longer than `BOND_TERMS_VESTING_MIN_SECONDS` hours
-    public final static int BOND_TERMS_VESTING_MIN_SECONDS = 36 * 3600; // 36 hours
+    public static final int BOND_TERMS_VESTING_MIN_SECONDS = 36 * 3600; // 36 hours
+
     // When calling setBondTerms(VESTING), 
     // maxPayout must be <= 1000 (= 1%)
-    private final BigInteger BOND_TERMS_PAYOUT_MAX_PERCENT = BigInteger.valueOf(1000);
+    private static final BigInteger BOND_TERMS_PAYOUT_MAX_PERCENT = BigInteger.valueOf(1000);
 
     // Arbitrary decimals precision
-    private final int DECIMALS_PRECISION = 5;
-    private final int TRUE_BOND_PRICE_PRECISION = 6;
+    private static final int DECIMALS_PRECISION_EXPONENT = 5;
+    private static final BigInteger DECIMALS_PRECISION = MathUtils.pow10(DECIMALS_PRECISION_EXPONENT);
+    private static final BigInteger TRUE_BOND_PRICE_PRECISION = MathUtils.pow10(6);
     // Arbitrary payout precision
-    private final int TOTAL_PAYOUT_PRECISION = 11;
-    private final int PAYOUT_PRECISION = 6;
+    private static final BigInteger TOTAL_PAYOUT_PRECISION = MathUtils.pow10(11);
+    private static final BigInteger PAYOUT_PRECISION = MathUtils.pow10(6);
     // Arbitrary vesting precision
     // 10000 = 100%
-    private final BigInteger FULLY_VESTED = BigInteger.valueOf(10000);
+    private static final BigInteger FULLY_VESTED = BigInteger.valueOf(10000);
 
     // 10**18
     private static final BigInteger EXA = MathUtils.pow10(18);
@@ -529,7 +536,7 @@ public class KarmaCustomBondBalanced extends Ownable {
             "deposit: Bond too large");
 
         // profits are calculated
-        BigInteger fee = payout.multiply(currentKarmaFee()).divide(MathUtils.pow10(PAYOUT_PRECISION));
+        BigInteger fee = payout.multiply(currentKarmaFee()).divide(PAYOUT_PRECISION);
 
         // principal is transferred in, and 
         // deposited into the treasury, returning (amount - profit) payout token
@@ -729,7 +736,7 @@ public class KarmaCustomBondBalanced extends Ownable {
         var terms = this.terms.get();
 
         // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-DECIMALS_PRECISION))
-        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - DECIMALS_PRECISION));
+        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - DECIMALS_PRECISION_EXPONENT));
 
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
@@ -740,7 +747,6 @@ public class KarmaCustomBondBalanced extends Ownable {
 
         return price;
     }
-
 
     // ================================================
     // Checks
@@ -767,7 +773,7 @@ public class KarmaCustomBondBalanced extends Ownable {
         var terms = this.terms.get();
 
         // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-DECIMALS_PRECISION))
-        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - DECIMALS_PRECISION));
+        BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - DECIMALS_PRECISION_EXPONENT));
 
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
@@ -781,8 +787,10 @@ public class KarmaCustomBondBalanced extends Ownable {
             // if bond discount is greater than max discount, increase bond price to fit the max discount
             if (bondDiscount.compareTo(maxDiscount) > 0) {
                 BigInteger payoutTokenMarketPriceUSD = payoutTokenMarketPriceUSD();
-                BigInteger newTrueBondPrice = payoutTokenMarketPriceUSD.subtract(maxDiscount.multiply(payoutTokenMarketPriceUSD)
-                        .divide(MathUtils.pow10(3))).multiply(MathUtils.pow10(7)).divide(this.lpMarketUsdPrice());
+                BigInteger newTrueBondPrice = payoutTokenMarketPriceUSD.subtract(
+                    maxDiscount.multiply(payoutTokenMarketPriceUSD)
+                    .divide(MathUtils.pow10(3))
+                ).multiply(MathUtils.pow10(7)).divide(this.lpMarketUsdPrice());
                 BigInteger newBondPrice = newTrueBondPrice.subtract(newTrueBondPrice.multiply(currentKarmaFee()).divide(MathUtils.pow10(6)));
 
                 // only apply new bond price if it is higher than the old one, this should mitigate oracle risk
@@ -880,7 +888,7 @@ public class KarmaCustomBondBalanced extends Ownable {
             bondPrice = this.bondPrice();
         }
         // truePrice = `bondPrice()` + (`bondPrice()` * `currentKarmaFee()` / 10**TRUE_BOND_PRICE_PRECISION)
-        return bondPrice.add(bondPrice.multiply(currentKarmaFee()).divide(MathUtils.pow10(TRUE_BOND_PRICE_PRECISION)));
+        return bondPrice.add(bondPrice.multiply(currentKarmaFee()).divide(TRUE_BOND_PRICE_PRECISION));
     }
 
     /**
@@ -889,7 +897,7 @@ public class KarmaCustomBondBalanced extends Ownable {
     @External(readonly = true)
     public BigInteger maxPayout() {
         // IRC2(payoutToken).totalSupply() * terms().maxPayout / 10**DECIMALS_PRECISION
-        return IToken.totalSupply(this.payoutToken).multiply(this.terms.get().maxPayout).divide(MathUtils.pow10(DECIMALS_PRECISION));
+        return IToken.totalSupply(this.payoutToken).multiply(this.terms.get().maxPayout).divide(DECIMALS_PRECISION);
     }
 
     /**
@@ -897,7 +905,7 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     private BigInteger _payoutFor (BigInteger value) {
         // total = value * 10**18 / bondPrice() / 10**TOTAL_PAYOUT_PRECISION
-        return FullMath.mulDiv(value, EXA, bondPrice()).divide(MathUtils.pow10(TOTAL_PAYOUT_PRECISION));
+        return FullMath.mulDiv(value, EXA, bondPrice()).divide(TOTAL_PAYOUT_PRECISION);
     }
 
     /**
@@ -907,7 +915,7 @@ public class KarmaCustomBondBalanced extends Ownable {
     public BigInteger payoutFor (BigInteger value) {
         BigInteger total = _payoutFor(value);
         // payoutFor = total - (total * currentKarmaFee() / 10**PAYOUT_PRECISION)
-        return total.subtract(total.multiply(currentKarmaFee()).divide(MathUtils.pow10(PAYOUT_PRECISION)));
+        return total.subtract(total.multiply(currentKarmaFee()).divide(PAYOUT_PRECISION));
     }
 
     /**
