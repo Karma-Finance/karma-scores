@@ -36,25 +36,30 @@ public class Terms {
     public BigInteger maxPayout;
     // payout token decimal debt ratio, max % total supply created as debt
     public BigInteger maxDebt;
+    // max discount cap on bond price in thousandths of a %, i.e. 500 = 0.5%
+    public BigInteger maxDiscount;
 
     public Terms (
         BigInteger controlVariable,
         long vestingTerm,
         BigInteger minimumPrice,
         BigInteger maxPayout,
-        BigInteger maxDebt
+        BigInteger maxDebt,
+        BigInteger maxDiscount
     ) {
         this.controlVariable = controlVariable;
         this.vestingTerm = vestingTerm;
         this.minimumPrice = minimumPrice;
         this.maxPayout = maxPayout;
         this.maxDebt = maxDebt;
+        this.maxDiscount = maxDiscount;
     }
 
     public static Terms readObject (ObjectReader r) {
         return new Terms(
             r.readBigInteger(),
             r.readLong(),
+            r.readBigInteger(),
             r.readBigInteger(),
             r.readBigInteger(),
             r.readBigInteger()
@@ -67,10 +72,11 @@ public class Terms {
         w.write(obj.minimumPrice);
         w.write(obj.maxPayout);
         w.write(obj.maxDebt);
+        w.write(obj.maxDiscount);
     }
 
     public static Terms empty() {
-        return new Terms(ZERO, 0L, ZERO, ZERO, ZERO);
+        return new Terms(ZERO, 0L, ZERO, ZERO, ZERO, ZERO);
     }
 
     public static Terms fromMap(Object call) {
@@ -81,7 +87,8 @@ public class Terms {
             ((BigInteger) map.get("vestingTerm")).longValue(),
             (BigInteger) map.get("minimumPrice"),
             (BigInteger) map.get("maxPayout"),
-            (BigInteger) map.get("maxDebt")
+            (BigInteger) map.get("maxDebt"),
+            (BigInteger) map.get("maxDiscount")
         );
     }
 }
