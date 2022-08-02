@@ -40,7 +40,7 @@ initialOwner=${karmaDAO}
 
 if [[ "$network" == "berlin" ]] ; then
   balancedDex=cx4d3b86709c387dec2927158c0377ecabe002f503
-  bandOracle=cx0ef46c6ef9718367e237dd700eaa1f4746708e47
+  bandOracle=cxbf3b46689e8c7d9c327e03a61098c5a91df2081e
   sIcx=cxdd89d7a425b8f0b6448a8c80136727c517e64033
 elif [[ "$network" == "sejong" ]] ; then
   balancedDex=cx648a6d9c5f231f6b86c0caa9cc9eff8bd6040999
