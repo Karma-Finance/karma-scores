@@ -35,7 +35,8 @@ deployDir=$(getDeployDir ${pkg} ${network})
 callsDir=$(getCallsDir ${pkg} ${network})
 
 # Deploy on ICON network
-karmaDAO=$(cat ./config/keystores/${network}/dao.icx | jq .address -r)
+karmaDAOWallet="./config/keystores/${network}/dao.icx"
+karmaDAO=$(cat ${karmaDAOWallet} | jq .address -r)
 
 initialOwner=${karmaDAO}
 
@@ -77,7 +78,10 @@ if [[ "$network" == "berlin" ]] ; then
   ommPoolName="OMM2"
   filter=$(cat <<EOF
   {
-    ommPoolName: \$ommPoolName
+    method: "setOmmPoolName",
+    params: {
+      ommPoolName: \$ommPoolName
+    }
   }
 EOF
   )
@@ -86,5 +90,5 @@ EOF
     --arg ommPoolName $ommPoolName \
     "${filter}" > ${callsDir}/${actionName}.json
 
-  ./run.py -e ${network} invoke ${pkg} ${actionName}
+  ./run.py -k ${karmaDAOWallet} -e ${network} invoke ${pkg} ${actionName}
 fi
