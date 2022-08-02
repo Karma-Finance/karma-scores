@@ -79,6 +79,7 @@ public class KarmaCustomBondBalanced extends Ownable {
     // Arbitrary decimals precision
     private static final int DECIMALS_PRECISION_EXPONENT = 5;
     private static final BigInteger DECIMALS_PRECISION = MathUtils.pow10(DECIMALS_PRECISION_EXPONENT);
+    private static final BigInteger BOND_PRICE_PRECISION = MathUtils.pow10(7);
     private static final BigInteger TRUE_BOND_PRICE_PRECISION = MathUtils.pow10(6);
     // Arbitrary payout precision
     private static final BigInteger TOTAL_PAYOUT_PRECISION = MathUtils.pow10(11);
@@ -791,7 +792,7 @@ public class KarmaCustomBondBalanced extends Ownable {
                     maxDiscount.multiply(payoutTokenMarketPriceUSD)
                     .divide(MathUtils.pow10(3))
                 ).multiply(MathUtils.pow10(7)).divide(this.lpMarketUsdPrice());
-                BigInteger newBondPrice = newTrueBondPrice.subtract(newTrueBondPrice.multiply(currentKarmaFee()).divide(MathUtils.pow10(6)));
+                BigInteger newBondPrice = newTrueBondPrice.subtract(newTrueBondPrice.multiply(currentKarmaFee()).divide(TRUE_BOND_PRICE_PRECISION));
 
                 // only apply new bond price if it is higher than the old one, this should mitigate oracle risk
                 // by defaulting to the un-capped bond price
@@ -811,7 +812,7 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     @External(readonly = true)
     public BigInteger currentBondDiscount(
-            @Optional BigInteger bondPrice
+        @Optional BigInteger bondPrice
     ) {
         BigInteger bondPriceUSD = this.bondPriceUSD(bondPrice);
         BigInteger payoutTokenMarketPriceUSD = payoutTokenMarketPriceUSD();
@@ -835,7 +836,7 @@ public class KarmaCustomBondBalanced extends Ownable {
     @External(readonly = true)
     public BigInteger bondPriceUSD(BigInteger bondPrice) {
         // NOTE: result is in 1e18 decimal precision
-        return this.trueBondPrice(bondPrice).multiply(this.lpMarketUsdPrice()).divide(MathUtils.pow10(7));
+        return this.trueBondPrice(bondPrice).multiply(this.lpMarketUsdPrice()).divide(BOND_PRICE_PRECISION);
     }
 
     /**
