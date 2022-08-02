@@ -58,6 +58,8 @@ public class KarmaOracle extends Ownable {
     private final VarDB<Address> bandOracle = Context.newVarDB(NAME + "_bandOracle", Address.class);
     // The Staked ICX token address
     private final VarDB<Address> sIcx = Context.newVarDB(NAME + "_sIcx", Address.class);
+    // OMM Pool Name on Balanced
+    private final VarDB<String> ommPoolName = Context.newVarDB(NAME + "_ommPoolName", String.class);
     // List of stablecoins - the price for these tokens will always be evaluated at 1$ whatever happens
     private final EnumerableSet<String> stablecoins = new EnumerableSet<>(NAME + "_stablecoins", String.class);
 
@@ -96,6 +98,10 @@ public class KarmaOracle extends Ownable {
 
         if (this.sIcx.get() == null) {
             this.sIcx.set(sIcx);
+        }
+
+        if (this.ommPoolName.get() == null) {
+            this.ommPoolName.set("OMM");
         }
 
         if (this.stablecoins.length() == 0) {
@@ -143,6 +149,15 @@ public class KarmaOracle extends Ownable {
         // OK
         this.sIcx.set(value);
         this.AddressChanged(value);
+    }
+
+    @External
+    public void setOmmPoolName (String ommPoolName) {
+        // Access control
+        this.onlyPolicy();
+
+        // OK
+        this.ommPoolName.set(ommPoolName);
     }
 
     @External
@@ -272,7 +287,7 @@ public class KarmaOracle extends Ownable {
         final Address dex = this.balancedDex.get();
 
         for (var token : OMM_TOKENS) {
-            BigInteger poolId = IBalancedDEX.lookupPid(dex, "OMM/" + token.name);
+            BigInteger poolId = IBalancedDEX.lookupPid(dex, this.ommPoolName.get() + "/" + token.name);
 
             if (poolId == null || poolId.equals(ZERO)) {
                 Context.revert("getOmmPrice: Unexpected error while retrieving the OMM price");
@@ -335,6 +350,11 @@ public class KarmaOracle extends Ownable {
     @External(readonly = true)
     public Address bandOracle () {
         return this.bandOracle.get();
+    }
+
+    @External(readonly = true)
+    public String ommPoolName () {
+        return this.ommPoolName.get();
     }
 
     @External(readonly = true)
