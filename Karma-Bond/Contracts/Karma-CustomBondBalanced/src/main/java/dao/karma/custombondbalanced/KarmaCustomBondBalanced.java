@@ -883,7 +883,7 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     @External(readonly = true)
     public BigInteger trueBondPrice(@Optional BigInteger bondPrice) {
-        if (bondPrice == null) {
+        if (bondPrice == null || bondPrice.equals(ZERO)) {
             // recursion only if no parameter given
             bondPrice = this.bondPrice();
         }
