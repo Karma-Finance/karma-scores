@@ -32,6 +32,7 @@ setupJavaDir ${javaPkg} ${build}
 setupDeployDir ${pkg} ${network}
 setupCallsDir ${pkg} ${network}
 deployDir=$(getDeployDir ${pkg} ${network})
+callsDir=$(getCallsDir ${pkg} ${network})
 
 # Deploy on ICON network
 karmaDAO=$(cat ./config/keystores/${network}/dao.icx | jq .address -r)
@@ -69,3 +70,21 @@ jq -n \
   "${filter}" > ${deployDir}/params.json
 
 ./run.py -e ${network} deploy ${pkg}
+
+
+if [[ "$network" == "berlin" ]] ; then
+  actionName=setOmmPoolName
+  ommPoolName="OMM2"
+  filter=$(cat <<EOF
+  {
+    ommPoolName: \$ommPoolName
+  }
+EOF
+  )
+
+  jq -n \
+    --arg ommPoolName $ommPoolName \
+    "${filter}" > ${callsDir}/${actionName}.json
+
+  ./run.py -e ${network} invoke ${pkg} ${actionName}
+fi
