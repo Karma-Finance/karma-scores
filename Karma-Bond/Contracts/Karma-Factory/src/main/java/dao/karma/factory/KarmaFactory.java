@@ -217,7 +217,7 @@ public class KarmaFactory extends Ownable {
      * Access: Policy
      * 
      * @param payoutToken The payout token
-     * @param principleToken The principle token
+     * @param principalToken The principal token
      * @param customTreasury The Custom Treasury address associated with the bond
      * @param initialOwner The initial owner of the bond
      * @param tierCeilings 

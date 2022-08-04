@@ -23,6 +23,7 @@ import com.eclipsesource.json.JsonObject;
 import dao.karma.interfaces.bond.IBalancedDEX;
 import dao.karma.interfaces.bond.IToken;
 
+import dao.karma.interfaces.lpbalanced.ILPBalanced;
 import dao.karma.utils.AddressUtils;
 import dao.karma.utils.JSONUtils;
 import dao.karma.utils.MathUtils;
@@ -73,6 +74,14 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
         Address token, 
         Address destination, 
         BigInteger amount
+    ) {}
+
+    @EventLog
+    public void WithdrawLp (
+            Address token,
+            Address destination,
+            BigInteger amount,
+            BigInteger poolId
     ) {}
 
     // ================================================
@@ -194,6 +203,35 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
 
         IToken.transfer(token, destination, amount);
         this.Withdraw(token, destination, amount);
+    }
+
+    /**
+     * Policy can withdraw IRC3 token to desired address
+     *
+     * Access: Policy
+     *
+     * @param token The token to withdraw (should be Balanced DEX address)
+     * @param destination The destination address for the withdraw
+     * @param amount The amount of tokens
+     * @param poolId Pool ID of token to transfer, defaults to principal pool ID
+     */
+    @External
+    public void withdrawLp (
+            Address token,
+            Address destination,
+            BigInteger amount,
+            @Optional BigInteger poolId
+    ) {
+        // Access control
+        onlyPolicy();
+
+        // default to principal Pool ID if none is passed
+        if (poolId == null || poolId.equals(BigInteger.ZERO)) {
+            poolId = this.poolIdPrincipalToken();
+        }
+
+        ILPBalanced.transfer(token, destination, amount, poolId, "".getBytes());
+        this.WithdrawLp(token, destination, amount, poolId);
     }
 
     /**
