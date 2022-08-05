@@ -5,7 +5,7 @@ from iconsdk.providers.http_provider import HTTPProvider
 icon_service = IconService(HTTPProvider("https://berlin.net.solidwallet.io", 3))
 
 DECIMALS_PRECISION_EXPONENT = 5
-TRUE_BOND_PRICE_PRECISION = 10**6
+TRUE_BOND_PRICE_PRECISION = 10**18
 CURRENT_BOND_PRICE_PRECISION = 10**7
 VESTING = 0
 PAYOUT = 1
