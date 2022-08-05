@@ -80,7 +80,7 @@ public class KarmaCustomBondBalanced extends Ownable {
     private static final int DECIMALS_PRECISION_EXPONENT = 5;
     private static final BigInteger DECIMALS_PRECISION = MathUtils.pow10(DECIMALS_PRECISION_EXPONENT);
     private static final BigInteger BOND_PRICE_PRECISION = MathUtils.pow10(7);
-    private static final BigInteger TRUE_BOND_PRICE_PRECISION = MathUtils.pow10(6);
+    private static final BigInteger TRUE_BOND_PRICE_PRECISION = MathUtils.pow10(18);
     // Arbitrary payout precision
     private static final BigInteger TOTAL_PAYOUT_PRECISION = MathUtils.pow10(11);
     private static final BigInteger PAYOUT_PRECISION = MathUtils.pow10(6);
