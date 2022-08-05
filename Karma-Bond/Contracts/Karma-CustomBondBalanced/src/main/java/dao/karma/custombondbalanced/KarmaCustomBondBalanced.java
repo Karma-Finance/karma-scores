@@ -80,7 +80,7 @@ public class KarmaCustomBondBalanced extends Ownable {
     private static final int DECIMALS_PRECISION_EXPONENT = 5;
     private static final BigInteger DECIMALS_PRECISION = MathUtils.pow10(DECIMALS_PRECISION_EXPONENT);
     private static final BigInteger BOND_PRICE_PRECISION = MathUtils.pow10(7);
-    private static final BigInteger TRUE_BOND_PRICE_PRECISION = MathUtils.pow10(18);
+    private static final BigInteger TRUE_BOND_PRICE_PRECISION = MathUtils.pow10(6);
     // Arbitrary payout precision
     private static final BigInteger TOTAL_PAYOUT_PRECISION = MathUtils.pow10(11);
     private static final BigInteger PAYOUT_PRECISION = MathUtils.pow10(6);
@@ -788,13 +788,9 @@ public class KarmaCustomBondBalanced extends Ownable {
             // if bond discount is greater than max discount, increase bond price to fit the max discount
             if (bondDiscount.compareTo(maxDiscount) > 0) {
                 BigInteger payoutTokenMarketPriceUSD = payoutTokenMarketPriceUSD();
-                BigInteger newTrueBondPrice = payoutTokenMarketPriceUSD.subtract(
-                    maxDiscount.multiply(payoutTokenMarketPriceUSD)
-                    .divide(MathUtils.pow10(3))
-                ).multiply(MathUtils.pow10(7)).divide(this.lpMarketUsdPrice());
-                BigInteger newBondPrice = newTrueBondPrice.subtract(
-                    newTrueBondPrice.multiply(currentKarmaFee()).divide(TRUE_BOND_PRICE_PRECISION)
-                );
+                BigInteger newTrueBondPrice = payoutTokenMarketPriceUSD.multiply(MathUtils.pow10(3)).subtract(
+                        maxDiscount.multiply(payoutTokenMarketPriceUSD)).multiply(MathUtils.pow10(4)).divide(this.lpMarketUsdPrice());
+                BigInteger newBondPrice = newTrueBondPrice.multiply(TRUE_BOND_PRICE_PRECISION).divide(TRUE_BOND_PRICE_PRECISION.add(currentKarmaFee()));
 
                 // only apply new bond price if it is higher than the old one, this should mitigate oracle risk
                 // by defaulting to the un-capped bond price
@@ -1096,12 +1092,12 @@ public class KarmaCustomBondBalanced extends Ownable {
     public BigInteger principalPoolId () {
         return this.principalPoolId;
     }
-    
+
     @External(readonly = true)
     public Address customTreasury () {
         return this.customTreasury;
     }
-    
+
     @External(readonly = true)
     public Address subsidyRouter () {
         return this.subsidyRouter;
