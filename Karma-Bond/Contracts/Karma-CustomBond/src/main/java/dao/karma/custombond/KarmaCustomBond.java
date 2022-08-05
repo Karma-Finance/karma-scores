@@ -1038,4 +1038,24 @@ public class KarmaCustomBond extends Ownable {
     public Bond bondInfo(Address depositor) {
         return this.bondInfo.get(depositor);
     }
+    
+    @External(readonly = true)
+    public Address principalToken () {
+        return this.principalToken;
+    }
+
+    @External(readonly = true)
+    public Address payoutToken () {
+        return this.payoutToken;
+    }
+     
+    @External(readonly = true)
+    public Address customTreasury () {
+        return this.customTreasury;
+    }
+     
+    @External(readonly = true)
+    public Address subsidyRouter () {
+        return this.subsidyRouter;
+    }
 }

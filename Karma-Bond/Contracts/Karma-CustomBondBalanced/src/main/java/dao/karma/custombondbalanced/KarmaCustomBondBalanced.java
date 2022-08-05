@@ -209,7 +209,7 @@ public class KarmaCustomBondBalanced extends Ownable {
             "KarmaCustomBondBalanced: tier length and fee length not the same");
 
         // OK
-        this.name = "Karma Custom Bond";
+        this.name = "Karma Custom Bond (Balanced)";
         this.customTreasury = customTreasury;
         this.payoutToken = payoutToken;
         this.principalToken = principalToken;
@@ -1080,5 +1080,30 @@ public class KarmaCustomBondBalanced extends Ownable {
     @External(readonly = true)
     public Bond bondInfo(Address depositor) {
         return this.bondInfo.get(depositor);
+    }
+
+    @External(readonly = true)
+    public Address principalToken () {
+        return this.principalToken;
+    }
+
+    @External(readonly = true)
+    public Address payoutToken () {
+        return this.payoutToken;
+    }
+
+    @External(readonly = true)
+    public BigInteger principalPoolId () {
+        return this.principalPoolId;
+    }
+    
+    @External(readonly = true)
+    public Address customTreasury () {
+        return this.customTreasury;
+    }
+    
+    @External(readonly = true)
+    public Address subsidyRouter () {
+        return this.subsidyRouter;
     }
 }
