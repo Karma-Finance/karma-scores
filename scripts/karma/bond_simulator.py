@@ -5,7 +5,7 @@ from iconsdk.providers.http_provider import HTTPProvider
 icon_service = IconService(HTTPProvider("https://berlin.net.solidwallet.io", 3))
 
 DECIMALS_PRECISION_EXPONENT = 5
-TRUE_BOND_PRICE_PRECISION = 10**18
+TRUE_BOND_PRICE_PRECISION = 10**6
 CURRENT_BOND_PRICE_PRECISION = 10**7
 VESTING = 0
 PAYOUT = 1
@@ -218,9 +218,11 @@ class Contract:
       if bondDiscount > maxDiscount:
         payoutTokenMarketPriceUSD = self.payoutTokenMarketPriceUSD()
 
-        payoutDiscount = maxDiscount * payoutTokenMarketPriceUSD // 10**3
-        newTrueBondPrice = (payoutTokenMarketPriceUSD - payoutDiscount) * 10**7 // self.lpMarketUsdPrice()
-        newBondPrice = newTrueBondPrice - (newTrueBondPrice * self.currentKarmaFee()) // TRUE_BOND_PRICE_PRECISION
+        newTrueBondPrice = ((payoutTokenMarketPriceUSD * 10**3) \
+                         - (maxDiscount * payoutTokenMarketPriceUSD)) \
+                         * 10**4 // self.lpMarketUsdPrice()
+
+        newBondPrice = newTrueBondPrice * TRUE_BOND_PRICE_PRECISION // (TRUE_BOND_PRICE_PRECISION + self.currentKarmaFee())
 
         # only apply new bond price if it is higher than the old one, this should mitigate oracle risk
         # by defaulting to the un-capped bond price
@@ -271,5 +273,4 @@ if __name__ == '__main__':
   print(f"bondPriceUSD          = {hex(bondPriceUSD):20s} => {bondPriceUSD}")
   print(f"trueBondPrice         = {hex(trueBondPrice):20s} => {trueBondPrice}")
   print(f"debtRatio             = {hex(debtRatio):20s} => {debtRatio}")
-  print(f"currentBondDiscount   = {hex(currentBondDiscount):20s} => {currentBondDiscount}")
   print(f"currentBondDiscount % = {currentBondDiscount / 10**7 * 100:.5f}%")
