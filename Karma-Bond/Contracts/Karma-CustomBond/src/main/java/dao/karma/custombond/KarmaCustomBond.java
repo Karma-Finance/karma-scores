@@ -777,11 +777,9 @@ public class KarmaCustomBond extends Ownable {
             // if bond discount is greater than max discount, increase bond price to fit the max discount
             if (bondDiscount.compareTo(maxDiscount) > 0) {
                 BigInteger payoutTokenMarketPriceUSD = payoutTokenMarketPriceUSD();
-                BigInteger newTrueBondPrice = payoutTokenMarketPriceUSD.subtract(
-                    maxDiscount.multiply(payoutTokenMarketPriceUSD)
-                    .divide(MathUtils.pow10(3))
-                ).multiply(MathUtils.pow10(7)).divide(this.principalTokenMarketPriceUSD());
-                BigInteger newBondPrice = newTrueBondPrice.subtract(newTrueBondPrice.multiply(currentKarmaFee()).divide(TRUE_BOND_PRICE_PRECISION));
+                BigInteger newTrueBondPrice = payoutTokenMarketPriceUSD.multiply(MathUtils.pow10(3)).subtract(
+                        maxDiscount.multiply(payoutTokenMarketPriceUSD)).multiply(MathUtils.pow10(4)).divide(this.principalTokenMarketPriceUSD());
+                BigInteger newBondPrice = newTrueBondPrice.multiply(TRUE_BOND_PRICE_PRECISION).divide(TRUE_BOND_PRICE_PRECISION.add(currentKarmaFee()));
 
                 // only apply new bond price if it is higher than the old one, this should mitigate oracle risk
                 // by defaulting to the un-capped bond price
