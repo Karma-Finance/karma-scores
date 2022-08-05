@@ -286,7 +286,7 @@ public class KarmaCustomBond extends Ownable {
 
         // Initialization control
         Context.require(currentDebt().equals(ZERO), 
-            "Debt must be 0 for initialization");
+            "initializeBond: Debt must be 0 for initialization");
 
         // OK
         this.terms.set (

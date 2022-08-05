@@ -290,7 +290,7 @@ public class KarmaCustomBondBalanced extends Ownable {
 
         // Initialization control
         Context.require(currentDebt().equals(ZERO), 
-            "Debt must be 0 for initialization");
+            "initializeBond: Debt must be 0 for initialization");
 
         // OK
         this.terms.set (
@@ -775,15 +775,15 @@ public class KarmaCustomBondBalanced extends Ownable {
 
         // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-DECIMALS_PRECISION))
         BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - DECIMALS_PRECISION_EXPONENT));
+        BigInteger maxDiscount = terms.maxDiscount;
 
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
         }
         // check if max discount is greater than 0 and increase price to fit the capped discount
         // NOTE: if minimumPrice is set in the terms capped discount is not applied!
-        else if (terms.maxDiscount.compareTo(ZERO) > 0) {
+        else if (maxDiscount.compareTo(ZERO) > 0) {
             BigInteger bondDiscount = currentBondDiscount(price);
-            BigInteger maxDiscount = terms.maxDiscount;
 
             // if bond discount is greater than max discount, increase bond price to fit the max discount
             if (bondDiscount.compareTo(maxDiscount) > 0) {
@@ -792,7 +792,9 @@ public class KarmaCustomBondBalanced extends Ownable {
                     maxDiscount.multiply(payoutTokenMarketPriceUSD)
                     .divide(MathUtils.pow10(3))
                 ).multiply(MathUtils.pow10(7)).divide(this.lpMarketUsdPrice());
-                BigInteger newBondPrice = newTrueBondPrice.subtract(newTrueBondPrice.multiply(currentKarmaFee()).divide(TRUE_BOND_PRICE_PRECISION));
+                BigInteger newBondPrice = newTrueBondPrice.subtract(
+                    newTrueBondPrice.multiply(currentKarmaFee()).divide(TRUE_BOND_PRICE_PRECISION)
+                );
 
                 // only apply new bond price if it is higher than the old one, this should mitigate oracle risk
                 // by defaulting to the un-capped bond price
@@ -860,10 +862,8 @@ public class KarmaCustomBondBalanced extends Ownable {
         BigInteger baseTokenMarketPrice = IKarmaOracle.getUsdPrice(karmaOracle, IToken.symbol(baseToken));
         BigInteger quoteTokenMarketPrice = IKarmaOracle.getUsdPrice(karmaOracle, IToken.symbol(quoteToken));
 
-        BigInteger poolBaseTokenPriceUSD = this.poolTokenReservePrice(baseTokenReserveAmount, poolTotalSupply,
-                baseTokenMarketPrice);
-        BigInteger poolQuoteTokenPriceUSD = this.poolTokenReservePrice(quoteTokenReserveAmount, poolTotalSupply,
-                quoteTokenMarketPrice);
+        BigInteger poolBaseTokenPriceUSD = this.poolTokenReservePrice(baseTokenReserveAmount, poolTotalSupply, baseTokenMarketPrice);
+        BigInteger poolQuoteTokenPriceUSD = this.poolTokenReservePrice(quoteTokenReserveAmount, poolTotalSupply, quoteTokenMarketPrice);
 
         // USD price per Balanced LP token
         return poolBaseTokenPriceUSD.add(poolQuoteTokenPriceUSD);
@@ -951,7 +951,7 @@ public class KarmaCustomBondBalanced extends Ownable {
 
         var totalDebt = this.totalDebt.get();
         long blockHeight = Context.getBlockHeight();
-        BigInteger blocksSinceLast = BigInteger.valueOf(blockHeight - lastDecay.get());
+        BigInteger blocksSinceLast = BigInteger.valueOf(blockHeight - this.lastDecay.get());
         BigInteger vestingTerm = BigInteger.valueOf(terms.vestingTerm);
         // decay = totalDebt() * (blockHeight - lastDecay()) / (terms.vestingTerm)
         BigInteger decay = totalDebt.multiply(blocksSinceLast).divide(vestingTerm);
@@ -1005,11 +1005,11 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     @External(readonly = true)
     public BigInteger currentKarmaFee() {
-        int tierLength = feeTiers.size();
+        int tierLength = this.feeTiers.size();
         var totalPrincipalBonded = this.totalPrincipalBonded.get();
 
         for (int i = 0; i < tierLength; i++) {
-            var feeTier = feeTiers.get(i);
+            var feeTier = this.feeTiers.get(i);
 
             if (totalPrincipalBonded.compareTo(feeTier.tierCeilings) < 0
             || i == (tierLength - 1)
