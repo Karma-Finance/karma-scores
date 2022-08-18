@@ -52,14 +52,14 @@ class Command:
     def get_keystore_password(password, keystore, network):
         if not password:
             if not keystore:
-                target_path = f"scripts/config/keystores/{network}/operator.pwd"
-            else:
-                target_path = keystore.replace('.icx', '.pwd')
+                keystore = f"scripts/config/keystores/{network}/operator.icx"
+
+            target_path = keystore.replace('.icx', '.pwd')
 
             if exists(target_path):
                 return open(target_path, "r").read()
             else:
-                return getpass.getpass(prompt='Enter the keystore password: ')
+                return getpass.getpass(prompt=f'Enter the keystore password ({keystore}): ')
         else:
             return password
 
