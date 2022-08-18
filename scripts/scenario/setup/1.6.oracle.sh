@@ -48,6 +48,10 @@ elif [[ "$network" == "sejong" ]] ; then
   balancedDex=cx648a6d9c5f231f6b86c0caa9cc9eff8bd6040999
   bandOracle=cxed354ecd9855e52a33ba0dab4e4439f8b4cb96ba
   sIcx=cx70806fdfa274fe12ab61f1f98c5a7a1409a0c108
+elif [[ "$network" == "mainnet" ]] ; then
+  balancedDex=cxa0af3165c08318e988cb30993b3048335b94af6c
+  bandOracle=cxe647e0af68a4661566f5e9861ad4ac854de808a2
+  sIcx=cx2609b924e33ef00b648a409245c7ea394c467824
 else
   error "Unsupported network"
   exit 1
