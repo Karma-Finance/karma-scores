@@ -273,4 +273,4 @@ if __name__ == '__main__':
   print(f"bondPriceUSD          = {hex(bondPriceUSD):20s} => {bondPriceUSD}")
   print(f"trueBondPrice         = {hex(trueBondPrice):20s} => {trueBondPrice}")
   print(f"debtRatio             = {hex(debtRatio):20s} => {debtRatio}")
-  print(f"currentBondDiscount % = {currentBondDiscount / 10**7 * 100:.5f}%")
+  print(f"currentBondDiscount % = {currentBondDiscount * 100 / 10**7}%")
