@@ -1,6 +1,0 @@
-{
-  "method": "toggleBondContract",
-  "params": {
-    "bondContract": "cx292a1acd52f9360e630eaf62687c673b734ed152"
-  }
-}

@@ -44,20 +44,20 @@ public class Ownable {
   // ================================================
   // DB Variables
   // ================================================
-  private VarDB<Address> owner = Context.newVarDB(NAME + "_owner", Address.class);
-  protected VarDB<Address> newOwner = Context.newVarDB(NAME + "_newOwner", Address.class);
+  private final VarDB<Address> owner = Context.newVarDB(NAME + "_owner", Address.class);
+  protected final VarDB<Address> newOwner = Context.newVarDB(NAME + "_newOwner", Address.class);
 
   public Ownable (Address initialOwner) {
     if (this.owner.get() == null) {
-      owner.set(initialOwner);
+      this.owner.set(initialOwner);
       this.OwnershipPushed(ZERO_ADDRESS, initialOwner);
     }
   }
 
   protected void onlyPolicy () {
-    final Address caller = Context.getCaller();
+    Address caller = Context.getCaller();
 
-    Context.require(owner.get().equals(caller),
+    Context.require(this.owner.get().equals(caller),
       "onlyPolicy: caller is not the owner");
   }
 
@@ -76,19 +76,20 @@ public class Ownable {
     Context.require(!newOwner.equals(ZERO_ADDRESS),
       "Ownable: new owner is the zero address");
 
-    this.OwnershipPushed (this.owner.get(), newOwner );
+    this.OwnershipPushed(this.owner.get(), newOwner);
     this.newOwner.set(newOwner);
   }
 
   @External
   public void pullManagement() {
-    final Address caller = Context.getCaller();
-    var newOwner = this.newOwner.get();
+    Address caller = Context.getCaller();
+    Address newOwner = this.newOwner.get();
 
     Context.require(caller.equals(newOwner), 
       "Ownable: must be new owner to pull");
 
-    this.OwnershipPulled(this.owner.get(), newOwner);
+    Address oldOwner = this.owner.get();
+    this.OwnershipPulled(oldOwner, newOwner);
     this.owner.set(newOwner);
   }
 

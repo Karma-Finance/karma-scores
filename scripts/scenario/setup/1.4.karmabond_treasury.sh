@@ -7,6 +7,7 @@ source ./venv/bin/activate
 source ./scripts/util/get_address.sh
 source ./scripts/util/dir.sh
 source ./scripts/util/console.sh
+source ./scripts/util/get_wallet_address.sh
 
 source ./scripts/karma/pkg.sh
 
@@ -25,7 +26,7 @@ info "Deploying Treasury..."
 warning "Treasury isn't implemented yet, use a fixed EOA address in the meantime"
 
 # Get the Fixed EOA address
-karmaTreasury=$(cat ./config/keystores/${network}/dao_treasury.icx | jq .address -r)
+karmaTreasury=$(get_wallet_address ./scripts/config/keystores/${network}/dao_treasury.icx)
 
 # Package information
 pkg=$(getKarmaTreasuryPkg)

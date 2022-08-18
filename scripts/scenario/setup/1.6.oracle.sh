@@ -8,6 +8,7 @@ source ./scripts/util/get_address.sh
 source ./scripts/util/dir.sh
 source ./scripts/util/console.sh
 source ./scripts/util/env.sh
+source ./scripts/util/get_wallet_address.sh
 
 source ./scripts/karma/pkg.sh
 
@@ -20,7 +21,7 @@ fi
 network=$1
 
 # Start
-info "Deploying Oracle on ${network}..."
+info "Deploying Oracle..."
 
 # Package information
 pkg=$(getKarmaOraclePkg)
@@ -35,10 +36,8 @@ deployDir=$(getDeployDir ${pkg} ${network})
 callsDir=$(getCallsDir ${pkg} ${network})
 
 # Deploy on ICON network
-karmaDAOWallet="./config/keystores/${network}/dao.icx"
-karmaDAO=$(cat ${karmaDAOWallet} | jq .address -r)
-
-initialOwner=${karmaDAO}
+ownerWallet="./scripts/config/keystores/${network}/owner.icx"
+initialOwner=$(get_wallet_address ${ownerWallet})
 
 if [[ "$network" == "berlin" ]] ; then
   balancedDex=cx4d3b86709c387dec2927158c0377ecabe002f503
@@ -76,7 +75,7 @@ jq -n \
 
 ./run.py -e ${network} deploy ${pkg}
 
-
+# Special case for Berlin OMM
 if [[ "$network" == "berlin" ]] ; then
   actionName=setOmmPoolName
   ommPoolName="OMM2"
@@ -94,5 +93,5 @@ EOF
     --arg ommPoolName $ommPoolName \
     "${filter}" > ${callsDir}/${actionName}.json
 
-  ./run.py -k ${karmaDAOWallet} -e ${network} invoke ${pkg} ${actionName}
+  ./run.py -k ${ownerWallet} -e ${network} invoke ${pkg} ${actionName}
 fi

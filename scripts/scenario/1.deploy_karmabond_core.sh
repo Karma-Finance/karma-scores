@@ -21,20 +21,23 @@ network=$1
 info "Cleaning..."
 ./gradlew clean > /dev/null
 
+# --- Perform checks ---
+${setupScriptsDir}/1.0.check_requirements.sh ${network}
+
 # --- Deploy Factory Storage ---
 ${setupScriptsDir}/1.1.karmabond_factorystorage.sh ${network}
 
 # --- Deploy Subsidy Router ---
 ${setupScriptsDir}/1.2.karmabond_subsidyrouter.sh ${network}
 
-# --- Deploy Factory ---
-${setupScriptsDir}/1.3.karmabond_factory.sh ${network}
+# --- Deploy DAO ---
+${setupScriptsDir}/1.3.karmabond_dao.sh ${network}
 
 # --- Deploy Treasury ---
 ${setupScriptsDir}/1.4.karmabond_treasury.sh ${network}
 
-# --- Deploy DAO ---
-${setupScriptsDir}/1.5.karmabond_dao.sh ${network}
+# --- Deploy Factory ---
+${setupScriptsDir}/1.5.karmabond_factory.sh ${network}
 
 # --- Deploy Oracle ---
 ${setupScriptsDir}/1.6.oracle.sh ${network}

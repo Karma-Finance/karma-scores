@@ -47,7 +47,7 @@ public class KarmaFactoryClient {
     BigInteger[] tierCeilings, 
     BigInteger[] fees
   ) {
-    client.invoke (from, "createBond", payoutToken, principalToken, customTreasury, initialOwner, tierCeilings, fees);
+    client.invoke(from, "createBond", payoutToken, principalToken, customTreasury, initialOwner, tierCeilings, fees);
   }
 
   public static void setCustomTreasuryContractBytes(Score client, Account from, byte[] content) {

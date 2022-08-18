@@ -238,7 +238,7 @@ if __name__ == '__main__':
 			"0x8214",
 			"0x8214"
 		],
-		initialOwner = "hxb6b5791be0b5ef67063b3c10b840fb81514db2fd",
+		initialOwner = "hxb47252510c20acfcc62f9adee212135b06711efc",
 		karmaDAO = "hxa05b1a31d6ec95a5b22a296405ea9ac5e9fe726e",
 		karmaOracle = "cx373129fb68b4444d4080aad7edb6bee4b2c488b7",
 		karmaTreasury = "hxdca38f5010b3cb56032ff0778d6051c5bfb27430",

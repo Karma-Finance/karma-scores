@@ -2,49 +2,49 @@
 
 set -e
 
-CONFIG_DIR=./config
+CONFIG_DIR=./scripts/config
 DEPLOY_DIR=${CONFIG_DIR}/deploy
 CALLS_DIR=${CONFIG_DIR}/calls
 
 getDeployDir () {
-  pkg=$1
-  network=$2
-  deployDir=${DEPLOY_DIR}/${pkg}/${network}
+  local pkg=$1
+  local network=$2
+  local deployDir=${DEPLOY_DIR}/${pkg}/${network}
   echo ${deployDir}
 }
 
 setupDeployDir () {
-  pkg=$1
-  network=$2
-  deployDir=$(getDeployDir ${pkg} ${network})
+  local pkg=$1
+  local network=$2
+  local deployDir=$(getDeployDir ${pkg} ${network})
   mkdir -p ${deployDir}
 }
 
 getCallsDir () {
-  pkg=$1
-  network=$2
-  callsDir=${CALLS_DIR}/${pkg}/${network}
+  local pkg=$1
+  local network=$2
+  local callsDir=${CALLS_DIR}/${pkg}/${network}
   echo ${callsDir}
 }
 
 setupCallsDir () {
-  pkg=$1
-  network=$2
-  callsDir=$(getCallsDir ${pkg} ${network})
+  local pkg=$1
+  local network=$2
+  local callsDir=$(getCallsDir ${pkg} ${network})
   mkdir -p ${callsDir}
 }
 
 getJavaDir () {
-  javaPkg=$1
-  build=$2
-  javaDir=${DEPLOY_DIR}/${pkg}
+  local javaPkg=$1
+  local build=$2
+  local javaDir=${DEPLOY_DIR}/${pkg}
   echo ${javaDir}
 }
 
 setupJavaDir () {
-  javaPkg=$1
-  build=$2
-  javaDir=$(getJavaDir ${javaPkg} ${build})
+  local javaPkg=$1
+  local build=$2
+  local javaDir=$(getJavaDir ${javaPkg} ${build})
   mkdir -p ${javaDir}
 
   jq -n \

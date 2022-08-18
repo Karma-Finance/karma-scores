@@ -7,6 +7,7 @@ source ./venv/bin/activate
 source ./scripts/util/get_address.sh
 source ./scripts/util/dir.sh
 source ./scripts/util/console.sh
+source ./scripts/util/get_wallet_address.sh
 
 source ./scripts/karma/pkg.sh
 
@@ -23,9 +24,7 @@ info "Deploying DAO..."
 
 # Warn about the DAO not being implemented yet
 warning "DAO isn't implemented yet, use a fixed EOA address in the meantime"
-
-# Get the Fixed EOA address
-karmaDAO=$(cat ./config/keystores/${network}/dao.icx | jq .address -r)
+karmaDAO=$(get_wallet_address ./scripts/config/keystores/${network}/dao.icx)
 
 # Package information
 pkg=$(getKarmaDAOPkg)

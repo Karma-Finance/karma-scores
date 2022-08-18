@@ -22,10 +22,10 @@ network=$1
 info "Deploying Factory..."
 
 # Get dependencies
-karmaTreasury=$(cat ./config/keystores/${network}/dao_treasury.icx | jq .address -r)
+karmaTreasury=$(getAddress $(getKarmaTreasuryPkg) ${network})
+karmaDAO=$(getAddress $(getKarmaDAOPkg) ${network})
 karmaFactoryStorage=$(getAddress "karmabond/factorystorage" ${network})
 karmaSubsidyRouter=$(getAddress "karmabond/subsidyrouter" ${network})
-karmaDAO=$(cat ./config/keystores/${network}/dao.icx | jq .address -r)
 
 # Package information
 pkg=$(getFactoryPkg)

@@ -26,7 +26,7 @@ config = {
 
       # Type: Address
       # Initial owner of the custom bond
-      "initialOwner": "hxb6b5791be0b5ef67063b3c10b840fb81514db2fd",
+      "initialOwner": "hxb47252510c20acfcc62f9adee212135b06711efc",
 
       # Type: Integer
       # Vesting term value (in seconds)
@@ -59,7 +59,7 @@ config = {
     "default": {
       # Type: Address
       # Initial owner of the custom treasury
-      "initialOwner": "hxb6b5791be0b5ef67063b3c10b840fb81514db2fd",
+      "initialOwner": "hxb47252510c20acfcc62f9adee212135b06711efc",
       
       # Type: String (hexstring)
       # Initial funding of the custom treasury payout token, sent from the operator address

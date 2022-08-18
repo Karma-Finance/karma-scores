@@ -31,6 +31,9 @@ payoutToken=$(echo ${bondConfig} | jq -r .bond.default.payoutToken)
 initialOwner=$(echo ${bondConfig} | jq -r .treasury.default.initialOwner)
 implementationType=$(echo ${bondConfig} | jq -r .implementation)
 
+# Get wallets paths
+funderWallet="./scripts/config/keystores/${network}/funder.icx"
+
 # Package information
 pkg=$(getCustomTreasuryPkg ${bondId})
 if [ "$implementationType" = "Base" ]; then
@@ -115,7 +118,7 @@ EOF
         --arg value $value \
         "${filter}" > ${callsDir}/${actionName}.json
 
-      ./run.py -e ${network} invoke ${pkg} ${actionName}
+      ./run.py -k ${funderWallet} -e ${network} invoke ${pkg} ${actionName}
     ;;
 
     # Payout = IRC2 token
@@ -145,7 +148,7 @@ EOF
         --arg _data $_data \
         "${filter}" > ${payoutCallsDir}/${actionName}.json
 
-      ./run.py -e ${network} invoke ${payoutPkg} ${actionName}
+      ./run.py -k ${funderWallet} -e ${network} invoke ${payoutPkg} ${actionName}
     ;;
   esac
 fi
