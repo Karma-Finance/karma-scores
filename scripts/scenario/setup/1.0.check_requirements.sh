@@ -23,10 +23,11 @@ network=$1
 info "Checking requirements..."
 
 # Check if wallets are set
+info "Checking if Operator wallet exists..."
 operator=$(get_wallet_address ./scripts/config/keystores/${network}/operator.icx)
+info "Checking if Karma Treasury wallet exists..."
 karmaTreasury=$(get_wallet_address ./scripts/config/keystores/${network}/dao_treasury.icx)
+info "Checking if Karma DAO wallet exists..."
 karmaDAO=$(get_wallet_address ./scripts/config/keystores/${network}/dao.icx)
-funder=$(get_wallet_address ./scripts/config/keystores/${network}/funder.icx)
-owner=$(get_wallet_address ./scripts/config/keystores/${network}/owner.icx)
 
 success "All requirements are OK"

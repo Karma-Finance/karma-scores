@@ -36,8 +36,8 @@ deployDir=$(getDeployDir ${pkg} ${network})
 callsDir=$(getCallsDir ${pkg} ${network})
 
 # Deploy on ICON network
-ownerWallet="./scripts/config/keystores/${network}/owner.icx"
-initialOwner=$(get_wallet_address ${ownerWallet})
+policyOwnerWallet="./scripts/config/keystores/${network}/dao.icx"
+initialOwner=$(get_wallet_address ${policyOwnerWallet})
 
 if [[ "$network" == "berlin" ]] ; then
   balancedDex=cx4d3b86709c387dec2927158c0377ecabe002f503
@@ -93,5 +93,5 @@ EOF
     --arg ommPoolName $ommPoolName \
     "${filter}" > ${callsDir}/${actionName}.json
 
-  ./run.py -k ${ownerWallet} -e ${network} invoke ${pkg} ${actionName}
+  ./run.py -k ${policyOwnerWallet} -e ${network} invoke ${pkg} ${actionName}
 fi

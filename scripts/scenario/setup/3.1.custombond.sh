@@ -36,7 +36,7 @@ tierCeilings=$(echo ${bondConfig} | jq -r .bond.default.tierCeilings)
 implementationType=$(echo ${bondConfig} | jq -r .implementation)
 
 # Get the policy owner wallet
-ownerWallet="./scripts/config/keystores/${network}/owner.icx"
+policyOwnerWallet="./scripts/config/keystores/${network}/dao.icx"
 
 # Get dependencies
 customTreasuryPkg=$(getCustomTreasuryPkg ${bondId})
@@ -157,7 +157,7 @@ jq -n \
   --arg input $vestingTerm \
   "${filter}" > ${bondCallsDir}/${actionName}.json
 
-./run.py -e ${network} -k ${ownerWallet} invoke ${pkg} ${actionName}
+./run.py -e ${network} -k ${policyOwnerWallet} invoke ${pkg} ${actionName}
 
 # Initialize the bond
 controlVariable=$(echo ${bondConfig} | jq -r .bond.default.initialize.controlVariable)
@@ -194,7 +194,7 @@ jq -n \
   --arg maxDiscount $maxDiscount \
   "${filter}" > ${bondCallsDir}/${actionName}.json
 
-./run.py -e ${network} -k ${ownerWallet} invoke ${pkg} ${actionName}
+./run.py -e ${network} -k ${policyOwnerWallet} invoke ${pkg} ${actionName}
 
 # Call toggleBondContract on the custom treasury for the current bond address
 bondContract=$(getAddress ${pkg} ${network})
@@ -215,4 +215,4 @@ jq -n \
   --arg bondContract $bondContract \
   "${filter}" > ${treasuryCallsDir}/${actionName}.json
 
-./run.py -e ${network} -k ${ownerWallet} invoke ${customTreasuryPkg} ${actionName}
+./run.py -e ${network} -k ${policyOwnerWallet} invoke ${customTreasuryPkg} ${actionName}

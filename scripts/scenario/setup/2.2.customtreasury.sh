@@ -32,7 +32,7 @@ initialOwner=$(echo ${bondConfig} | jq -r .treasury.default.initialOwner)
 implementationType=$(echo ${bondConfig} | jq -r .implementation)
 
 # Get wallets paths
-funderWallet="./scripts/config/keystores/${network}/funder.icx"
+funderWallet="./scripts/config/keystores/${network}/operator.icx"
 
 # Package information
 pkg=$(getCustomTreasuryPkg ${bondId})
