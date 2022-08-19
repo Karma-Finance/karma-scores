@@ -858,11 +858,14 @@ public class KarmaCustomBondBalanced extends Ownable {
         BigInteger baseTokenMarketPrice = IKarmaOracle.getUsdPrice(karmaOracle, IToken.symbol(baseToken));
         BigInteger quoteTokenMarketPrice = IKarmaOracle.getUsdPrice(karmaOracle, IToken.symbol(quoteToken));
 
-        BigInteger poolBaseTokenPriceUSD = this.poolTokenReservePrice(baseTokenReserveAmount, poolTotalSupply, baseTokenMarketPrice);
-        BigInteger poolQuoteTokenPriceUSD = this.poolTokenReservePrice(quoteTokenReserveAmount, poolTotalSupply, quoteTokenMarketPrice);
+        // extend reserve amount bases for 1e5 in order to keep 5 decimal precision
+        // reason: ( base or quote reserve amount / poolTotalSupply) was resulting in < 1 which defaulted to 0
+        BigInteger poolBaseTokenPriceUSD = this.poolTokenReservePrice(baseTokenReserveAmount.multiply(MathUtils.pow10(5)), poolTotalSupply, baseTokenMarketPrice);
+        BigInteger poolQuoteTokenPriceUSD = this.poolTokenReservePrice(quoteTokenReserveAmount.multiply(MathUtils.pow10(5)), poolTotalSupply, quoteTokenMarketPrice);
 
         // USD price per Balanced LP token
-        return poolBaseTokenPriceUSD.add(poolQuoteTokenPriceUSD);
+        // divide by 1e5 in order to return the precision to 1e18
+        return poolBaseTokenPriceUSD.divide(MathUtils.pow10(5)).add(poolQuoteTokenPriceUSD.divide(MathUtils.pow10(5)));
     }
 
 
