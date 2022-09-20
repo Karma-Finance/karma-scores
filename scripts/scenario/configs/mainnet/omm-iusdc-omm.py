@@ -46,7 +46,7 @@ config = {
             ],
 
             "initialize": {
-                "controlVariable": hex(40777),
+                "controlVariable": hex(40000),
                 "minimumPrice": hex(0),
                 "maxPayout": hex(9),
                 "maxDebt": hex(650_000 * 10**18),
