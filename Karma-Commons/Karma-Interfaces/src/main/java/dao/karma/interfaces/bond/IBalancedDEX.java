@@ -16,8 +16,16 @@ public class IBalancedDEX {
     return (BigInteger) Context.call(address, "getPriceByName", name);
   }
 
+  public static BigInteger getPrice (Address address, BigInteger _id) {
+    return (BigInteger) Context.call(address, "getPrice", _id);
+  }
+
   public static BigInteger lookupPid (Address address, String name) {
     return (BigInteger) Context.call(address, "lookupPid", name);
+  }
+
+  public static BigInteger getPoolId (Address address, Address token1, Address token2) {
+    return (BigInteger) Context.call(address, "getPoolId", token1, token2);
   }
 
   @SuppressWarnings("unchecked")
