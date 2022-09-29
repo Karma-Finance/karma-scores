@@ -51,7 +51,7 @@ public class KarmaOracle extends Ownable {
     public final Address ICX = Address.fromString("cx1111111111111111111111111111111111111111");
     public final Address USDS;
     public final Address USDB;
-    public final Address bnUSD;
+    public final Address BNUSD;
     public final Address IUSDC;
     public final Address IUSDT;
     public final Address BALN;
@@ -91,7 +91,7 @@ public class KarmaOracle extends Ownable {
         // Token Addresses
         Address USDS,
         Address USDB,
-        Address bnUSD,
+        Address BNUSD,
         Address IUSDC,
         Address IUSDT,
         Address BALN,
@@ -107,7 +107,7 @@ public class KarmaOracle extends Ownable {
         // Tokens
         this.USDS = USDS;
         this.USDB = USDB;
-        this.bnUSD = bnUSD;
+        this.BNUSD = BNUSD;
         this.IUSDC = IUSDC;
         this.IUSDT = IUSDT;
         this.BALN = BALN;
@@ -133,7 +133,7 @@ public class KarmaOracle extends Ownable {
         if (this.stablecoins.length() == 0) {
             if (USDS != ZERO_ADDRESS)  this.stablecoins.add(USDS);
             if (USDB != ZERO_ADDRESS)  this.stablecoins.add(USDB);
-            if (bnUSD != ZERO_ADDRESS) this.stablecoins.add(bnUSD);
+            if (BNUSD != ZERO_ADDRESS) this.stablecoins.add(BNUSD);
             if (IUSDC != ZERO_ADDRESS) this.stablecoins.add(IUSDC);
             if (IUSDT != ZERO_ADDRESS) this.stablecoins.add(IUSDT);
         }
