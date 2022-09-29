@@ -131,11 +131,11 @@ public class KarmaOracle extends Ownable {
         }
 
         if (this.stablecoins.length() == 0) {
-            if (USDS != ZERO_ADDRESS)  this.stablecoins.add(USDS);
-            if (USDB != ZERO_ADDRESS)  this.stablecoins.add(USDB);
-            if (BNUSD != ZERO_ADDRESS) this.stablecoins.add(BNUSD);
-            if (IUSDC != ZERO_ADDRESS) this.stablecoins.add(IUSDC);
-            if (IUSDT != ZERO_ADDRESS) this.stablecoins.add(IUSDT);
+            if (!USDS.equals(ZERO_ADDRESS))  this.stablecoins.add(USDS);
+            if (!USDB.equals(ZERO_ADDRESS))  this.stablecoins.add(USDB);
+            if (!BNUSD.equals(ZERO_ADDRESS)) this.stablecoins.add(BNUSD);
+            if (!IUSDC.equals(ZERO_ADDRESS)) this.stablecoins.add(IUSDC);
+            if (!IUSDT.equals(ZERO_ADDRESS)) this.stablecoins.add(IUSDT);
         }
     }
 
