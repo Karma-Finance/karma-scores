@@ -825,7 +825,7 @@ public class KarmaCustomBondBalanced extends Ownable {
      */
     @External(readonly = true)
     public BigInteger payoutTokenMarketPriceUSD() {
-        return IKarmaOracle.getUsdPrice(this.karmaOracle.get(), IToken.symbol(this.payoutToken));
+        return IKarmaOracle.getUsdPrice(this.karmaOracle.get(), this.payoutToken);
     }
 
     /**
@@ -855,8 +855,8 @@ public class KarmaCustomBondBalanced extends Ownable {
         Address quoteToken = (Address) poolStats.get("quote_token");
 
         Address karmaOracle = this.karmaOracle.get();
-        BigInteger baseTokenMarketPrice = IKarmaOracle.getUsdPrice(karmaOracle, IToken.symbol(baseToken));
-        BigInteger quoteTokenMarketPrice = IKarmaOracle.getUsdPrice(karmaOracle, IToken.symbol(quoteToken));
+        BigInteger baseTokenMarketPrice = IKarmaOracle.getUsdPrice(karmaOracle, baseToken);
+        BigInteger quoteTokenMarketPrice = IKarmaOracle.getUsdPrice(karmaOracle, quoteToken);
 
         // extend reserve amount bases for 1e5 in order to keep 5 decimal precision
         // reason: ( base or quote reserve amount / poolTotalSupply) was resulting in < 1 which defaulted to 0

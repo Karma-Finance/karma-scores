@@ -814,7 +814,7 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger payoutTokenMarketPriceUSD() {
-        return IKarmaOracle.getUsdPrice(this.karmaOracle.get(), IToken.symbol(this.payoutToken));
+        return IKarmaOracle.getUsdPrice(this.karmaOracle.get(), this.payoutToken);
     }
 
     /**
@@ -822,7 +822,7 @@ public class KarmaCustomBond extends Ownable {
      */
     @External(readonly = true)
     public BigInteger principalTokenMarketPriceUSD() {
-        return IKarmaOracle.getUsdPrice(this.karmaOracle.get(), IToken.symbol(this.principalToken));
+        return IKarmaOracle.getUsdPrice(this.karmaOracle.get(), this.principalToken);
     }
 
     /**
