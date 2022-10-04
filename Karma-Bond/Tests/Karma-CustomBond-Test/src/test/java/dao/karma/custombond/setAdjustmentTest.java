@@ -18,6 +18,7 @@ public class setAdjustmentTest extends KarmaCustomBondTest {
   // Fake contracts
   Address customTreasury = sm.createAccount().getAddress();
   Address karmaTreasury = sm.createAccount().getAddress();
+  Address karmaOracle = sm.createAccount().getAddress();
   Address subsidyRouter = sm.createAccount().getAddress();
   Address karmaDAO = sm.createAccount().getAddress();
   Address payoutToken = sm.createAccount().getAddress();
@@ -51,6 +52,7 @@ public class setAdjustmentTest extends KarmaCustomBondTest {
       payoutToken,
       principalToken,
       karmaTreasury,
+      karmaOracle,
       subsidyRouter,
       initialOwner,
       karmaDAO,
@@ -66,6 +68,7 @@ public class setAdjustmentTest extends KarmaCustomBondTest {
     BigInteger maxPayout = BigInteger.valueOf(500);
     BigInteger maxDebt = new BigInteger("5000000000");
     BigInteger initialDebt = new BigInteger("1560000000");
+    BigInteger maxDiscount = new BigInteger("100"); // in thousands 100 = 10%
 
     KarmaCustomBondClient.setBondTerms (
       bond.score,
@@ -82,7 +85,8 @@ public class setAdjustmentTest extends KarmaCustomBondTest {
       minimumPrice,
       maxPayout,
       maxDebt,
-      initialDebt
+      initialDebt,
+      maxDiscount
     );
   }
 

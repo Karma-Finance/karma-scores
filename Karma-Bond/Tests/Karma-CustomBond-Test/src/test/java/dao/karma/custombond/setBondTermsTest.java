@@ -15,6 +15,7 @@ public class setBondTermsTest extends KarmaCustomBondTest {
   // Fake contracts
   final Address customTreasury = sm.createAccount().getAddress();
   final Address karmaTreasury = sm.createAccount().getAddress();
+  final Address karmaOracle = sm.createAccount().getAddress();
   final Address subsidyRouter = sm.createAccount().getAddress();
   final Address karmaDAO = sm.createAccount().getAddress();
   final Address payoutToken = sm.createAccount().getAddress();
@@ -47,6 +48,7 @@ public class setBondTermsTest extends KarmaCustomBondTest {
       payoutToken,
       principalToken,
       karmaTreasury,
+      karmaOracle,
       subsidyRouter,
       initialOwner,
       karmaDAO,

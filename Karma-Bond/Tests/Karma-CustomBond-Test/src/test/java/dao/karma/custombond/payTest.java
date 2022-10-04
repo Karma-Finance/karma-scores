@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dao.karma.clients.KarmaCustomBondClient;
+import dao.karma.custombond.mocks.KarmaOracleMock;
 import dao.karma.custombond.tokens.PayoutToken;
 import dao.karma.custombond.tokens.PrincipalToken;
 import dao.karma.customtreasury.KarmaCustomTreasury;
@@ -33,6 +34,7 @@ public class payTest extends KarmaCustomBondTest {
   };
 
   ScoreSpy<PrincipalToken> principalToken;
+  ScoreSpy<KarmaOracleMock> karmaOracle;
   ScoreSpy<PayoutToken> payoutToken;
   ScoreSpy<KarmaCustomTreasury> customTreasury;
 
@@ -42,12 +44,14 @@ public class payTest extends KarmaCustomBondTest {
     principalToken = deploy(PrincipalToken.class);
     payoutToken = deploy(PayoutToken.class);
     customTreasury = deploy(KarmaCustomTreasury.class, payoutToken.getAddress(), initialOwner);
+    karmaOracle = deploy(KarmaOracleMock.class);
 
     setup_bond(
       customTreasury.getAddress(),
       payoutToken.getAddress(),
       principalToken.getAddress(),
       karmaTreasury,
+      karmaOracle.getAddress(),
       subsidyRouter,
       initialOwner,
       karmaDAO,

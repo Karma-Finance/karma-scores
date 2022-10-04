@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import dao.karma.clients.IRC2Client;
 import dao.karma.clients.KarmaCustomBondClient;
 import dao.karma.clients.KarmaCustomTreasuryClient;
+import dao.karma.custombond.mocks.KarmaOracleMock;
 import dao.karma.custombond.mocks.KarmaTreasuryMock;
 import dao.karma.custombond.tokens.PrincipalToken;
 import dao.karma.customtreasury.KarmaCustomTreasury;
@@ -40,6 +41,7 @@ public class depositIcxTest extends KarmaCustomBondTest {
 
   ScoreSpy<PrincipalToken> principalToken;
   ScoreSpy<KarmaTreasuryMock> karmaTreasury;
+  ScoreSpy<KarmaOracleMock> karmaOracle;
   Address payoutToken = dao.karma.utils.ICX.TOKEN_ADDRESS;
   ScoreSpy<KarmaCustomTreasury> customTreasury;
 
@@ -49,12 +51,14 @@ public class depositIcxTest extends KarmaCustomBondTest {
     principalToken = deploy(PrincipalToken.class);
     customTreasury = deploy(KarmaCustomTreasury.class, payoutToken, initialOwner);
     karmaTreasury = deploy(KarmaTreasuryMock.class);
+    karmaOracle = deploy(KarmaOracleMock.class);
 
     setup_bond(
       customTreasury.getAddress(),
       payoutToken,
       principalToken.getAddress(),
       karmaTreasury.getAddress(),
+      karmaOracle.getAddress(),
       subsidyRouter,
       initialOwner,
       karmaDAO,
@@ -81,6 +85,7 @@ public class depositIcxTest extends KarmaCustomBondTest {
     BigInteger maxPayout = EXA.multiply(BigInteger.valueOf(5_000));
     BigInteger maxDebt = EXA.multiply(BigInteger.valueOf(2_000));
     BigInteger initialDebt = new BigInteger("15600");
+    BigInteger maxDiscount = new BigInteger("100"); // in thousands 100 = 10%
 
     KarmaCustomBondClient.setBondTerms(bond.score, owner, KarmaCustomBond.VESTING, BigInteger.valueOf(vestingTerm));
     KarmaCustomBondClient.initializeBond (
@@ -91,7 +96,8 @@ public class depositIcxTest extends KarmaCustomBondTest {
       minimumPrice,
       maxPayout,
       maxDebt,
-      initialDebt
+      initialDebt,
+      maxDiscount
     );
 
     // Enable the bond contract in the custom treasury
@@ -127,6 +133,6 @@ public class depositIcxTest extends KarmaCustomBondTest {
 
     assertEquals(alicePrincipalBefore.subtract(amount), alicePrincipalAfter);
     assertEquals(new BigInteger("0"), bondPayoutBefore);
-    assertEquals(new BigInteger("1239358974358974358974359"), bondPayoutAfter);
+    assertEquals(new BigInteger("1933400000000000000000000"), bondPayoutAfter);
   }
 }

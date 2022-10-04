@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import dao.karma.clients.IRC2Client;
 import dao.karma.clients.KarmaCustomBondClient;
 import dao.karma.clients.KarmaCustomTreasuryClient;
+import dao.karma.custombond.mocks.KarmaOracleMock;
 import dao.karma.custombond.tokens.PayoutToken;
 import dao.karma.custombond.tokens.PrincipalToken;
 import dao.karma.customtreasury.KarmaCustomTreasury;
@@ -41,6 +42,7 @@ public class redeemTest extends KarmaCustomBondTest {
   };
 
   ScoreSpy<PrincipalToken> principalToken;
+  ScoreSpy<KarmaOracleMock> karmaOracle;
   ScoreSpy<PayoutToken> payoutToken;
   ScoreSpy<KarmaCustomTreasury> customTreasury;
 
@@ -50,12 +52,14 @@ public class redeemTest extends KarmaCustomBondTest {
     principalToken = deploy(PrincipalToken.class);
     payoutToken = deploy(PayoutToken.class);
     customTreasury = deploy(KarmaCustomTreasury.class, payoutToken.getAddress(), initialOwner);
+    karmaOracle = deploy(KarmaOracleMock.class);
 
     setup_bond(
       customTreasury.getAddress(),
       payoutToken.getAddress(),
       principalToken.getAddress(),
       karmaTreasury,
+      karmaOracle.getAddress(),
       subsidyRouter,
       initialOwner,
       karmaDAO,
@@ -82,6 +86,7 @@ public class redeemTest extends KarmaCustomBondTest {
     BigInteger maxPayout = BigInteger.valueOf(500);
     BigInteger maxDebt = EXA.multiply(BigInteger.valueOf(5000));
     BigInteger initialDebt = new BigInteger("1560000000");
+    BigInteger maxDiscount = new BigInteger("100"); // in thousands 100 = 10%
 
     KarmaCustomBondClient.setBondTerms(bond.score, owner, KarmaCustomBond.VESTING, BigInteger.valueOf(302400));
     KarmaCustomBondClient.initializeBond (
@@ -92,7 +97,8 @@ public class redeemTest extends KarmaCustomBondTest {
       minimumPrice,
       maxPayout,
       maxDebt,
-      initialDebt
+      initialDebt,
+      maxDiscount
     );
 
     // Enable the bond contract in the custom treasury

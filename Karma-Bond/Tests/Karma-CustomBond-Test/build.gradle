@@ -8,8 +8,8 @@ java {
 dependencies {
     compileOnly 'foundation.icon:javaee-api:0.9.0'
     testImplementation 'org.mockito:mockito-inline:3.11.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
     testImplementation 'com.github.sink772:minimal-json:0.9.6'
     testImplementation project(':Karma-Commons:ICON:unittest')
@@ -22,6 +22,7 @@ dependencies {
     implementation project(':Karma-Commons:Karma-Clients')
     implementation project(':Karma-Bond:Contracts:Karma-CustomBond')
     implementation project(':Karma-Bond:Contracts:Karma-CustomTreasury')
+    implementation project(':Karma-Bond:Contracts:Karma-Oracle')
 }
 
 test {

@@ -15,6 +15,7 @@ public class initializeBondTest extends KarmaCustomBondTest {
   // Fake contracts
   final Address customTreasury = sm.createAccount().getAddress();
   final Address karmaTreasury = sm.createAccount().getAddress();
+  final Address karmaOracle = sm.createAccount().getAddress();
   final Address subsidyRouter = sm.createAccount().getAddress();
   final Address karmaDAO = sm.createAccount().getAddress();
   final Address payoutToken = sm.createAccount().getAddress();
@@ -47,6 +48,7 @@ public class initializeBondTest extends KarmaCustomBondTest {
       payoutToken,
       principalToken,
       karmaTreasury,
+      karmaOracle,
       subsidyRouter,
       initialOwner,
       karmaDAO,
@@ -63,6 +65,7 @@ public class initializeBondTest extends KarmaCustomBondTest {
     BigInteger maxPayout = BigInteger.valueOf(500);
     BigInteger maxDebt = new BigInteger("5000000000");
     BigInteger initialDebt = new BigInteger("1560000000");
+    BigInteger maxDiscount = new BigInteger("100"); // in thousands 100 = 10%
 
     // Set bond terms must be called beforehand
     KarmaCustomBondClient.setBondTerms (
@@ -80,7 +83,8 @@ public class initializeBondTest extends KarmaCustomBondTest {
       minimumPrice,
       maxPayout,
       maxDebt,
-      initialDebt
+      initialDebt,
+      maxDiscount
     );
   }
 
@@ -92,6 +96,7 @@ public class initializeBondTest extends KarmaCustomBondTest {
     BigInteger maxPayout = BigInteger.valueOf(500);
     BigInteger maxDebt = new BigInteger("5000000000");
     BigInteger initialDebt = new BigInteger("1560000000");
+    BigInteger maxDiscount = new BigInteger("100"); // in thousands 100 = 10%
 
     AssertUtils.assertThrowsMessage(() ->
       KarmaCustomBondClient.initializeBond (
@@ -102,7 +107,8 @@ public class initializeBondTest extends KarmaCustomBondTest {
         minimumPrice,
         maxPayout,
         maxDebt,
-        initialDebt
+        initialDebt,
+        maxDiscount
       ),
       "debtDecay: The vesting term must be initialized first");
   }
