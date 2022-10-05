@@ -22,7 +22,7 @@ import score.Context;
 
 public class IKarmaOracle {
   
-  public static BigInteger getUsdPrice (Address oracle, String base) {
+  public static BigInteger getUsdPrice (Address oracle, Address base) {
     return (BigInteger) Context.call (oracle, "getUsdPrice", base);
   }
 

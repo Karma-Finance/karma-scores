@@ -38,9 +38,10 @@ public class KarmaCustomBondClient {
     BigInteger minimumPrice,
     BigInteger maxPayout,
     BigInteger maxDebt,
-    BigInteger initialDebt
+    BigInteger initialDebt,
+    BigInteger maxDiscount
   ) {
-    client.invoke(from, "initializeBond", controlVariable, vestingTerm, minimumPrice, maxPayout, maxDebt, initialDebt);
+    client.invoke(from, "initializeBond", controlVariable, vestingTerm, minimumPrice, maxPayout, maxDebt, initialDebt, maxDiscount);
   }
 
   public static void setBondTerms (
