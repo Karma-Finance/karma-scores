@@ -18,6 +18,7 @@ public class changeKarmaTreasuryTest extends KarmaCustomBondTest {
   final Account karmaDAOAccount = sm.createAccount();
   final Address customTreasury = sm.createAccount().getAddress();
   final Address karmaTreasury = sm.createAccount().getAddress();
+  final Address karmaOracle = sm.createAccount().getAddress();
   final Address subsidyRouter = sm.createAccount().getAddress();
   final Address karmaDAO = karmaDAOAccount.getAddress();
   final Address payoutToken = sm.createAccount().getAddress();
@@ -51,6 +52,7 @@ public class changeKarmaTreasuryTest extends KarmaCustomBondTest {
       payoutToken,
       principalToken,
       karmaTreasury,
+      karmaOracle,
       subsidyRouter,
       initialOwner,
       karmaDAO,
