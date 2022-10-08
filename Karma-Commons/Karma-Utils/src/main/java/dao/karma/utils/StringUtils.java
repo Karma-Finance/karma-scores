@@ -40,6 +40,10 @@ public class StringUtils {
         Context.require(hexstring.length() % 2 == 0,
             "hexToByteArray: invalid hexstring length");
 
+        if (hexstring.startsWith("0x")) {
+            hexstring = hexstring.substring(2);
+        }
+    
         int len = hexstring.length();
         byte[] data = new byte[len / 2];
 
