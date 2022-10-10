@@ -46,11 +46,11 @@ config = {
       ],
 
       "initialize": {
-        "controlVariable": hex(180),
+        "controlVariable": hex(1800),
         "minimumPrice": hex(0),
         "maxPayout": hex(100),
         "maxDebt": hex(100_000 * 10**18),
-        "initialDebt": hex(8_000 * 10**18),
+        "initialDebt": hex(800 * 10**18),
         "maxDiscount": hex(100),  # in thousands, 100 = 10%
       },
     }
@@ -66,7 +66,7 @@ config = {
       # Initial funding of the custom treasury payout token, sent from the operator address
       # This value must be a hexstring
       # If "0x0", do not send anything
-      "initialPayoutFunding": hex(2000 * 10**18), # VOID TOKEN
+      "initialPayoutFunding": hex(0 * 10**18), # VOID TOKEN
     },
   },
 }
