@@ -1,7 +1,7 @@
 import json
 
-bnUSD = "cx1cd2da25f9942fda5144e139bbda3e5108d3c083"
-VOID = "cxc2faf30ef79327f8a177f4b236ee3a1db8de81ec"
+bnUSD = "cx88fd7df7ddff82f7cc735c871dc519838cb235bb"
+VOID = "cx32d5b6c3eff488b058feff88acec824abe7ed8ca"
 
 config = {
   # Type: String
@@ -9,7 +9,7 @@ config = {
   #   - "sejong" for Sejong Network,
   #   - "berlin" for Berlin Network,
   #   - "mainnet" for Main Network
-  "network": "berlin",
+  "network": "mainnet",
 
   # Type: String
   # "type" value must be:
@@ -27,7 +27,7 @@ config = {
       # Type: Address
       # Initial owner of the custom bond
       # Should point to the dao.icx address
-      "initialOwner": "hx73920a92f3dc273fbf1a17aacc74b7bc31c6a932",
+      "initialOwner": "hx42c7aff8bc45b91dacd8713892aa8ee5687170e2",
 
       # Type: Integer
       # Vesting term value (in seconds)
@@ -46,11 +46,11 @@ config = {
       ],
 
       "initialize": {
-        "controlVariable": hex(2500),
+        "controlVariable": hex(1000),
         "minimumPrice": hex(0),
-        "maxPayout": hex(100),
+        "maxPayout": hex(1460),
         "maxDebt": hex(100_000 * 10**18),
-        "initialDebt": hex(600 * 10**18),
+        "initialDebt": hex(695 * 10**18),
         "maxDiscount": hex(100),  # in thousands, 100 = 10%
       },
     }
@@ -60,13 +60,13 @@ config = {
     "default": {
       # Type: Address
       # Initial owner of the custom treasury
-      "initialOwner": "hx73920a92f3dc273fbf1a17aacc74b7bc31c6a932",
+      "initialOwner": "hxc5e0b88cb9092bbd8b004a517996139334752f62",
 
       # Type: String (hexstring)
       # Initial funding of the custom treasury payout token, sent from the operator address
       # This value must be a hexstring
       # If "0x0", do not send anything
-      "initialPayoutFunding": hex(2000 * 10**18), # VOID TOKEN
+      "initialPayoutFunding": hex(0), # Initial owner (Inanis Invicuts will send 31119 VOID to the treasury)
     },
   },
 }
