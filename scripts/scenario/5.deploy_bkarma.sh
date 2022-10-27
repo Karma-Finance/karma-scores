@@ -22,6 +22,6 @@ info "Cleaning..."
 ./gradlew clean > /dev/null
 
 # --- Deploy bKarma ---
-${setupScriptsDir}/1.6.oracle.sh ${network}
+${setupScriptsDir}/5.1.bkarma.sh ${network}
 
-success "Karma Oracle have been successfully deployed!"
+success "bKarma have been successfully deployed!"

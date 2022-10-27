@@ -50,9 +50,9 @@ EOF
 )
 
 jq -n \
-  --arg _name $_name \
-  --arg _symbol $_symbol \
-  --arg _decimals $_decimals \
+  --arg _name "${_name}" \
+  --arg _symbol "${_symbol}" \
+  --arg _decimals "${_decimals}" \
   "${filter}" > ${deployDir}/params.json
 
 ./run.py -e ${network} deploy ${pkg}
