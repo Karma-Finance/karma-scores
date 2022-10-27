@@ -1,0 +1,8 @@
+{
+  "method": "transfer",
+  "params": {
+    "_to": "cx16cbf7721ef962f7d21d596d0caa2d250477b73e",
+    "_value": "0x6c6b935b8bbd400000",
+    "_data": "0x7b226d6574686f64223a2266756e64696e67227d"
+  }
+}

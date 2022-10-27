@@ -1,0 +1,22 @@
+@startuml Karma Custom Bond initializeBond flow
+
+Caller -> KarmaCustomBond : **setBondTerms** ( \n\
+  VESTING, \n\
+  vestingTerm, \n\
+)
+
+Caller -> KarmaCustomBond : **initializeBond** ( \n\
+  controlVariable, \n\
+  vestingTerm, \n\
+  minimumPrice, \n\
+  maxPayout, \n\
+  maxDebt, \n\
+  initialDebt \n\
+)
+
+KarmaCustomBond -> KarmaCustomBond : Check if **currentDebt()** is zero
+
+note over KarmaCustomBond : Bond fully initialized \n\
+Users can start purchasing bonds
+
+@enduml

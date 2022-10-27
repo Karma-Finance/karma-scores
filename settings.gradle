@@ -1,0 +1,44 @@
+rootProject.name = 'karma-scores'
+
+include (
+  // ------------------
+  // --- Karma-Bond ---
+  // ------------------
+
+  // Contracts
+  ':Karma-Bond:Contracts:bKarma',
+  ':Karma-Bond:Contracts:Karma-CustomBond',
+  ':Karma-Bond:Contracts:Karma-CustomBondBalanced',
+  ':Karma-Bond:Contracts:Karma-CustomTreasury',
+  ':Karma-Bond:Contracts:Karma-CustomTreasuryBalanced',
+  ':Karma-Bond:Contracts:Karma-Factory',
+  ':Karma-Bond:Contracts:Karma-FactoryStorage',
+  ':Karma-Bond:Contracts:Karma-SubsidyRouter',
+  ':Karma-Bond:Contracts:Karma-Oracle',
+
+  // Tests
+  ':Karma-Bond:Tests:bKarma-Test',
+  ':Karma-Bond:Tests:Karma-CustomBond-Test',
+  ':Karma-Bond:Tests:Karma-CustomTreasury-Test',
+  ':Karma-Bond:Tests:Karma-Factory-Test',
+  ':Karma-Bond:Tests:Karma-FactoryStorage-Test',
+  ':Karma-Bond:Tests:Karma-SubsidyRouter-Test',
+  ':Karma-Bond:Tests:Karma-Oracle-Test',
+
+  // ---------------------
+  // --- Karma-Commons ---
+  // ---------------------
+
+  // Librairies & common code
+  ':Karma-Commons:Karma-Test',
+  ':Karma-Commons:Karma-Utils',
+  ':Karma-Commons:Karma-Structs',
+  ':Karma-Commons:Karma-Types',
+  ':Karma-Commons:Karma-Interfaces',
+  ':Karma-Commons:Karma-Clients',
+
+  // ICON related code
+  ':Karma-Commons:ICON:irc2',
+  ':Karma-Commons:ICON:unittest',
+  ':Karma-Commons:ICON:testinteg',
+)

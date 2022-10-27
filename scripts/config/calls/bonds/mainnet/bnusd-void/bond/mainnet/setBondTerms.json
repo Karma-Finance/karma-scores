@@ -1,0 +1,7 @@
+{
+  "method": "setBondTerms",
+  "params": {
+    "parameter": "0x0",
+    "input": "0x49d40"
+  }
+}

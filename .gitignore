@@ -1,0 +1,26 @@
+.gradle
+.settings
+.idea
+build
+out
+
+.vscode
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+scripts/config/keystores
+!scripts/config/keystores/localhost
+
+testsvc/
+
+.project
+.classpath
+
+*.pyc
+venv/
+
+R&D/*
+
+# Ignore test scenarios
+scripts/scenario/configs/**test.py
