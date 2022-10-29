@@ -550,7 +550,7 @@ public class KarmaCustomBond extends Ownable {
             depositorBondInfo.payout.add(payout.subtract(fee)),
             terms.vestingTerm,
             Context.getBlockHeight(),
-            trueBondPrice(null)
+            nativePrice
         ));
 
         // indexed events are emitted

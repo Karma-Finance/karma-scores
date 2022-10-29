@@ -46,11 +46,11 @@ config = {
       ],
 
       "initialize": {
-        "controlVariable": hex(180),
+        "controlVariable": hex(2500),
         "minimumPrice": hex(0),
         "maxPayout": hex(100),
         "maxDebt": hex(100_000 * 10**18),
-        "initialDebt": hex(8_000 * 10**18),
+        "initialDebt": hex(600 * 10**18),
         "maxDiscount": hex(100),  # in thousands, 100 = 10%
       },
     }
@@ -60,7 +60,7 @@ config = {
     "default": {
       # Type: Address
       # Initial owner of the custom treasury
-      "initialOwner": "hxc5e0b88cb9092bbd8b004a517996139334752f62",
+      "initialOwner": "hx73920a92f3dc273fbf1a17aacc74b7bc31c6a932",
 
       # Type: String (hexstring)
       # Initial funding of the custom treasury payout token, sent from the operator address
