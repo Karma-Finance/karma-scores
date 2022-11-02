@@ -6,6 +6,7 @@ include (
   // ------------------
 
   // Contracts
+  ':Karma-Bond:Contracts:bKarma',
   ':Karma-Bond:Contracts:Karma-CustomBond',
   ':Karma-Bond:Contracts:Karma-CustomBondBalanced',
   ':Karma-Bond:Contracts:Karma-CustomTreasury',
@@ -16,6 +17,7 @@ include (
   ':Karma-Bond:Contracts:Karma-Oracle',
 
   // Tests
+  ':Karma-Bond:Tests:bKarma-Test',
   ':Karma-Bond:Tests:Karma-CustomBond-Test',
   ':Karma-Bond:Tests:Karma-CustomTreasury-Test',
   ':Karma-Bond:Tests:Karma-Factory-Test',

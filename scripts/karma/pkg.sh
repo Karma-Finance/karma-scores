@@ -23,6 +23,10 @@ getKarmaOraclePkg () {
   echo karmabond/oracle
 }
 
+getbKarmaPkg () {
+  echo karmabond/bkarma
+}
+
 getKarmaDAOPkg () {
   echo karmabond/dao
 }

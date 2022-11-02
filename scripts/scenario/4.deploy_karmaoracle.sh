@@ -22,6 +22,6 @@ info "Cleaning..."
 ./gradlew clean > /dev/null
 
 # --- Deploy Oracle ---
-${setupScriptsDir}/1.6.oracle.sh ${network}
+${setupScriptsDir}/4.1.oracle.sh ${network}
 
 success "Karma Oracle have been successfully deployed!"
