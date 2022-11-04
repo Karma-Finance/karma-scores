@@ -51,6 +51,18 @@ if [[ "$network" == "berlin" ]] ; then
   SICX=cxdd89d7a425b8f0b6448a8c80136727c517e64033
   OMM=cx0fa7815de5b2be6e51dc52caa0dc556012ae0f98
   SICX_ICX_POOL_ID=0x1
+if [[ "$network" == "lisbon" ]] ; then
+  balancedDex=
+  bandOracle=
+  USDS=
+  USDB=
+  BNUSD=
+  IUSDC=
+  IUSDT=
+  BALN=
+  SICX=
+  OMM=
+  SICX_ICX_POOL_ID=
 elif [[ "$network" == "mainnet" ]] ; then
   balancedDex=cxa0af3165c08318e988cb30993b3048335b94af6c
   bandOracle=cxe647e0af68a4661566f5e9861ad4ac854de808a2
