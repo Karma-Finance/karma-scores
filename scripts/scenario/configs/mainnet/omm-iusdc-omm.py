@@ -1,7 +1,7 @@
 import json
 
 OMM_IUSDC = "cxa0af3165c08318e988cb30993b3048335b94af6c"
-OMM_IUSDC_LP_POOL_ID =  6
+OMM_IUSDC_LP_POOL_ID = 6
 OMM = "cx1a29259a59f463a67bb2ef84398b30ca56b5830a"
 
 config = {
@@ -46,11 +46,11 @@ config = {
             ],
 
             "initialize": {
-                "controlVariable": hex(40000),
+                "controlVariable": hex(25_777),
                 "minimumPrice": hex(0),
-                "maxPayout": hex(9),
-                "maxDebt": hex(650_000 * 10**18),
-                "initialDebt": hex(25_000 * 10**18),
+                "maxPayout": hex(28),
+                "maxDebt": hex(2_200_000 * 10**18),
+                "initialDebt": hex(33_200 * 10**18),
                 "maxDiscount": hex(100),  # in thousands 100 = 10%
             },
         },

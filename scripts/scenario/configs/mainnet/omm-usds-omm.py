@@ -46,11 +46,11 @@ config = {
             ],
 
             "initialize": {
-                "controlVariable": hex(39977),
+                "controlVariable": hex(25_777),
                 "minimumPrice": hex(0),
-                "maxPayout": hex(9),
-                "maxDebt": hex(650_000 * 10**18),
-                "initialDebt": hex(25_500 * 10**18),
+                "maxPayout": hex(28),
+                "maxDebt": hex(2_200_000 * 10**18),
+                "initialDebt": hex(34_000 * 10**18),
                 "maxDiscount": hex(100),  # in thousands 100 = 10%
             },
         },
