@@ -7,7 +7,7 @@ config = {
   # Type: String
   # "network" value must be:
   #   - "sejong" for Sejong Network,
-  #   - "berlin" for Berlin Network,
+  #   - "lisbon" for Lisbon Network,
   #   - "mainnet" for Main Network
   "network": "sejong",
 
