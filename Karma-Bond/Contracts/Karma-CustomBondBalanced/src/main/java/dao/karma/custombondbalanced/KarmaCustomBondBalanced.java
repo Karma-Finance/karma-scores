@@ -775,15 +775,15 @@ public class KarmaCustomBondBalanced extends Ownable {
 
         // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-DECIMALS_PRECISION))
         BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - DECIMALS_PRECISION_EXPONENT));
-        BigInteger maxDiscount = terms.maxDiscount;
 
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
         }
         // check if max discount is greater than 0 and increase price to fit the capped discount
         // NOTE: if minimumPrice is set in the terms capped discount is not applied!
-        else if (maxDiscount.compareTo(ZERO) > 0) {
+        else if (terms.maxDiscount.compareTo(ZERO) > 0) {
             BigInteger bondDiscount = currentBondDiscount(price);
+            BigInteger maxDiscount = terms.maxDiscount;
 
             // if bond discount is greater than max discount, increase bond price to fit the max discount
             if (bondDiscount.compareTo(maxDiscount) > 0) {

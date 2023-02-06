@@ -40,6 +40,6 @@ ${setupScriptsDir}/1.4.karmabond_treasury.sh ${network}
 ${setupScriptsDir}/1.5.karmabond_factory.sh ${network}
 
 # --- Deploy Oracle ---
-${setupScriptsDir}/1.6.oracle.sh ${network}
+${setupScriptsDir}/4.1.oracle.sh ${network}
 
 success "All Karma Bond core contracts have been successfully deployed!"

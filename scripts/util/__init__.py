@@ -46,6 +46,7 @@ def get_icon_service(endpoint):
         "bicon":    ['https://bicon.net.solidwallet.io', 0x3],
         "sejong":   ['https://sejong.net.solidwallet.io', 0x53],
         "berlin":   ['https://berlin.net.solidwallet.io', 0x7],
+        "lisbon":   ['https://lisbon.net.solidwallet.io', 0x2],
         "gochain":  ['http://localhost:9082', 0x3],
         "custom":   ['https://endpoint.karmafinance.netlib.re', 0x3],
         "local":    ['http://localhost:9000', 0x3],

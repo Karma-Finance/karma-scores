@@ -301,6 +301,7 @@ public class KarmaCustomTreasuryBalanced extends Ownable {
 
     /**
      * Returns payout token valuation of principal token
+     * i.e. convert amount denominated in payout decimals to be denominated in payout decimals
      * 
      * @param principalTokenAddress The principal token address
      * @param amount An amount of principal token
