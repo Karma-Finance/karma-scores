@@ -25,6 +25,7 @@ import java.util.Map;
 import com.eclipsesource.json.JsonObject;
 
 import dao.karma.interfaces.bond.IBalancedDEX;
+import dao.karma.interfaces.bond.ICustomTreasury;
 import dao.karma.interfaces.bond.ICustomTreasuryBalanced;
 import dao.karma.interfaces.bond.IToken;
 import dao.karma.interfaces.dao.ITreasury;
@@ -910,12 +911,16 @@ public class KarmaCustomBondBalanced extends Ownable {
 
     /**
      * Calculate user's interest due for new bond, accounting for Karma Fee
+     * @param value - amount of principal in principal decimal precision
      */
     @External(readonly = true)
     public BigInteger payoutFor (BigInteger value) {
-        BigInteger total = _payoutFor(value);
+        // value is denominated in payout token decimals
+        BigInteger valueInPayout = ICustomTreasury.valueOfToken(this.customTreasury, this.principalToken, value);
+        BigInteger payout = _payoutFor(valueInPayout);
+
         // payoutFor = total - (total * currentKarmaFee() / 10**PAYOUT_PRECISION)
-        return total.subtract(total.multiply(currentKarmaFee()).divide(PAYOUT_PRECISION));
+        return payout.subtract(payout.multiply(currentKarmaFee()).divide(PAYOUT_PRECISION));
     }
 
     /**
