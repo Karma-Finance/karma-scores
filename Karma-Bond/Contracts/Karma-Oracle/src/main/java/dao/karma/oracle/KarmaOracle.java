@@ -246,7 +246,6 @@ public class KarmaOracle extends Ownable {
                 // The base / stablecoin pool may not exist, keep iterating
                 continue;
             }
-
             Map<String, ?> poolStats = IBalancedDEX.getPoolStats(dex, poolId);
             
             // convert price to 10**18 precision and calculate price in quote
