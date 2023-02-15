@@ -52,4 +52,8 @@ public class IRC2Client {
   public static void mint(Score irc2, Account from, BigInteger amount) {
     irc2.invoke(from, "mint", amount);
   }
+
+  public static BigInteger totalSupply(Score irc2) {
+    return (BigInteger) irc2.call("totalSupply");
+  }
 }

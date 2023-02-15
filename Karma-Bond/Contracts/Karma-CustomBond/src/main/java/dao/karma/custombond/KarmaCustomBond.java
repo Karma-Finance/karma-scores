@@ -550,7 +550,7 @@ public class KarmaCustomBond extends Ownable {
             depositorBondInfo.payout.add(payout.subtract(fee)),
             terms.vestingTerm,
             Context.getBlockHeight(),
-            trueBondPrice(null)
+            nativePrice
         ));
 
         // indexed events are emitted
@@ -866,12 +866,16 @@ public class KarmaCustomBond extends Ownable {
 
     /**
      * Calculate user's interest due for new bond, accounting for Karma Fee
+     * @param value - amount of principal in principal decimal precision
      */
     @External(readonly = true)
     public BigInteger payoutFor (BigInteger value) {
-        BigInteger total = _payoutFor(value);
+        // value is denominated in payout token decimals
+        BigInteger valueInPayout = ICustomTreasury.valueOfToken(this.customTreasury, this.principalToken, value);
+        BigInteger payout = _payoutFor(valueInPayout);
+
         // payoutFor = total - (total * currentKarmaFee() / 10**PAYOUT_PRECISION)
-        return total.subtract(total.multiply(currentKarmaFee()).divide(PAYOUT_PRECISION));
+        return payout.subtract(payout.multiply(currentKarmaFee()).divide(PAYOUT_PRECISION));
     }
 
     /**

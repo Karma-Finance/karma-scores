@@ -25,6 +25,7 @@ import java.util.Map;
 import com.eclipsesource.json.JsonObject;
 
 import dao.karma.interfaces.bond.IBalancedDEX;
+import dao.karma.interfaces.bond.ICustomTreasury;
 import dao.karma.interfaces.bond.ICustomTreasuryBalanced;
 import dao.karma.interfaces.bond.IToken;
 import dao.karma.interfaces.dao.ITreasury;
@@ -558,7 +559,7 @@ public class KarmaCustomBondBalanced extends Ownable {
             depositorBondInfo.payout.add(payout.subtract(fee)),
             terms.vestingTerm,
             Context.getBlockHeight(),
-            trueBondPrice(null)
+            nativePrice
         ));
 
         // indexed events are emitted
@@ -775,15 +776,15 @@ public class KarmaCustomBondBalanced extends Ownable {
 
         // price = BCV * debtRatio / (10**(IRC2(payoutToken).decimals()-DECIMALS_PRECISION))
         BigInteger price = terms.controlVariable.multiply(debtRatio()).divide(MathUtils.pow10(IToken.decimals(this.payoutToken) - DECIMALS_PRECISION_EXPONENT));
-        BigInteger maxDiscount = terms.maxDiscount;
 
         if (price.compareTo(terms.minimumPrice) < 0) {
             price = terms.minimumPrice;
         }
         // check if max discount is greater than 0 and increase price to fit the capped discount
         // NOTE: if minimumPrice is set in the terms capped discount is not applied!
-        else if (maxDiscount.compareTo(ZERO) > 0) {
+        else if (terms.maxDiscount.compareTo(ZERO) > 0) {
             BigInteger bondDiscount = currentBondDiscount(price);
+            BigInteger maxDiscount = terms.maxDiscount;
 
             // if bond discount is greater than max discount, increase bond price to fit the max discount
             if (bondDiscount.compareTo(maxDiscount) > 0) {
@@ -910,12 +911,16 @@ public class KarmaCustomBondBalanced extends Ownable {
 
     /**
      * Calculate user's interest due for new bond, accounting for Karma Fee
+     * @param value - amount of principal in principal decimal precision
      */
     @External(readonly = true)
     public BigInteger payoutFor (BigInteger value) {
-        BigInteger total = _payoutFor(value);
+        // value is denominated in payout token decimals
+        BigInteger valueInPayout = ICustomTreasury.valueOfToken(this.customTreasury, this.principalToken, value);
+        BigInteger payout = _payoutFor(valueInPayout);
+
         // payoutFor = total - (total * currentKarmaFee() / 10**PAYOUT_PRECISION)
-        return total.subtract(total.multiply(currentKarmaFee()).divide(PAYOUT_PRECISION));
+        return payout.subtract(payout.multiply(currentKarmaFee()).divide(PAYOUT_PRECISION));
     }
 
     /**
